@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -13,9 +12,19 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
 
+type AutoplayPluginType = {
+  name: 'autoplay';
+  options?: {
+    delay?: number;
+    stopOnInteraction?: boolean;
+    stopOnMouseEnter?: boolean;
+    playOnInit?: boolean;
+  };
+}
+
 type CarouselProps = {
   opts?: CarouselOptions
-  plugins?: CarouselPlugin
+  plugins?: (CarouselPlugin | AutoplayPluginType)[]
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
 }
@@ -67,15 +76,16 @@ const Carousel = React.forwardRef<
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
-    // Create autoplay effect
     React.useEffect(() => {
       if (!api || !plugins) return;
 
-      const plugin = plugins.find(plugin => plugin.name === 'autoplay');
-      if (!plugin) return;
+      const autoplayPlugin = plugins.find(plugin => 
+        typeof plugin === 'object' && plugin.name === 'autoplay'
+      ) as AutoplayPluginType | undefined;
       
-      const options = plugin.options as { delay: number };
-      const delay = options?.delay || 4000;
+      if (!autoplayPlugin) return;
+      
+      const delay = autoplayPlugin.options?.delay || 4000;
       
       const autoplay = setInterval(() => {
         if (api.canScrollNext()) {
