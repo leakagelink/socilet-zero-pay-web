@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -143,19 +144,19 @@ const ZeroAdvancePayment = () => {
               <h2 className="text-3xl font-bold mb-6">Why We Work With Zero Advance Payment</h2>
               
               <p>
-                We are working with a zero advance payment and work-first-pay-later business model to protect people from scams. Today, many developers take advance payments, then stop responding or deliver incomplete work or use templates. These templates often don't match the client's requirements.
+                हम जीरो एडवांस पेमेंट और वर्क फर्स्ट पे लेटर वाले बिजनेस मॉडल पर इसलिए काम कर रहे हैं ताकि हम लोगों को स्कैम से बचा सकें। आज के समय कई डेवलपर ऐसे हैं जो एडवांस पेमेंट ले लेते हैं, उसके बाद रिस्पॉन्स करना बंद कर देते हैं या अधूरा काम करके देते हैं या टेम्पलेट का इस्तेमाल करके बनाते हैं। उसमें भी क्लाइंट की रिक्वायरमेंट के अनुसार चीजें नहीं होती हैं।
               </p>
               
               <p>
-                Meanwhile, users are willing to pay good money and substantial advance payments. But even after that, developers or freelancers don't properly do their work honestly. And the user who has given their hard-earned money becomes very troubled, but no one can help them.
+                जबकि जो यूजर होता है वो अच्छा खासा पैसा देने के लिए तैयार होता है और अच्छा खासा एडवांस पेमेंट भी देता है। पर उसके बाद भी जो डेवलपर होते हैं या जो फ्रीलांसर होते हैं, सही तरह से अपना काम ईमानदारी से नहीं करते। और जिस यूजर ने अपना हार्ड अर्न मनी दिया होता है, वो बहुत परेशान होता है पर उसकी कोई भी हेल्प नहीं कर पाता।
               </p>
               
               <p>
-                Socilet wants to completely eliminate these scams and frauds happening in the market. That's why Socilet works on zero advance payment and doesn't take any hidden or extra charges, and provides uptime support and quality work.
+                सोसिलेट उन स्कैम और फ्रॉड को जो मार्केट में हो रहे हैं, उसे पूरी तरह खत्म करना चाहता है। इसलिए सोसिलेट जीरो एडवांस पेमेंट पर काम करता है और कोई भी हिडन या एक्स्ट्रा चार्ज भी नहीं लेता और अपटाइम सपोर्ट देता है और क्वालिटी वर्क भी।
               </p>
               
               <p>
-                We say that if you don't like the work, don't give us even 1 rupee. Socilet believes in quality work, and we don't want your hard-earned money to be wasted, so don't get work done from any scammer, get it done from Socilet.
+                हम बोलते हैं कि अगर आपको काम पसंद न आए तो आप हमें 1 रुपये भी मत देना। सोसिलेट विश्वास रखता है क्वालिटी वर्क में और हम नहीं चाहते आपके हार्ड अर्न मनी वेस्ट हो, इसलिए किसी स्कैमर से नहीं, सोसिलेट से काम करवाएं।
               </p>
               
               <div className="my-12 border-l-4 border-primary-600 pl-6 bg-primary-50 p-4 rounded-r-lg">

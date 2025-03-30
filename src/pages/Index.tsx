@@ -60,12 +60,25 @@ const Index = () => {
                 </Link>
               </div>
               
-              <div className="rounded-xl overflow-hidden shadow-xl max-w-md">
-                <img 
-                  src="/lovable-uploads/769a1794-a1ba-4de7-8ea2-f23cd2700c77.png" 
-                  alt="Socilet Team - Zero Advance Payment Model" 
-                  className="w-full h-auto"
-                />
+              <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+                <ul className="space-y-3 text-white">
+                  <li className="flex items-start">
+                    <div className="text-green-400 mr-2 mt-1">✓</div>
+                    <p>Pay only after complete project delivery</p>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="text-green-400 mr-2 mt-1">✓</div>
+                    <p>No hidden or extra charges</p>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="text-green-400 mr-2 mt-1">✓</div>
+                    <p>Continuous support throughout development</p>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="text-green-400 mr-2 mt-1">✓</div>
+                    <p>Don't pay if you're not 100% satisfied</p>
+                  </li>
+                </ul>
               </div>
             </motion.div>
           </div>
