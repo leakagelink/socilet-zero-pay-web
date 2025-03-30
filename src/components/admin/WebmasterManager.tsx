@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -9,7 +8,7 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { Settings, RefreshCw, Key, Search } from 'lucide-react';
+import { Settings, RefreshCw, Key, Search, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
   Dialog, 
@@ -22,6 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const WebmasterManager = () => {
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -31,9 +39,12 @@ const WebmasterManager = () => {
   
   // Google Search Console states
   const [isGoogleDialogOpen, setIsGoogleDialogOpen] = useState(false);
+  const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [verificationMethod, setVerificationMethod] = useState('html');
   const [verificationCode, setVerificationCode] = useState('');
   const [siteUrl, setSiteUrl] = useState('');
+  const [copied, setCopied] = useState(false);
+  const tagRef = useRef<HTMLTextAreaElement>(null);
 
   const handleClearCache = () => {
     // Simulate clearing cache
@@ -106,7 +117,37 @@ const WebmasterManager = () => {
     setIsGoogleDialogOpen(false);
   };
 
-  // Load Google verification settings if they exist
+  const showHtmlTag = () => {
+    if (verificationMethod === 'html' && verificationCode) {
+      setIsTagDialogOpen(true);
+    } else {
+      toast.error('Please enter a valid verification code first');
+    }
+  };
+
+  const copyToClipboard = () => {
+    if (tagRef.current) {
+      tagRef.current.select();
+      document.execCommand('copy');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      toast.success('Meta tag copied to clipboard');
+    }
+  };
+
+  const extractMetaContent = (metaTag: string) => {
+    const contentMatch = metaTag.match(/content="([^"]+)"/);
+    return contentMatch ? contentMatch[1] : '';
+  };
+
+  const getFormattedMetaTag = () => {
+    if (verificationCode.includes('<meta') && verificationCode.includes('google-site-verification')) {
+      return verificationCode.trim();
+    }
+    
+    return `<meta name="google-site-verification" content="${extractMetaContent(verificationCode) || verificationCode}" />`;
+  };
+
   React.useEffect(() => {
     const savedSettings = localStorage.getItem('google-webmaster-settings');
     if (savedSettings) {
@@ -151,6 +192,13 @@ const WebmasterManager = () => {
             <Button onClick={() => setIsGoogleDialogOpen(true)}>
               {localStorage.getItem('google-webmaster-settings') ? 'Update Verification' : 'Add Verification'}
             </Button>
+            {localStorage.getItem('google-webmaster-settings') && 
+              JSON.parse(localStorage.getItem('google-webmaster-settings') || '{}').method === 'html' && (
+                <Button variant="outline" onClick={showHtmlTag} className="mt-2">
+                  View HTML Meta Tag
+                </Button>
+              )
+            }
             <a 
               href="https://search.google.com/search-console" 
               target="_blank" 
@@ -336,7 +384,7 @@ const WebmasterManager = () => {
                 />
                 <p className="text-xs text-gray-500">
                   {verificationMethod === 'html' ? 
-                    'Paste the entire meta tag from Google Search Console.' : 
+                    'Paste the entire meta tag from Google Search Console or just the verification code.' : 
                     'Paste the content of the HTML verification file provided by Google.'
                   }
                 </p>
@@ -353,6 +401,34 @@ const WebmasterManager = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* HTML Meta Tag Dialog */}
+      <AlertDialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>HTML Verification Meta Tag</AlertDialogTitle>
+            <AlertDialogDescription>
+              Add this meta tag to your website's &lt;head&gt; section to verify ownership.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="my-4 p-3 bg-gray-50 border rounded-md">
+            <Textarea
+              ref={tagRef}
+              readOnly
+              className="font-mono text-sm bg-transparent border-0 p-0 focus-visible:ring-0"
+              value={getFormattedMetaTag()}
+              rows={2}
+            />
+          </div>
+          <AlertDialogFooter>
+            <Button onClick={copyToClipboard} className="gap-2">
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+              {copied ? "Copied!" : "Copy to Clipboard"}
+            </Button>
+            <AlertDialogAction>Close</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
