@@ -8,6 +8,7 @@ import Testimonials from '../components/Testimonials';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import Founder from '../components/Founder';
+import Technologies from '../components/Technologies';
 import { Toaster } from 'sonner';
 
 const Index = () => {
@@ -18,6 +19,7 @@ const Index = () => {
       <main>
         <Hero />
         <Services />
+        <Technologies />
         <Founder />
         <Portfolio />
         <Testimonials />
