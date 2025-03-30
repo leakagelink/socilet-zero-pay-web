@@ -56,32 +56,22 @@ const Testimonials = () => {
   const videoTestimonials = [
     {
       id: 1,
-      name: 'Kavita Singh',
-      position: 'Owner, Wellness Center',
       videoId: 'Rz6PVUtVYks', 
     },
     {
       id: 2,
-      name: 'Sudeshnaa',
-      position: 'The Dietitian',
       videoId: '4oogYX-_a38',
     },
     {
       id: 3,
-      name: 'Meena Reddy',
-      position: 'Director, Education First',
       videoId: 'g57bSleJEEY', 
     },
     {
       id: 4,
-      name: 'Rahul Desai',
-      position: 'Startup Founder',
       videoId: '_8s-7gSdT5E',
     },
     {
       id: 5,
-      name: 'Ananya Joshi',
-      position: 'Marketing Consultant',
       videoId: '_A-NDWDF9aE',
     },
   ];
@@ -219,7 +209,7 @@ const Testimonials = () => {
                     {thumbnails[video.videoId] ? (
                       <img 
                         src={thumbnails[video.videoId]} 
-                        alt={video.name}
+                        alt="Video thumbnail"
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                       />
                     ) : (
@@ -249,11 +239,6 @@ const Testimonials = () => {
                         <Youtube className="w-8 h-8 text-white" />
                       </motion.div>
                     </div>
-                  </div>
-                  
-                  <div className="p-4 text-center">
-                    <h4 className="font-bold text-primary-800">{video.name}</h4>
-                    <p className="text-sm text-gray-500">{video.position}</p>
                   </div>
                 </CardContent>
               </Card>
