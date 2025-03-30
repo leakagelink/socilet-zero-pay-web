@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -105,6 +106,14 @@ const Portfolio = () => {
       image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&h=400',
       description: 'India\'s Most Trusted Stock Market Institute making learning and teaching more effective with active participation and student collaboration. Completed on October 20, 2024.',
       url: 'https://vrt9trading.com/'
+    },
+    {
+      id: 13,
+      title: 'PinnacleSyncTech',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1573164574572-cb89e39749b4?auto=format&fit=crop&w=600&h=400',
+      description: 'Welcome to PinnacleSyncTech, where we bridge the gap between top-tier IT talent and innovative companies striving for excellence. Founded on a commitment to excellence and a passion for technology, we specialize in providing exceptional IT staffing solutions. Completed on April 26, 2024.',
+      url: 'https://pinnaclesynctech.com/'
     },
   ];
 
