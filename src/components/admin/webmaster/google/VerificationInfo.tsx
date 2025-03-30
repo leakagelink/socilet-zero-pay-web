@@ -7,7 +7,7 @@ interface VerificationInfoProps {
   siteUrl: string;
   verificationMethod: 'html' | 'html-file';
   isVerified?: boolean;
-  onShowHtmlTag: () => void;
+  onShowHtmlTag: () => void;  // Changed to not require a parameter
   onDownloadFile: () => void;
 }
 
@@ -40,8 +40,7 @@ const VerificationInfo = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               console.log("Show HTML Tag button clicked");
               onShowHtmlTag();
             }} 
@@ -55,8 +54,7 @@ const VerificationInfo = ({
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               console.log("Download file button clicked");
               onDownloadFile();
             }} 

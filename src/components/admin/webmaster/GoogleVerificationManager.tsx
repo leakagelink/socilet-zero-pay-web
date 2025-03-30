@@ -51,8 +51,8 @@ const GoogleVerificationManager = () => {
     setIsGoogleDialogOpen(true);
   };
 
-  const handleShowHtmlTag = (e: React.MouseEvent) => {
-    e.preventDefault();
+  // Changed this function to not require an event parameter
+  const handleShowHtmlTag = () => {
     console.log('Show HTML Tag button clicked directly from manager');
     showHtmlTag();
   };
