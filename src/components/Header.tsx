@@ -2,10 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone } from "lucide-react";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,33 +24,64 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Services', href: '#services' },
-    { name: 'Portfolio', href: '#portfolio' },
-    { name: 'Testimonials', href: '#testimonials' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Home', href: '/', path: '/' },
+    { name: 'Services', href: '/#services', path: '/' },
+    { name: 'Portfolio', href: '/#portfolio', path: '/' },
+    { name: 'Blog', href: '/blog', path: '/blog' },
+    { name: 'Track Project', href: '/track-project', path: '/track-project' },
+    { name: 'Affiliate', href: '/affiliate', path: '/affiliate' },
+    { name: 'Contact', href: '/#contact', path: '/' },
   ];
+
+  const handleNavigation = (href: string) => {
+    if (href.startsWith('#') && location.pathname === '/') {
+      // If it's a hash link and we're on the homepage, just scroll
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else if (href.includes('#') && !href.startsWith('#')) {
+      // If it contains a hash but isn't just a hash (like "/#services")
+      const path = href.split('#')[0];
+      navigate(path);
+      setTimeout(() => {
+        const hash = href.split('#')[1];
+        const element = document.querySelector(`#${hash}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // Regular navigation
+      navigate(href);
+    }
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/90 backdrop-blur-sm py-4'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <a href="#" className="flex flex-col">
+        <a href="#" className="flex flex-col" onClick={() => handleNavigation('/')}>
           <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-700 to-primary-900">socilet</span>
           <span className="text-xs text-secondary font-medium">Brand Your Dream</span>
         </a>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
-              className="text-gray-700 hover:text-primary-600 font-medium transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation(link.href);
+              }}
+              className={`text-gray-700 hover:text-primary-600 font-medium transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left ${location.pathname === link.path ? 'text-primary-600 after:scale-x-100' : ''}`}
             >
               {link.name}
             </a>
           ))}
-          <Button className="bg-primary-600 hover:bg-primary-700 gap-2">
+          <Button className="bg-primary-600 hover:bg-primary-700 gap-2" onClick={() => handleNavigation('/#contact')}>
             <Phone size={16} />
             <span>Get Started</span>
           </Button>
@@ -70,13 +104,19 @@ const Header = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className="text-gray-700 hover:text-primary-600 font-medium transition-colors py-2 border-b border-gray-100"
-                onClick={() => setIsMenuOpen(false)}
+                className={`text-gray-700 hover:text-primary-600 font-medium transition-colors py-2 border-b border-gray-100 ${location.pathname === link.path ? 'text-primary-600' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation(link.href);
+                }}
               >
                 {link.name}
               </a>
             ))}
-            <Button className="bg-primary-600 hover:bg-primary-700 flex items-center gap-2">
+            <Button 
+              className="bg-primary-600 hover:bg-primary-700 flex items-center gap-2"
+              onClick={() => handleNavigation('/#contact')}
+            >
               <Phone size={16} />
               <span>Get Started</span>
             </Button>
