@@ -1,5 +1,6 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { 
   Card, 
   CardContent, 
@@ -8,60 +9,66 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
-import { Search, Copy, Check } from 'lucide-react';
-import { toast } from 'sonner';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
-} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { CheckCircle, Copy, Search } from 'lucide-react';
 
 const GoogleVerificationManager = () => {
   const [isGoogleDialogOpen, setIsGoogleDialogOpen] = useState(false);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+  const [siteUrl, setSiteUrl] = useState('');
   const [verificationMethod, setVerificationMethod] = useState('html');
   const [verificationCode, setVerificationCode] = useState('');
-  const [siteUrl, setSiteUrl] = useState('');
-  const [copied, setCopied] = useState(false);
-  const tagRef = useRef<HTMLTextAreaElement>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
-  const handleSaveGoogleVerification = () => {
-    // Validate inputs
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+      toast.success('Copied to clipboard!');
+    }, () => {
+      toast.error('Failed to copy!');
+    });
+  };
+
+  const generateMetaTag = () => {
+    return `<meta name="google-site-verification" content="${verificationCode}" />`;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!siteUrl) {
-      toast.error('Please enter your site URL');
-      return;
-    }
-    
-    if (!verificationCode) {
-      toast.error('Please enter your verification code');
+      toast.error('Please enter a site URL');
       return;
     }
 
-    // Save the verification settings to localStorage
-    const googleSettings = {
+    if (!verificationCode) {
+      toast.error('Please enter a verification code');
+      return;
+    }
+
+    // Save to localStorage
+    localStorage.setItem('google-webmaster-settings', JSON.stringify({
       url: siteUrl,
       method: verificationMethod,
       code: verificationCode,
-      date: new Date().toISOString()
-    };
-    
-    localStorage.setItem('google-webmaster-settings', JSON.stringify(googleSettings));
+    }));
     
     if (verificationMethod === 'html') {
       toast.success('Verification code saved. Please add the meta tag to your site\'s <head> section.');
@@ -82,31 +89,33 @@ const GoogleVerificationManager = () => {
     if (verificationMethod === 'html' && verificationCode) {
       setIsTagDialogOpen(true);
     } else {
-      toast.error('Please enter a valid verification code first');
+      toast.error('Please save HTML verification settings first');
     }
   };
 
-  const copyToClipboard = () => {
-    if (tagRef.current) {
-      tagRef.current.select();
-      document.execCommand('copy');
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast.success('Meta tag copied to clipboard');
+  const downloadVerificationFile = () => {
+    if (verificationMethod === 'html-file' && verificationCode) {
+      // Create file content
+      const fileContent = `google-site-verification: ${verificationCode}.html`;
+      
+      // Create a blob
+      const blob = new Blob([fileContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create temp link and click it
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${verificationCode}.html`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Verification file downloaded');
+    } else {
+      toast.error('Please save HTML file verification settings first');
     }
-  };
-
-  const extractMetaContent = (metaTag: string) => {
-    const contentMatch = metaTag.match(/content="([^"]+)"/);
-    return contentMatch ? contentMatch[1] : '';
-  };
-
-  const getFormattedMetaTag = () => {
-    if (verificationCode.includes('<meta') && verificationCode.includes('google-site-verification')) {
-      return verificationCode.trim();
-    }
-    
-    return `<meta name="google-site-verification" content="${extractMetaContent(verificationCode) || verificationCode}" />`;
   };
 
   useEffect(() => {
@@ -129,155 +138,174 @@ const GoogleVerificationManager = () => {
 
   return (
     <>
-      <Card className="col-span-1">
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Search className="mr-2 h-5 w-5" />
-            Google Search Console
+      <Card className="shadow-sm">
+        <CardHeader className="border-b bg-muted/40">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Search size={18} /> Google Search Console
           </CardTitle>
-          <CardDescription>Verify and manage your site with Google Search Console</CardDescription>
+          <CardDescription>
+            Verify your website ownership with Google Search Console
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-500 mb-4">
-            Verify your site ownership and monitor its presence in Google Search results.
-          </p>
-          {localStorage.getItem('google-webmaster-settings') && (
-            <div className="bg-gray-50 p-3 rounded-md border text-sm mb-4">
-              <p className="font-medium">Site Verification Status:</p>
-              <p className="text-green-600">✓ Verification settings saved</p>
-              <p className="text-xs text-gray-500 mt-1">
-                {JSON.parse(localStorage.getItem('google-webmaster-settings') || '{}').method === 'html' 
-                  ? 'Meta tag method' 
-                  : 'HTML file method'}
-              </p>
+        <CardContent className="pt-6">
+          {localStorage.getItem('google-webmaster-settings') ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-base font-medium">
+                <CheckCircle size={18} className="text-green-500" />
+                <span>Verification in progress</span>
+              </div>
+              <p className="text-sm text-muted-foreground">Site: {siteUrl}</p>
+              <p className="text-xs text-muted-foreground">Method: {verificationMethod === 'html' ? 'HTML Meta Tag' : 'HTML File Upload'}</p>
+              {verificationMethod === 'html' && (
+                <Button variant="outline" size="sm" onClick={showHtmlTag}>Show HTML Tag</Button>
+              )}
+              {verificationMethod === 'html-file' && (
+                <Button variant="outline" size="sm" onClick={downloadVerificationFile}>Download Verification File</Button>
+              )}
             </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No Google verification configured yet.
+              Click the button below to set up verification for your website.
+            </p>
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
-          <Button onClick={openVerificationDialog}>
+          <Button onClick={openVerificationDialog} className="bg-primary-600 hover:bg-primary-700">
             {localStorage.getItem('google-webmaster-settings') ? 'Update Verification' : 'Add Verification'}
           </Button>
           {localStorage.getItem('google-webmaster-settings') && 
-            JSON.parse(localStorage.getItem('google-webmaster-settings') || '{}').method === 'html' && (
-              <Button variant="outline" onClick={showHtmlTag} className="mt-2">
-                View HTML Meta Tag
-              </Button>
-            )
+            <Button 
+              variant="destructive" 
+              size="sm"
+              onClick={() => {
+                localStorage.removeItem('google-webmaster-settings');
+                setSiteUrl('');
+                setVerificationCode('');
+                setVerificationMethod('html');
+                toast.success('Google verification removed');
+              }}
+            >
+              Remove Verification
+            </Button>
           }
-          <a 
-            href="https://search.google.com/search-console" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-xs text-blue-600 hover:underline"
-          >
-            Open Google Search Console →
-          </a>
         </CardFooter>
       </Card>
-
-      {/* Google Search Console Dialog */}
+      
+      {/* Google Verification Dialog */}
       <Dialog open={isGoogleDialogOpen} onOpenChange={setIsGoogleDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Google Search Console Verification</DialogTitle>
             <DialogDescription>
-              Connect your website to Google Search Console for search visibility monitoring and optimization.
+              Enter your website details and verification code from Google Search Console
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="site-url" className="text-right">
-                Website URL
-              </Label>
-              <Input
-                id="site-url"
-                type="text"
-                placeholder="https://example.com"
-                value={siteUrl}
-                onChange={(e) => setSiteUrl(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="verification-method" className="text-right">
-                Verification Method
-              </Label>
-              <div className="col-span-3">
-                <select 
-                  id="verification-method" 
-                  value={verificationMethod}
-                  onChange={(e) => setVerificationMethod(e.target.value)}
-                  className="w-full border border-input bg-background px-3 py-2 text-sm rounded-md"
-                >
-                  <option value="html">HTML meta tag</option>
-                  <option value="html-file">HTML file upload</option>
-                </select>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="site-url" className="text-right">
+                  Site URL
+                </Label>
+                <Input
+                  id="site-url"
+                  value={siteUrl}
+                  onChange={(e) => setSiteUrl(e.target.value)}
+                  placeholder="https://example.com"
+                  className="col-span-3"
+                />
               </div>
-            </div>
-            
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="verification-code" className="text-right pt-2">
-                Verification Code
-              </Label>
-              <div className="col-span-3 space-y-2">
-                <Textarea
-                  id="verification-code"
-                  placeholder={verificationMethod === 'html' ? 
-                    '<meta name="google-site-verification" content="your-code-here" />' : 
-                    'Paste the content of your verification HTML file here'
-                  }
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="method" className="text-right">
+                  Method
+                </Label>
+                <Select 
+                  value={verificationMethod}
+                  onValueChange={setVerificationMethod}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="html">HTML Meta Tag</SelectItem>
+                    <SelectItem value="html-file">HTML File</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="code" className="text-right">
+                  {verificationMethod === 'html' 
+                    ? 'Meta Content' 
+                    : 'Filename'}
+                </Label>
+                <Input
+                  id="code"
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
-                  rows={4}
+                  placeholder={verificationMethod === 'html' 
+                    ? "XYZ123abc..." 
+                    : "googleXYZ123abc..."}
+                  className="col-span-3"
                 />
-                <p className="text-xs text-gray-500">
-                  {verificationMethod === 'html' ? 
-                    'Paste the entire meta tag from Google Search Console or just the verification code.' : 
-                    'Paste the content of the HTML verification file provided by Google.'
-                  }
+              </div>
+              <div className="col-span-4 text-xs text-muted-foreground">
+                <p>
+                  {verificationMethod === 'html' 
+                    ? 'Enter only the content value from the meta tag provided by Google.' 
+                    : 'Enter the filename provided by Google (without .html extension).'}
                 </p>
               </div>
             </div>
+            <DialogFooter>
+              <Button type="submit">Save Verification</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* HTML Tag Dialog */}
+      <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>HTML Meta Tag</DialogTitle>
+            <DialogDescription>
+              Add this meta tag to the &lt;head&gt; section of your website's HTML
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2">
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="meta-tag">HTML Tag</Label>
+              <div className="relative">
+                <Input
+                  id="meta-tag"
+                  readOnly
+                  value={generateMetaTag()}
+                  className="pr-12 font-mono text-xs"
+                />
+                <Button
+                  size="icon"
+                  type="button"
+                  variant="ghost"
+                  className="absolute right-1 top-1 h-7 w-7"
+                  onClick={() => copyToClipboard(generateMetaTag())}
+                >
+                  {copySuccess ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="bg-muted p-3 rounded-md text-xs">
+            <p>
+              1. Copy the above meta tag<br />
+              2. Paste it in the &lt;head&gt; section of your website's HTML<br />
+              3. Return to Google Search Console and click "Verify"
+            </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsGoogleDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveGoogleVerification}>
-              Save Verification
-            </Button>
+            <Button onClick={() => setIsTagDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* HTML Meta Tag Dialog */}
-      <AlertDialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>HTML Verification Meta Tag</AlertDialogTitle>
-            <AlertDialogDescription>
-              Add this meta tag to your website's &lt;head&gt; section to verify ownership.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="my-4 p-3 bg-gray-50 border rounded-md">
-            <Textarea
-              ref={tagRef}
-              readOnly
-              className="font-mono text-sm bg-transparent border-0 p-0 focus-visible:ring-0"
-              value={getFormattedMetaTag()}
-              rows={2}
-            />
-          </div>
-          <AlertDialogFooter>
-            <Button onClick={copyToClipboard} className="gap-2">
-              {copied ? <Check size={16} /> : <Copy size={16} />}
-              {copied ? "Copied!" : "Copy to Clipboard"}
-            </Button>
-            <AlertDialogAction>Close</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
