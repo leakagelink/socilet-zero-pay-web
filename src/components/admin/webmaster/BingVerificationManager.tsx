@@ -24,12 +24,15 @@ interface BingVerificationSettings {
 }
 
 const BingVerificationManager = () => {
+  // Default Bing verification code to the one provided
+  const defaultVerificationCode = 'F369CBC92F03EBB72A41A8782CB42881';
+  
   // State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [siteUrl, setSiteUrl] = useState('');
   const [verificationMethod, setVerificationMethod] = useState<'html' | 'html-file'>('html');
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationCode, setVerificationCode] = useState(defaultVerificationCode);
   const [copySuccess, setCopySuccess] = useState(false);
 
   // Check if verification settings exist
@@ -43,10 +46,15 @@ const BingVerificationManager = () => {
         const settings = JSON.parse(savedSettings) as BingVerificationSettings;
         setSiteUrl(settings.url || '');
         setVerificationMethod(settings.method || 'html');
-        setVerificationCode(settings.code || '');
+        setVerificationCode(settings.code || defaultVerificationCode);
+      } else {
+        // If no settings exist, pre-populate with the default verification code
+        setVerificationCode(defaultVerificationCode);
       }
     } catch (error) {
       console.error('Error loading saved Bing settings:', error);
+      // If there was an error, still set the default verification code
+      setVerificationCode(defaultVerificationCode);
     }
   }, []);
 
