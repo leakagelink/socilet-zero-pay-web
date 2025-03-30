@@ -67,6 +67,14 @@ const Portfolio = () => {
       description: 'MSMEs & Startups solution funding website built with React. Completed on March 30, 2025.',
       url: 'https://bharatstartupsolution.com/'
     },
+    {
+      id: 8,
+      title: 'Shaswat Initial Support Services',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1661956600684-97d3a4320e45?auto=format&fit=crop&w=600&h=400',
+      description: 'Website development company based in Gujarat. Completed on December 15, 2024.',
+      url: 'https://shaswatinitialsupportservices.com/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
