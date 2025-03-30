@@ -4,4 +4,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://socilet.com/sitemap.xml
+Sitemap: https://socilet.com/sitemap_index.xml
