@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface AdminHeaderProps {
@@ -17,6 +17,16 @@ const AdminHeader = ({ onLogout }: AdminHeaderProps) => {
           <nav>
             <ul className="flex space-x-6">
               <li><Link to="/" className="hover:text-secondary transition-colors">View Site</Link></li>
+              <li>
+                <a 
+                  href="https://search.google.com/search-console" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-secondary transition-colors flex items-center"
+                >
+                  <Globe className="w-4 h-4 mr-1" /> Search Console
+                </a>
+              </li>
             </ul>
           </nav>
         </div>

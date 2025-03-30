@@ -7,6 +7,7 @@ import PortfolioManager from '../components/admin/PortfolioManager';
 import BlogManager from '../components/admin/BlogManager';
 import TestimonialManager from '../components/admin/TestimonialManager';
 import WebsitePhotosManager from '../components/admin/WebsitePhotosManager';
+import WebmasterManager from '../components/admin/WebmasterManager';
 import AdminLogin from '../components/admin/AdminLogin';
 
 const Admin = () => {
@@ -55,6 +56,7 @@ const Admin = () => {
             <TabsTrigger value="blog">Blog Posts</TabsTrigger>
             <TabsTrigger value="testimonials">Video Testimonials</TabsTrigger>
             <TabsTrigger value="photos">Website Photos</TabsTrigger>
+            <TabsTrigger value="webmaster">Search Console</TabsTrigger>
           </TabsList>
           
           <TabsContent value="portfolio" className="border rounded-lg p-6 bg-white">
@@ -71,6 +73,10 @@ const Admin = () => {
           
           <TabsContent value="photos" className="border rounded-lg p-6 bg-white">
             <WebsitePhotosManager />
+          </TabsContent>
+          
+          <TabsContent value="webmaster" className="border rounded-lg p-6 bg-white">
+            <WebmasterManager />
           </TabsContent>
         </Tabs>
       </main>
