@@ -125,6 +125,14 @@ const Portfolio = () => {
       description: 'Welcome to ICARUS HR, where talent and opportunity converge to create impactful careers and thriving teams. At ICARUS HR, we believe recruitment is more than just filling roles—it\'s about forging meaningful connections between visionary companies and exceptional talent. Completed on November 24, 2024.',
       url: 'https://icarushr.com/'
     },
+    {
+      id: 15,
+      title: 'Amazon Pallets Liquidation',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1606293459339-a5e322a49a5a?auto=format&fit=crop&w=600&h=400',
+      description: 'For over 10 years, Amazon pallets liquidation has been a leading provider of customer returns, overstock, and end-of-life products sourced from major retailers and manufacturers. We offer a diverse range of liquidation inventory, including electronics, home goods, clothing, toys, general merchandise and much more. Completed on October 07, 2024.',
+      url: 'https://amazonpalletsliquidation.com/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
