@@ -3,5 +3,6 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Create a clean root without any additional wrappers
-createRoot(document.getElementById("root")!).render(<App />);
+// Direct render without any wrappers to avoid any "Edit with Lovable" badges
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
