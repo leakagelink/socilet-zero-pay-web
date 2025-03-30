@@ -6,11 +6,14 @@ import { motion } from "framer-motion";
 import PortfolioFilters from './portfolio/PortfolioFilters';
 import PortfolioGrid from './portfolio/PortfolioGrid';
 
-// Import the same portfolio items used in the admin panel for consistency
-import { portfolioItems as initialPortfolioItems } from './admin/portfolioData';
+// Import the loadPortfolioItems function to get the current portfolio data
+import { loadPortfolioItems } from './admin/portfolioData';
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  
+  // Load portfolio items from localStorage
+  const portfolioItems = loadPortfolioItems();
 
   const filters = [
     { id: 'all', label: 'All Projects' },
@@ -22,8 +25,8 @@ const Portfolio = () => {
 
   // Filter portfolio items based on the active filter
   const filteredItems = activeFilter === 'all' 
-    ? initialPortfolioItems 
-    : initialPortfolioItems.filter(item => item.category === activeFilter);
+    ? portfolioItems 
+    : portfolioItems.filter(item => item.category === activeFilter);
 
   // Helper function to get category label from category id
   const getCategoryLabel = (categoryId: string) => {

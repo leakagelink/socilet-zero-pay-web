@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Card, 
@@ -21,10 +20,10 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { Edit, Plus, Trash2, ExternalLink } from 'lucide-react';
-import { PortfolioItem, portfolioItems as initialPortfolioItems } from './portfolioData';
+import { PortfolioItem, loadPortfolioItems, savePortfolioItems } from './portfolioData';
 
 const PortfolioManager = () => {
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(initialPortfolioItems);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(loadPortfolioItems());
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<PortfolioItem | null>(null);
@@ -46,7 +45,9 @@ const PortfolioManager = () => {
 
   const handleAddItem = () => {
     const id = Math.max(0, ...portfolioItems.map(item => item.id)) + 1;
-    setPortfolioItems([...portfolioItems, { id, ...newItem }]);
+    const updatedItems = [...portfolioItems, { id, ...newItem }];
+    setPortfolioItems(updatedItems);
+    savePortfolioItems(updatedItems); // Save to localStorage
     setIsAddDialogOpen(false);
     setNewItem({
       title: '',
@@ -61,9 +62,12 @@ const PortfolioManager = () => {
   const handleEditItem = () => {
     if (!currentItem) return;
     
-    setPortfolioItems(portfolioItems.map(item => 
+    const updatedItems = portfolioItems.map(item => 
       item.id === currentItem.id ? currentItem : item
-    ));
+    );
+    
+    setPortfolioItems(updatedItems);
+    savePortfolioItems(updatedItems); // Save to localStorage
     setIsEditDialogOpen(false);
     setCurrentItem(null);
     toast.success('Portfolio item updated successfully');
@@ -71,7 +75,9 @@ const PortfolioManager = () => {
 
   const handleDeleteItem = (id: number) => {
     if (confirm('Are you sure you want to delete this item?')) {
-      setPortfolioItems(portfolioItems.filter(item => item.id !== id));
+      const updatedItems = portfolioItems.filter(item => item.id !== id);
+      setPortfolioItems(updatedItems);
+      savePortfolioItems(updatedItems); // Save to localStorage
       toast.success('Portfolio item deleted successfully');
     }
   };

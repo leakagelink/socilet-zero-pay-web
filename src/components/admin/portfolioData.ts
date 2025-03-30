@@ -8,8 +8,8 @@ export type PortfolioItem = {
   url?: string;
 };
 
-// Combined portfolio items from both components to ensure consistency
-export const portfolioItems: PortfolioItem[] = [
+// Initial default portfolio items 
+const defaultPortfolioItems: PortfolioItem[] = [
   {
     id: 1,
     title: 'E-commerce Website',
@@ -131,3 +131,17 @@ export const portfolioItems: PortfolioItem[] = [
     url: 'https://amazonpalletsliquidation.com/'
   },
 ];
+
+// Load portfolio items from localStorage if available, otherwise use defaults
+export const loadPortfolioItems = (): PortfolioItem[] => {
+  const savedItems = localStorage.getItem('portfolioItems');
+  return savedItems ? JSON.parse(savedItems) : defaultPortfolioItems;
+};
+
+// Save portfolio items to localStorage
+export const savePortfolioItems = (items: PortfolioItem[]): void => {
+  localStorage.setItem('portfolioItems', JSON.stringify(items));
+};
+
+// Export the portfolio items from the loadPortfolioItems function
+export const portfolioItems: PortfolioItem[] = loadPortfolioItems();
