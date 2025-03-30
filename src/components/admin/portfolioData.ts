@@ -63,7 +63,7 @@ export const portfolioItems: PortfolioItem[] = [
     title: 'Bharat Startup Solution',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&h=400',
-    description: 'MSMEs & Startups solution funding website built with React. Completed on March 30, 2025.',
+    description: 'MSMEs & Startups solution funding website built with React and modern frontend technologies. Completed on March 30, 2025.',
     url: 'https://bharatstartupsolution.com/'
   },
   {
