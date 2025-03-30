@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Star, Play, Quote, X, Video, Youtube } from "lucide-react";
+import { Star, Quote, X, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Carousel,
@@ -59,49 +58,35 @@ const Testimonials = () => {
       name: 'Kavita Singh',
       position: 'Owner, Wellness Center',
       thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=600',
-      videoId: 'Rz6PVUtVYks', // YouTube short ID
+      videoId: 'Rz6PVUtVYks', 
     },
     {
       id: 2,
       name: 'Vikram Mehta',
       position: 'CEO, BuildRight Construction',
       thumbnail: 'https://images.unsplash.com/photo-1600486913747-55e5470d6f40?auto=format&fit=crop&w=400&h=600',
-      videoId: '4oogYX-_a38', // YouTube short ID
+      videoId: '4oogYX-_a38',
     },
     {
       id: 3,
       name: 'Meena Reddy',
       position: 'Director, Education First',
       thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=600',
-      videoId: 'g57bSleJEEY', // YouTube short ID
+      videoId: 'g57bSleJEEY', 
     },
     {
       id: 4,
       name: 'Rahul Desai',
       position: 'Startup Founder',
       thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&h=600',
-      videoId: '_8s-7gSdT5E', // YouTube short ID
+      videoId: '_8s-7gSdT5E',
     },
     {
       id: 5,
       name: 'Ananya Joshi',
       position: 'Marketing Consultant',
       thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600',
-      videoId: '_A-NDWDF9aE', // YouTube short ID
-    },
-    {
-      id: 6,
-      name: 'Sanjay Gupta',
-      position: 'E-commerce Entrepreneur',
-      thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=600',
-      videoId: 'Rz6PVUtVYks', // Duplicate for demo
-    },
-    {
-      id: 7,
-      name: 'Neha Sharma',
-      position: 'Digital Strategist',
-      thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=600',
-      videoId: '4oogYX-_a38', // Duplicate for demo
+      videoId: '_A-NDWDF9aE',
     },
   ];
 
@@ -118,7 +103,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section id="testimonials" className="section-padding bg-gradient-to-b from-white to-gray-50 relative">
+    <section id="testimonials" className="section-padding bg-gradient-to-b from-white to-gray-50 relative py-20">
       {/* Background decorative elements */}
       <div className="absolute top-40 right-10 w-72 h-72 bg-primary-50 rounded-full filter blur-3xl opacity-50"></div>
       <div className="absolute bottom-40 left-10 w-72 h-72 bg-secondary/10 rounded-full filter blur-3xl opacity-50"></div>
@@ -140,7 +125,12 @@ const Testimonials = () => {
         </motion.div>
 
         <div className="mb-20 overflow-hidden">
-          <Carousel className="w-full" opts={{ loop: true }}>
+          <Carousel 
+            className="w-full" 
+            opts={{ 
+              loop: true 
+            }}
+          >
             <CarouselContent>
               {testimonials.map(testimonial => (
                 <CarouselItem key={testimonial.id} className="md:basis-1/3 pl-4">
@@ -183,6 +173,7 @@ const Testimonials = () => {
           </Carousel>
         </div>
 
+        {/* New YouTube Video Testimonials Section */}
         <motion.div 
           className="text-center max-w-2xl mx-auto mb-12"
           initial="hidden"
@@ -190,86 +181,68 @@ const Testimonials = () => {
           viewport={{ once: true }}
           variants={fadeInUp}
         >
-          <h3 className="text-2xl font-bold mb-4 text-primary-700">YouTube Shorts Testimonials</h3>
+          <h3 className="text-2xl font-bold mb-4 text-primary-700">Video Testimonials</h3>
           <p className="text-gray-600 mb-8">
-            Watch our quick YouTube shorts testimonials from satisfied clients.
+            Watch our clients share their experiences with our services
           </p>
         </motion.div>
 
-        {/* YouTube shorts testimonials section */}
-        <div className="mb-16">
-          <Carousel 
-            className="w-full" 
-            opts={{ 
-              loop: true, 
-              align: "start",
-              containScroll: false,
-              skipSnaps: false,
-              dragFree: true
-            }}
-            autoplayOptions={{
-              delay: 4000,
-              stopOnInteraction: false
-            }}
-          >
-            <CarouselContent>
-              {videoTestimonials.map((video) => (
-                <CarouselItem key={video.id} className="md:basis-1/4 pl-4">
-                  <motion.div 
-                    className="relative group cursor-pointer mx-auto"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    whileHover={{ scale: 1.02 }}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-16">
+          {videoTestimonials.map((video) => (
+            <motion.div
+              key={video.id}
+              className="relative group cursor-pointer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: video.id * 0.1 }}
+              whileHover={{ y: -5 }}
+            >
+              <Card className="overflow-hidden border-none shadow-lg h-full">
+                <CardContent className="p-0 relative">
+                  <div 
+                    className="relative aspect-[9/16] overflow-hidden"
                     onClick={() => playVideo(video.videoId)}
                   >
-                    <Card className="overflow-hidden rounded-2xl w-64 border-none shadow-lg">
-                      <CardContent className="p-0">
-                        <div className="relative">
-                          <img 
-                            src={video.thumbnail} 
-                            alt={video.name}
-                            className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105" 
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex flex-col items-center justify-center group-hover:bg-black/30 transition-all duration-300">
-                            <motion.div 
-                              className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center shadow-lg mb-2"
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              initial={{ scale: 0.9, opacity: 0.8 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 400, 
-                                damping: 10,
-                                duration: 0.3
-                              }}
-                            >
-                              <Youtube className="w-8 h-8 text-white ml-0.5" />
-                            </motion.div>
-                            <span className="text-white font-medium text-sm px-3 py-1 bg-black/40 rounded-full">
-                              YouTube Short
-                            </span>
-                          </div>
-                        </div>
-                        <div className="py-4 px-2 text-center">
-                          <h4 className="font-bold text-primary-700">{video.name}</h4>
-                          <p className="text-sm text-gray-500">{video.position}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="flex justify-center mt-8 gap-2">
-              <CarouselPrevious className="static transform-none mx-2" />
-              <CarouselNext className="static transform-none mx-2" />
-            </div>
-          </Carousel>
+                    <img 
+                      src={video.thumbnail} 
+                      alt={video.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col items-center justify-center group-hover:bg-black/30 transition-all duration-300">
+                      <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-medium rounded-lg px-2 py-1 flex items-center">
+                        <Youtube className="h-3 w-3 mr-1" />
+                        <span>Shorts</span>
+                      </div>
+                      
+                      <motion.div 
+                        className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-xl"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ scale: 0.9, opacity: 0.8 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400, 
+                          damping: 10,
+                          duration: 0.3
+                        }}
+                      >
+                        <Youtube className="w-8 h-8 text-white" />
+                      </motion.div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 text-center">
+                    <h4 className="font-bold text-primary-800">{video.name}</h4>
+                    <p className="text-sm text-gray-500">{video.position}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
-
+        
         <motion.div 
           className="mt-20 text-center"
           initial={{ opacity: 0, y: 10 }}
