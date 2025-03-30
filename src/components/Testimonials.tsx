@@ -47,7 +47,7 @@ const Testimonials = () => {
     },
   ];
 
-  // Mock video testimonials - portrait orientation
+  // Video testimonials - 7 videos in portrait orientation
   const videoTestimonials = [
     {
       id: 1,
@@ -59,7 +59,37 @@ const Testimonials = () => {
       id: 2,
       name: 'Vikram Mehta',
       position: 'CEO, BuildRight Construction',
-      thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&h=600',
+      thumbnail: 'https://images.unsplash.com/photo-1600486913747-55e5470d6f40?auto=format&fit=crop&w=400&h=600',
+    },
+    {
+      id: 3,
+      name: 'Meena Reddy',
+      position: 'Director, Education First',
+      thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=600',
+    },
+    {
+      id: 4,
+      name: 'Rahul Desai',
+      position: 'Startup Founder',
+      thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&h=600',
+    },
+    {
+      id: 5,
+      name: 'Ananya Joshi',
+      position: 'Marketing Consultant',
+      thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600',
+    },
+    {
+      id: 6,
+      name: 'Sanjay Gupta',
+      position: 'E-commerce Entrepreneur',
+      thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=600',
+    },
+    {
+      id: 7,
+      name: 'Neha Sharma',
+      position: 'Digital Strategist',
+      thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=600',
     },
   ];
 
@@ -148,47 +178,74 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
-          {videoTestimonials.map(video => (
-            <motion.div 
-              key={video.id} 
-              className="relative group cursor-pointer mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="overflow-hidden rounded-2xl w-64 h-96 mx-auto shadow-lg">
-                <img 
-                  src={video.thumbnail} 
-                  alt={video.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex items-center justify-center group-hover:bg-black/30 transition-all duration-300">
+        {/* Video testimonials carousel - auto sliding */}
+        <div className="mb-16">
+          <Carousel 
+            className="w-full" 
+            opts={{ 
+              loop: true, 
+              align: "start",
+              containScroll: false,
+              skipSnaps: false,
+              dragFree: true
+            }}
+            plugins={[
+              {
+                name: "autoplay",
+                options: {
+                  delay: 4000,
+                },
+              },
+            ]}
+          >
+            <CarouselContent>
+              {videoTestimonials.map((video) => (
+                <CarouselItem key={video.id} className="md:basis-1/4 pl-4">
                   <motion.div 
-                    className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center shadow-lg"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ scale: 0.9, opacity: 0.8 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 400, 
-                      damping: 10,
-                      duration: 0.3
-                    }}
+                    className="relative group cursor-pointer mx-auto"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    whileHover={{ scale: 1.02 }}
                   >
-                    <Play className="w-8 h-8 text-white ml-1" />
+                    <div className="overflow-hidden rounded-2xl w-64 h-96 mx-auto shadow-lg">
+                      <img 
+                        src={video.thumbnail} 
+                        alt={video.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex items-center justify-center group-hover:bg-black/30 transition-all duration-300">
+                        <motion.div 
+                          className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center shadow-lg"
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          initial={{ scale: 0.9, opacity: 0.8 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400, 
+                            damping: 10,
+                            duration: 0.3
+                          }}
+                        >
+                          <Play className="w-8 h-8 text-white ml-1" />
+                        </motion.div>
+                      </div>
+                    </div>
+                    <div className="mt-4 text-center">
+                      <h4 className="font-bold text-primary-700">{video.name}</h4>
+                      <p className="text-sm text-gray-500">{video.position}</p>
+                    </div>
                   </motion.div>
-                </div>
-              </div>
-              <div className="mt-4 text-center">
-                <h4 className="font-bold text-primary-700">{video.name}</h4>
-                <p className="text-sm text-gray-500">{video.position}</p>
-              </div>
-            </motion.div>
-          ))}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center mt-8 gap-2">
+              <CarouselPrevious className="static transform-none mx-2" />
+              <CarouselNext className="static transform-none mx-2" />
+            </div>
+          </Carousel>
         </div>
 
         <motion.div 
