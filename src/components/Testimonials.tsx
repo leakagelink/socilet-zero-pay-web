@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Star, Play, Quote, X } from "lucide-react";
+import { Star, Play, Quote, X, Video, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Carousel,
@@ -10,6 +10,7 @@ import {
   CarouselPrevious
 } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Testimonials = () => {
   const [videoOpen, setVideoOpen] = useState(false);
@@ -189,13 +190,13 @@ const Testimonials = () => {
           viewport={{ once: true }}
           variants={fadeInUp}
         >
-          <h3 className="text-2xl font-bold mb-4 text-primary-700">Video Testimonials</h3>
+          <h3 className="text-2xl font-bold mb-4 text-primary-700">YouTube Shorts Testimonials</h3>
           <p className="text-gray-600 mb-8">
-            Watch what our clients have to say about their experience working with Socilet.
+            Watch our quick YouTube shorts testimonials from satisfied clients.
           </p>
         </motion.div>
 
-        {/* Video testimonials carousel - auto sliding */}
+        {/* YouTube shorts testimonials section */}
         <div className="mb-16">
           <Carousel 
             className="w-full" 
@@ -223,34 +224,41 @@ const Testimonials = () => {
                     whileHover={{ scale: 1.02 }}
                     onClick={() => playVideo(video.videoId)}
                   >
-                    <div className="overflow-hidden rounded-2xl w-64 h-96 mx-auto shadow-lg">
-                      <img 
-                        src={video.thumbnail} 
-                        alt={video.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex items-center justify-center group-hover:bg-black/30 transition-all duration-300">
-                        <motion.div 
-                          className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center shadow-lg"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                          initial={{ scale: 0.9, opacity: 0.8 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 400, 
-                            damping: 10,
-                            duration: 0.3
-                          }}
-                        >
-                          <Play className="w-8 h-8 text-white ml-1" />
-                        </motion.div>
-                      </div>
-                    </div>
-                    <div className="mt-4 text-center">
-                      <h4 className="font-bold text-primary-700">{video.name}</h4>
-                      <p className="text-sm text-gray-500">{video.position}</p>
-                    </div>
+                    <Card className="overflow-hidden rounded-2xl w-64 border-none shadow-lg">
+                      <CardContent className="p-0">
+                        <div className="relative">
+                          <img 
+                            src={video.thumbnail} 
+                            alt={video.name}
+                            className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-105" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex flex-col items-center justify-center group-hover:bg-black/30 transition-all duration-300">
+                            <motion.div 
+                              className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center shadow-lg mb-2"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              initial={{ scale: 0.9, opacity: 0.8 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 400, 
+                                damping: 10,
+                                duration: 0.3
+                              }}
+                            >
+                              <Youtube className="w-8 h-8 text-white ml-0.5" />
+                            </motion.div>
+                            <span className="text-white font-medium text-sm px-3 py-1 bg-black/40 rounded-full">
+                              YouTube Short
+                            </span>
+                          </div>
+                        </div>
+                        <div className="py-4 px-2 text-center">
+                          <h4 className="font-bold text-primary-700">{video.name}</h4>
+                          <p className="text-sm text-gray-500">{video.position}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </motion.div>
                 </CarouselItem>
               ))}
@@ -279,10 +287,10 @@ const Testimonials = () => {
         </motion.div>
       </div>
 
-      {/* Video dialog */}
+      {/* Video dialog for YouTube shorts */}
       <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
-        <DialogContent className="sm:max-w-[800px] p-0 bg-black overflow-hidden">
-          <div className="relative pt-[56.25%] w-full">
+        <DialogContent className="sm:max-w-[400px] md:max-w-[360px] p-0 bg-black overflow-hidden h-[80vh] max-h-[80vh]">
+          <div className="relative w-full h-full">
             <iframe
               className="absolute top-0 left-0 w-full h-full"
               src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1`}
@@ -292,7 +300,7 @@ const Testimonials = () => {
               allowFullScreen
             ></iframe>
           </div>
-          <DialogClose className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full">
+          <DialogClose className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full z-50">
             <X className="h-6 w-6" />
           </DialogClose>
         </DialogContent>
