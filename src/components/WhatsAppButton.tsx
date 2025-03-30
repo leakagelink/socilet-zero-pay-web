@@ -24,7 +24,8 @@ const WhatsAppButton = () => {
     <AnimatePresence>
       {showButton && (
         <motion.div
-          className="fixed bottom-6 right-6 z-50"
+          className="fixed bottom-6 right-6 z-40"
+          id="whatsapp-button-container"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
@@ -39,6 +40,7 @@ const WhatsAppButton = () => {
           <Button
             onClick={handleWhatsAppClick}
             className="bg-green-500 hover:bg-green-600 text-white rounded-full w-14 h-14 shadow-lg flex items-center justify-center"
+            id="whatsapp-button"
           >
             <MessageCircle className="w-7 h-7" />
             <span className="sr-only">Chat on WhatsApp</span>

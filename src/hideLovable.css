@@ -1,13 +1,32 @@
 
-/* Hide all Lovable-related elements */
+/* Aggressive hiding of all Lovable and GPT Engineer related elements */
 [data-lovable-id],
 [id*="lovable"],
 [class*="lovable"],
+[id^="lovable"],
+[class^="lovable"],
 [id*="gpteng"],
 [class*="gpteng"],
-div[style*="z-index: 2147483647"] {
+[id^="gpteng"],
+[class^="gpteng"],
+div[style*="z-index: 2147483647"],
+div[style*="position: fixed"],
+iframe[src*="lovable"],
+iframe[src*="gpteng"],
+body > div:not([id]):not([class]),
+#root ~ div,
+body > div:last-child:not(#root) {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
 }
+
+/* Apply !important to all properties to override any inline styles */
