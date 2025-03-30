@@ -62,7 +62,7 @@ const Header = () => {
     <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/90 backdrop-blur-sm py-4'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
         <a href="#" className="flex items-center" onClick={() => handleNavigation('/')}>
-          <img src="/logo.png" alt="Socilet Logo" className="h-10" />
+          <img src="/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png" alt="Socilet Logo" className="h-14" />
         </a>
 
         {/* Desktop Navigation */}
