@@ -117,6 +117,14 @@ const Portfolio = () => {
       description: 'Welcome to PinnacleSyncTech, where we bridge the gap between top-tier IT talent and innovative companies striving for excellence. Founded on a commitment to excellence and a passion for technology, we specialize in providing exceptional IT staffing solutions. Completed on April 26, 2024.',
       url: 'https://pinnaclesynctech.com/'
     },
+    {
+      id: 14,
+      title: 'ICARUS HR',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=600&h=400',
+      description: 'Welcome to ICARUS HR, where talent and opportunity converge to create impactful careers and thriving teams. At ICARUS HR, we believe recruitment is more than just filling roles—it\'s about forging meaningful connections between visionary companies and exceptional talent. Completed on November 24, 2024.',
+      url: 'https://icarushr.com/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
