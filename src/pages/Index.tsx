@@ -11,6 +11,7 @@ import Founder from '../components/Founder';
 import Technologies from '../components/Technologies';
 import FAQ from '../components/FAQ';
 import BlogPreview from '../components/BlogPreview';
+import WhatsAppButton from '../components/WhatsAppButton';
 import { Toaster } from 'sonner';
 
 const Index = () => {
@@ -30,6 +31,7 @@ const Index = () => {
         <Contact />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 };
