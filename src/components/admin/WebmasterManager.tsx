@@ -4,10 +4,12 @@ import GoogleVerificationManager from './webmaster/GoogleVerificationManager';
 import CacheManager from './webmaster/CacheManager';
 import PasswordManager from './webmaster/PasswordManager';
 import OtherSettingsCard from './webmaster/OtherSettingsCard';
+import { Toaster } from 'sonner';
 
 const WebmasterManager = () => {
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" richColors />
       <h2 className="text-2xl font-bold">Webmaster Tools</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

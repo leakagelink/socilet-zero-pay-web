@@ -118,23 +118,23 @@ const GoogleVerificationManager = () => {
     }
   };
 
+  // Load saved settings
   useEffect(() => {
-    const savedSettings = localStorage.getItem('google-webmaster-settings');
-    if (savedSettings) {
-      try {
+    try {
+      const savedSettings = localStorage.getItem('google-webmaster-settings');
+      if (savedSettings) {
         const settings = JSON.parse(savedSettings);
         setSiteUrl(settings.url || '');
         setVerificationMethod(settings.method || 'html');
         setVerificationCode(settings.code || '');
-      } catch (e) {
-        console.error('Error parsing saved settings:', e);
       }
+    } catch (error) {
+      console.error('Error loading saved settings:', error);
     }
   }, []);
 
-  const openVerificationDialog = () => {
-    setIsGoogleDialogOpen(true);
-  };
+  // Debug logs to check state changes
+  console.log('Dialog state:', { isGoogleDialogOpen, isTagDialogOpen });
 
   return (
     <>
@@ -171,7 +171,13 @@ const GoogleVerificationManager = () => {
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
-          <Button onClick={openVerificationDialog} className="bg-primary-600 hover:bg-primary-700">
+          <Button 
+            onClick={() => {
+              console.log('Add Verification button clicked');
+              setIsGoogleDialogOpen(true);
+            }} 
+            className="bg-primary-600 hover:bg-primary-700"
+          >
             {localStorage.getItem('google-webmaster-settings') ? 'Update Verification' : 'Add Verification'}
           </Button>
           {localStorage.getItem('google-webmaster-settings') && 
@@ -192,7 +198,6 @@ const GoogleVerificationManager = () => {
         </CardFooter>
       </Card>
       
-      {/* Google Verification Dialog */}
       <Dialog open={isGoogleDialogOpen} onOpenChange={setIsGoogleDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -263,7 +268,6 @@ const GoogleVerificationManager = () => {
         </DialogContent>
       </Dialog>
       
-      {/* HTML Tag Dialog */}
       <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
