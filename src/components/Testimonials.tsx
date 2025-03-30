@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Star, Quote, X, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
@@ -63,8 +62,8 @@ const Testimonials = () => {
     },
     {
       id: 2,
-      name: 'Vikram Mehta',
-      position: 'CEO, BuildRight Construction',
+      name: 'Sudeshnaa',
+      position: 'The Dietitian',
       videoId: '4oogYX-_a38',
     },
     {
