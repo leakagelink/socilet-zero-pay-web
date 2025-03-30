@@ -2,7 +2,7 @@
 import React from 'react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Code, FileDown, ExternalLink } from 'lucide-react';
+import { Code, FileDown, ExternalLink, Info } from 'lucide-react';
 
 interface VerificationInfoProps {
   siteUrl: string;
@@ -36,9 +36,10 @@ const BingVerificationInfo: React.FC<VerificationInfoProps> = ({
       </Alert>
 
       <Alert variant="default" className="bg-blue-50 text-blue-800 border-blue-200">
-        <AlertDescription className="flex flex-col gap-2">
+        <Info className="h-4 w-4 absolute left-4 top-4 text-blue-800" />
+        <AlertDescription className="flex flex-col gap-2 pl-7">
           <div><span className="font-medium">Important:</span> Make sure the verification meta tag is placed in the <code className="bg-blue-100 px-1 rounded">&lt;head&gt;</code> section of your HTML, before the <code className="bg-blue-100 px-1 rounded">&lt;body&gt;</code> tag.</div>
-          <div className="text-xs text-blue-600">If you're using our hosted service, this tag should be automatically injected.</div>
+          <div className="text-xs text-blue-600">Our system should automatically inject this meta tag in the head section. If you're still seeing errors, please check the HTML structure of your page.</div>
         </AlertDescription>
       </Alert>
       

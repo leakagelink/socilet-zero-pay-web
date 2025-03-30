@@ -33,7 +33,7 @@ const removeLovableElements = () => {
   });
 };
 
-// Function to ensure verification meta tags are always present
+// Function to ensure verification meta tags are always present and in the correct position
 const ensureVerificationTags = () => {
   // Critical verification tags that must always be present
   const criticalMetaTags = [
@@ -47,25 +47,37 @@ const ensureVerificationTags = () => {
     }
   ];
   
+  // Ensure the head element exists
+  if (!document.head) {
+    console.error('Document head not found');
+    return;
+  }
+  
   // Add any missing critical meta tags
   criticalMetaTags.forEach(metaData => {
     let metaTag = document.querySelector(`meta[name="${metaData.name}"]`);
+    
+    // If the meta tag doesn't exist, create it and add it to the head
     if (!metaTag) {
       metaTag = document.createElement('meta');
       metaTag.setAttribute('name', metaData.name);
       metaTag.setAttribute('content', metaData.content);
       
-      // Insert at the beginning of head to ensure it's before body
-      if (document.head.firstChild) {
-        document.head.insertBefore(metaTag, document.head.firstChild);
-      } else {
-        document.head.appendChild(metaTag);
-      }
+      // Insert as the first element in head to ensure it's before body
+      document.head.insertBefore(metaTag, document.head.firstChild);
       console.log(`Added missing ${metaData.name} verification tag`);
-    } else if (metaTag.getAttribute('content') !== metaData.content) {
-      // Update content if it's wrong
+    } 
+    // If the meta tag exists but has the wrong content, update it
+    else if (metaTag.getAttribute('content') !== metaData.content) {
       metaTag.setAttribute('content', metaData.content);
       console.log(`Updated ${metaData.name} verification tag content`);
+    }
+    
+    // Move the tag to the beginning of head if it's not already there
+    if (metaTag !== document.head.firstElementChild) {
+      document.head.removeChild(metaTag);
+      document.head.insertBefore(metaTag, document.head.firstChild);
+      console.log(`Moved ${metaData.name} verification tag to top of head`);
     }
   });
 };
