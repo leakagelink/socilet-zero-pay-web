@@ -4,6 +4,9 @@ import GoogleVerificationManager from './webmaster/GoogleVerificationManager';
 import CacheManager from './webmaster/CacheManager';
 import PasswordManager from './webmaster/PasswordManager';
 import OtherSettingsCard from './webmaster/OtherSettingsCard';
+import BingVerificationManager from './webmaster/BingVerificationManager';
+import YandexVerificationManager from './webmaster/YandexVerificationManager';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from 'sonner';
 
 const WebmasterManager = () => {
@@ -12,16 +15,34 @@ const WebmasterManager = () => {
       <Toaster position="top-right" richColors />
       <h2 className="text-2xl font-bold">Webmaster Tools</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Google Search Console Card */}
-        <GoogleVerificationManager />
+      <Tabs defaultValue="google" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="google">Google Search Console</TabsTrigger>
+          <TabsTrigger value="bing">Bing Webmaster</TabsTrigger>
+          <TabsTrigger value="yandex">Yandex Webmaster</TabsTrigger>
+          <TabsTrigger value="other">Other Settings</TabsTrigger>
+        </TabsList>
         
-        <CacheManager />
+        <TabsContent value="google">
+          <GoogleVerificationManager />
+        </TabsContent>
         
-        <PasswordManager />
+        <TabsContent value="bing">
+          <BingVerificationManager />
+        </TabsContent>
         
-        <OtherSettingsCard />
-      </div>
+        <TabsContent value="yandex">
+          <YandexVerificationManager />
+        </TabsContent>
+        
+        <TabsContent value="other">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CacheManager />
+            <PasswordManager />
+            <OtherSettingsCard />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

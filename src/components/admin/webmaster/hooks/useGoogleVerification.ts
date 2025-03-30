@@ -6,6 +6,7 @@ export interface GoogleVerificationSettings {
   url: string;
   method: 'html' | 'html-file';
   code: string;
+  isVerified?: boolean;
 }
 
 export const useGoogleVerification = () => {
@@ -15,6 +16,7 @@ export const useGoogleVerification = () => {
   const [verificationMethod, setVerificationMethod] = useState<'html' | 'html-file'>('html');
   const [verificationCode, setVerificationCode] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   // Load saved settings
   useEffect(() => {
@@ -25,6 +27,7 @@ export const useGoogleVerification = () => {
         setSiteUrl(settings.url || '');
         setVerificationMethod(settings.method || 'html');
         setVerificationCode(settings.code || '');
+        setIsVerified(settings.isVerified || false);
       }
     } catch (error) {
       console.error('Error loading saved settings:', error);
@@ -64,6 +67,7 @@ export const useGoogleVerification = () => {
       url: siteUrl,
       method: verificationMethod,
       code: verificationCode,
+      isVerified: false // Default to not verified
     }));
     
     // Close verification dialog
@@ -75,9 +79,12 @@ export const useGoogleVerification = () => {
       setTimeout(() => {
         setIsTagDialogOpen(true);
         console.log('Tag dialog opened:', true);
-      }, 500);
+      }, 200);
     } else if (verificationMethod === 'html-file') {
       toast.success('HTML file verification selected. Please upload the file to your site root.');
+      setTimeout(() => {
+        downloadVerificationFile();
+      }, 200);
     } else {
       toast.success('Verification settings saved.');
     }
@@ -124,6 +131,7 @@ export const useGoogleVerification = () => {
     setSiteUrl('');
     setVerificationCode('');
     setVerificationMethod('html');
+    setIsVerified(false);
     console.log('Verification removed');
   };
 
@@ -140,6 +148,8 @@ export const useGoogleVerification = () => {
     setVerificationCode,
     copySuccess,
     setCopySuccess,
+    isVerified,
+    setIsVerified,
     generateMetaTag,
     copyToClipboard,
     handleVerificationSave,

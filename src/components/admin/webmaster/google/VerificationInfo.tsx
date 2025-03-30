@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 
 interface VerificationInfoProps {
   siteUrl: string;
   verificationMethod: 'html' | 'html-file';
+  isVerified?: boolean;
   onShowHtmlTag: () => void;
   onDownloadFile: () => void;
 }
@@ -13,31 +14,58 @@ interface VerificationInfoProps {
 const VerificationInfo = ({
   siteUrl,
   verificationMethod,
+  isVerified = false,
   onShowHtmlTag,
   onDownloadFile
 }: VerificationInfoProps) => {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center gap-2 text-base font-medium">
-        <CheckCircle size={18} className="text-green-500" />
-        <span>Verification in progress</span>
+        {isVerified ? (
+          <CheckCircle size={18} className="text-green-500" />
+        ) : (
+          <AlertCircle size={18} className="text-amber-500" />
+        )}
+        <span>{isVerified ? "Verified" : "Verification in progress"}</span>
       </div>
-      <p className="text-sm text-muted-foreground">Site: {siteUrl}</p>
+      
+      {siteUrl && <p className="text-sm text-muted-foreground">Site: {siteUrl}</p>}
+      
       <p className="text-xs text-muted-foreground">
         Method: {verificationMethod === 'html' ? 'HTML Meta Tag' : 'HTML File Upload'}
       </p>
       
-      {verificationMethod === 'html' && (
-        <Button variant="outline" size="sm" onClick={onShowHtmlTag} className="w-full sm:w-auto">
-          Show HTML Tag
-        </Button>
-      )}
-      
-      {verificationMethod === 'html-file' && (
-        <Button variant="outline" size="sm" onClick={onDownloadFile} className="w-full sm:w-auto">
-          Download Verification File
-        </Button>
-      )}
+      <div className="flex flex-col sm:flex-row gap-2 pt-1">
+        {verificationMethod === 'html' && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("Show HTML Tag button clicked");
+              onShowHtmlTag();
+            }} 
+            className="w-full sm:w-auto"
+          >
+            Show HTML Tag
+          </Button>
+        )}
+        
+        {verificationMethod === 'html-file' && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={(e) => {
+              e.preventDefault();
+              console.log("Download file button clicked");
+              onDownloadFile();
+            }} 
+            className="w-full sm:w-auto"
+          >
+            Download Verification File
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

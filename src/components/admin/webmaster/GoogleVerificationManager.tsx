@@ -45,13 +45,15 @@ const GoogleVerificationManager = () => {
     console.log('Dialog state updated:', { isGoogleDialogOpen, isTagDialogOpen });
   }, [isGoogleDialogOpen, isTagDialogOpen]);
 
-  const handleAddVerification = () => {
+  const handleAddVerification = (e: React.MouseEvent) => {
+    e.preventDefault();
     console.log('Add Verification button clicked');
     setIsGoogleDialogOpen(true);
   };
 
-  const handleShowTag = () => {
-    console.log('Show HTML Tag button clicked');
+  const handleShowHtmlTag = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log('Show HTML Tag button clicked directly from manager');
     showHtmlTag();
   };
 
@@ -71,7 +73,7 @@ const GoogleVerificationManager = () => {
             <VerificationInfo 
               siteUrl={siteUrl}
               verificationMethod={verificationMethod}
-              onShowHtmlTag={handleShowTag}
+              onShowHtmlTag={handleShowHtmlTag}
               onDownloadFile={downloadVerificationFile}
             />
           ) : (
@@ -83,7 +85,7 @@ const GoogleVerificationManager = () => {
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
           <Button 
-            onClick={handleAddVerification} 
+            onClick={handleAddVerification}
             className="bg-primary-600 hover:bg-primary-700"
           >
             {hasVerification ? 'Update Verification' : 'Add Verification'}
@@ -104,6 +106,7 @@ const GoogleVerificationManager = () => {
         </CardFooter>
       </Card>
       
+      {/* Dialogs */}
       <VerificationDialog 
         isOpen={isGoogleDialogOpen}
         onOpenChange={setIsGoogleDialogOpen}
