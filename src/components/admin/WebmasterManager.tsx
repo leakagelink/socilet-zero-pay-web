@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Globe, FileText, Plus, Trash, BingLogo } from 'lucide-react';
+import { Globe, FileText, Plus, Trash } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
