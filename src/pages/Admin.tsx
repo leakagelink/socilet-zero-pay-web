@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminHeader from '../components/admin/AdminHeader';
@@ -9,12 +9,13 @@ import TestimonialManager from '../components/admin/TestimonialManager';
 import WebsitePhotosManager from '../components/admin/WebsitePhotosManager';
 import WebmasterManager from '../components/admin/WebmasterManager';
 import AdminLogin from '../components/admin/AdminLogin';
+import { toast } from 'sonner';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
-  // Simple authentication check using localStorage
-  React.useEffect(() => {
+  // Authentication check using localStorage
+  useEffect(() => {
     const adminAuth = localStorage.getItem('admin-auth');
     if (adminAuth === 'authenticated') {
       setIsAuthenticated(true);
@@ -23,16 +24,19 @@ const Admin = () => {
 
   const handleLogin = (password: string) => {
     // Simple password check (in a real app, this would be server-side)
-    // You should replace this with a more secure authentication mechanism
     if (password === 'admin123') {
       localStorage.setItem('admin-auth', 'authenticated');
       setIsAuthenticated(true);
+      toast.success('Login successful');
+    } else {
+      toast.error('Invalid password');
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('admin-auth');
     setIsAuthenticated(false);
+    toast.success('Logged out successfully');
   };
 
   if (!isAuthenticated) {

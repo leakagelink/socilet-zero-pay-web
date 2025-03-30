@@ -15,11 +15,12 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === 'admin123') {
-      onLogin(password);
-    } else {
-      toast.error('Invalid password');
+    if (password.trim() === '') {
+      toast.error('Please enter a password');
+      return;
     }
+    
+    onLogin(password);
   };
 
   return (
@@ -45,7 +46,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               className="w-full"
               placeholder="Enter admin password"
             />
-            <p className="text-xs text-gray-500 mt-1">Default password: admin123</p>
           </div>
           
           <Button type="submit" className="w-full">
