@@ -31,6 +31,18 @@ const removeLovableElements = () => {
       div.remove();
     }
   });
+  
+  // Make sure we don't accidentally remove meta tags
+  document.querySelectorAll('meta').forEach(meta => {
+    // Preserve all meta tags, especially verification tags
+    if (meta.getAttribute('name') === 'msvalidate.01' || 
+        meta.getAttribute('name') === 'google-site-verification') {
+      // Ensure these critical meta tags are always present in the head
+      if (!document.head.contains(meta)) {
+        document.head.appendChild(meta.cloneNode(true));
+      }
+    }
+  });
 };
 
 // Run the cleanup initially
