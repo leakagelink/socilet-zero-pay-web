@@ -65,13 +65,17 @@ const GoogleVerificationManager = () => {
     
     if (verificationMethod === 'html') {
       toast.success('Verification code saved. Please add the meta tag to your site\'s <head> section.');
+      setTimeout(() => {
+        setIsGoogleDialogOpen(false);
+        setIsTagDialogOpen(true); // Automatically show the HTML tag after saving
+      }, 1000);
     } else if (verificationMethod === 'html-file') {
       toast.success('HTML file verification selected. Please upload the file to your site root.');
+      setIsGoogleDialogOpen(false);
     } else {
       toast.success('Verification settings saved.');
+      setIsGoogleDialogOpen(false);
     }
-    
-    setIsGoogleDialogOpen(false);
   };
 
   const showHtmlTag = () => {
@@ -108,12 +112,20 @@ const GoogleVerificationManager = () => {
   useEffect(() => {
     const savedSettings = localStorage.getItem('google-webmaster-settings');
     if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      setSiteUrl(settings.url || '');
-      setVerificationMethod(settings.method || 'html');
-      setVerificationCode(settings.code || '');
+      try {
+        const settings = JSON.parse(savedSettings);
+        setSiteUrl(settings.url || '');
+        setVerificationMethod(settings.method || 'html');
+        setVerificationCode(settings.code || '');
+      } catch (e) {
+        console.error('Error parsing saved settings:', e);
+      }
     }
   }, []);
+
+  const openVerificationDialog = () => {
+    setIsGoogleDialogOpen(true);
+  };
 
   return (
     <>
@@ -142,7 +154,7 @@ const GoogleVerificationManager = () => {
           )}
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
-          <Button onClick={() => setIsGoogleDialogOpen(true)}>
+          <Button onClick={openVerificationDialog}>
             {localStorage.getItem('google-webmaster-settings') ? 'Update Verification' : 'Add Verification'}
           </Button>
           {localStorage.getItem('google-webmaster-settings') && 
