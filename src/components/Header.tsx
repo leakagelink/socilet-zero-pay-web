@@ -42,7 +42,7 @@ const Header = () => {
     { name: 'Blog', href: '/blog', path: '/blog' },
     { name: 'Track Project', href: '/track-project', path: '/track-project' },
     { name: 'Affiliate', href: '/affiliate', path: '/affiliate' },
-    { name: 'Contact', href: '/#contact', path: '/' },
+    // Removed the Contact link from here
   ];
 
   const handleNavigation = (href: string) => {
