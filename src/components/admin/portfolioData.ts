@@ -95,7 +95,7 @@ export const portfolioItems: PortfolioItem[] = [
     title: 'Code Formatter Pro',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=600&h=400',
-    description: 'A simple, elegant tool to format HTML, CSS, JavaScript and Python code. Completed on March 30, 2025.',
+    description: 'A simple, elegant tool to format HTML, CSS, JavaScript and Python code built using React. Completed on March 30, 2025.',
     url: 'https://codeformatter.pro/'
   },
   {
