@@ -1,0 +1,13 @@
+
+/* Hide all Lovable-related elements */
+[data-lovable-id],
+[id*="lovable"],
+[class*="lovable"],
+[id*="gpteng"],
+[class*="gpteng"],
+div[style*="z-index: 2147483647"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
