@@ -21,37 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { Edit, Plus, Trash2, ExternalLink } from 'lucide-react';
-
-// Import initial portfolio data from the Portfolio component
-// In a real app, this would be fetched from a database
-const initialPortfolioItems = [
-  {
-    id: 1,
-    title: 'E-commerce Website',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=600&h=400',
-    description: 'A full-featured e-commerce platform with payment integration and inventory management.',
-    url: ''
-  },
-  {
-    id: 2,
-    title: 'Restaurant App',
-    category: 'apps',
-    image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&h=400',
-    description: 'Mobile application for a restaurant chain with online ordering and table reservation.',
-    url: ''
-  },
-  // ... (more items would be included here)
-];
-
-type PortfolioItem = {
-  id: number;
-  title: string;
-  category: string;
-  image: string;
-  description: string;
-  url?: string;
-};
+import { PortfolioItem, portfolioItems as initialPortfolioItems } from './portfolioData';
 
 const PortfolioManager = () => {
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(initialPortfolioItems);
