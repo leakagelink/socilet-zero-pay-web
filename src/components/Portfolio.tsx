@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import PortfolioFilters from './portfolio/PortfolioFilters';
+import PortfolioGrid from './portfolio/PortfolioGrid';
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -122,21 +124,10 @@ const Portfolio = () => {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category === activeFilter);
 
-  // Animation variants
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const item = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  // Helper function to get category label from category id
+  const getCategoryLabel = (categoryId: string) => {
+    const filter = filters.find(f => f.id === categoryId);
+    return filter?.label || categoryId;
   };
 
   return (
@@ -161,81 +152,16 @@ const Portfolio = () => {
           </p>
         </motion.div>
 
-        <motion.div 
-          className="flex flex-wrap justify-center mb-12 gap-2"
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          {filters.map(filter => (
-            <Button
-              key={filter.id}
-              onClick={() => setActiveFilter(filter.id)}
-              variant={activeFilter === filter.id ? "default" : "outline"}
-              className={`px-4 py-2 rounded-full transition-all ${
-                activeFilter === filter.id
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              {filter.label}
-            </Button>
-          ))}
-        </motion.div>
+        <PortfolioFilters 
+          filters={filters} 
+          activeFilter={activeFilter} 
+          onFilterChange={setActiveFilter} 
+        />
 
-        <motion.div 
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          {filteredItems.map((portfolioItem) => (
-            <motion.div 
-              key={portfolioItem.id} 
-              className="bg-white rounded-xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500"
-              variants={item}
-              whileHover={{ y: -10 }}
-            >
-              <div className="overflow-hidden h-48 relative">
-                <img 
-                  src={portfolioItem.image} 
-                  alt={portfolioItem.title} 
-                  className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4">
-                  <span className="text-white font-medium text-sm bg-primary-600 px-3 py-1 rounded-full">
-                    {filters.find(f => f.id === portfolioItem.category)?.label || portfolioItem.category}
-                  </span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{portfolioItem.title}</h3>
-                <p className="text-gray-600 mb-4">{portfolioItem.description}</p>
-                {portfolioItem.url ? (
-                  <a 
-                    href={portfolioItem.url}
-                    target="_blank"
-                    rel="noopener noreferrer" 
-                    className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
-                  >
-                    <span>Visit Website</span> 
-                    <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                  </a>
-                ) : (
-                  <a 
-                    href="#" 
-                    className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
-                  >
-                    <span>View Project</span> 
-                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+        <PortfolioGrid 
+          items={filteredItems}
+          getCategoryLabel={getCategoryLabel}
+        />
 
         <motion.div 
           className="text-center mt-12"
