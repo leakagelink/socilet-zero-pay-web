@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
 import { ArrowLeft, Share2, CalendarIcon, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BlogPost } from '@/components/BlogPreview';
+import { Helmet } from 'react-helmet';
 
 interface BlogPostProps {
   post: BlogPost;
@@ -13,6 +13,19 @@ interface BlogPostProps {
 const WebsiteDevelopmentSEO: React.FC<BlogPostProps> = ({ post, onBack }) => {
   return (
     <article className="py-12 px-4">
+      <Helmet>
+        <title>{post.title} | Socilet Blog</title>
+        <meta name="description" content="Learn how proper SEO integration during website development ensures better visibility and traffic. Read Socilet's comprehensive guide." />
+        <meta name="keywords" content="SEO, website development, search engine optimization, technical SEO, Core Web Vitals" />
+        <link rel="canonical" href={`https://socilet.com/blog/${post.slug}`} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content="Learn how proper SEO integration during website development ensures better visibility and traffic." />
+        <meta property="og:image" content={post.imageUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:section" content={post.category} />
+      </Helmet>
+      
       <div className="container mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -28,6 +41,9 @@ const WebsiteDevelopmentSEO: React.FC<BlogPostProps> = ({ post, onBack }) => {
               src={post.imageUrl} 
               alt={post.title}
               className="w-full h-full object-cover"
+              loading="lazy"
+              width="1200"
+              height="630"
             />
           </div>
 
@@ -263,6 +279,42 @@ const WebsiteDevelopmentSEO: React.FC<BlogPostProps> = ({ post, onBack }) => {
             <p>
               Remember, in today's competitive digital landscape, a website that isn't optimized for search is missing a crucial ingredient for success. Let us help you build a website that's designed to be found.
             </p>
+            
+            <script type="application/ld+json">
+              {`
+                {
+                  "@context": "https://schema.org",
+                  "@type": "BlogPosting",
+                  "headline": "${post.title}",
+                  "image": "${post.imageUrl}",
+                  "editor": "Socilet Team",
+                  "genre": "${post.category}",
+                  "keywords": "SEO, website development, technical SEO",
+                  "url": "https://socilet.com/blog/${post.slug}",
+                  "datePublished": "${post.date}",
+                  "dateCreated": "${post.date}",
+                  "dateModified": "${post.date}",
+                  "description": "Learn how proper SEO integration during website development ensures better visibility and traffic.",
+                  "articleBody": "In today's digital landscape, a beautiful website that no one can find is like a store in the middle of a desert—impressive but ineffective. That's why at Socilet, we believe SEO considerations should be baked into every stage of website development.",
+                  "publisher": {
+                    "@type": "Organization",
+                    "name": "Socilet",
+                    "logo": {
+                      "@type": "ImageObject",
+                      "url": "https://socilet.com/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png"
+                    }
+                  },
+                  "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": "https://socilet.com/blog/${post.slug}"
+                  },
+                  "author": {
+                    "@type": "Organization",
+                    "name": "Socilet Team"
+                  }
+                }
+              `}
+            </script>
           </div>
         </motion.div>
       </div>
