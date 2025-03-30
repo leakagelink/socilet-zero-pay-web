@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -98,6 +97,14 @@ const Portfolio = () => {
       image: 'https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=600&h=400',
       description: 'A simple, elegant tool to format HTML, CSS, JavaScript and Python code. Completed on March 30, 2025.',
       url: 'https://codeformatter.pro/'
+    },
+    {
+      id: 12,
+      title: 'VRT9 Trading',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=600&h=400',
+      description: 'India\'s Most Trusted Stock Market Institute making learning and teaching more effective with active participation and student collaboration. Completed on October 20, 2024.',
+      url: 'https://vrt9trading.com/'
     },
   ];
 
