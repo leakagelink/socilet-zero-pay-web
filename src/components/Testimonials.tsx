@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Star, Quote, X, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -14,6 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const Testimonials = () => {
   const [videoOpen, setVideoOpen] = useState(false);
   const [currentVideoId, setCurrentVideoId] = useState("");
+  const [thumbnails, setThumbnails] = useState<{[key: string]: string}>({});
   
   // Mock testimonials
   const testimonials = [
@@ -57,38 +59,49 @@ const Testimonials = () => {
       id: 1,
       name: 'Kavita Singh',
       position: 'Owner, Wellness Center',
-      thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=600',
       videoId: 'Rz6PVUtVYks', 
     },
     {
       id: 2,
       name: 'Vikram Mehta',
       position: 'CEO, BuildRight Construction',
-      thumbnail: 'https://images.unsplash.com/photo-1600486913747-55e5470d6f40?auto=format&fit=crop&w=400&h=600',
       videoId: '4oogYX-_a38',
     },
     {
       id: 3,
       name: 'Meena Reddy',
       position: 'Director, Education First',
-      thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=600',
       videoId: 'g57bSleJEEY', 
     },
     {
       id: 4,
       name: 'Rahul Desai',
       position: 'Startup Founder',
-      thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&h=600',
       videoId: '_8s-7gSdT5E',
     },
     {
       id: 5,
       name: 'Ananya Joshi',
       position: 'Marketing Consultant',
-      thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600',
       videoId: '_A-NDWDF9aE',
     },
   ];
+
+  // Fetch YouTube thumbnails when component mounts
+  useEffect(() => {
+    const fetchThumbnails = async () => {
+      const thumbnailData: {[key: string]: string} = {};
+      
+      for (const video of videoTestimonials) {
+        // YouTube thumbnail URL format
+        thumbnailData[video.videoId] = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`;
+      }
+      
+      setThumbnails(thumbnailData);
+    };
+    
+    fetchThumbnails();
+  }, []);
 
   // Function to play video
   const playVideo = (videoId: string) => {
@@ -173,7 +186,7 @@ const Testimonials = () => {
           </Carousel>
         </div>
 
-        {/* New YouTube Video Testimonials Section */}
+        {/* YouTube Video Testimonials Section */}
         <motion.div 
           className="text-center max-w-2xl mx-auto mb-12"
           initial="hidden"
@@ -204,11 +217,17 @@ const Testimonials = () => {
                     className="relative aspect-[9/16] overflow-hidden"
                     onClick={() => playVideo(video.videoId)}
                   >
-                    <img 
-                      src={video.thumbnail} 
-                      alt={video.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                    />
+                    {thumbnails[video.videoId] ? (
+                      <img 
+                        src={thumbnails[video.videoId]} 
+                        alt={video.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
+                        <Youtube className="w-10 h-10 text-gray-400" />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col items-center justify-center group-hover:bg-black/30 transition-all duration-300">
                       <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-medium rounded-lg px-2 py-1 flex items-center">
                         <Youtube className="h-3 w-3 mr-1" />
