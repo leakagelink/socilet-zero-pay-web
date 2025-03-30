@@ -10,11 +10,14 @@ export interface GoogleVerificationSettings {
 }
 
 export const useGoogleVerification = () => {
+  // Default Google verification code to the one provided
+  const defaultVerificationCode = '9-T-e6qKoCEslMvWnfKDeXadkedKtT_DtKPKyjY';
+  
   const [isGoogleDialogOpen, setIsGoogleDialogOpen] = useState(false);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
   const [siteUrl, setSiteUrl] = useState('');
   const [verificationMethod, setVerificationMethod] = useState<'html' | 'html-file'>('html');
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationCode, setVerificationCode] = useState(defaultVerificationCode);
   const [copySuccess, setCopySuccess] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
@@ -26,11 +29,16 @@ export const useGoogleVerification = () => {
         const settings = JSON.parse(savedSettings) as GoogleVerificationSettings;
         setSiteUrl(settings.url || '');
         setVerificationMethod(settings.method || 'html');
-        setVerificationCode(settings.code || '');
+        setVerificationCode(settings.code || defaultVerificationCode);
         setIsVerified(settings.isVerified || false);
+      } else {
+        // If no settings exist, pre-populate with the default verification code
+        setVerificationCode(defaultVerificationCode);
       }
     } catch (error) {
       console.error('Error loading saved settings:', error);
+      // If there was an error, still set the default verification code
+      setVerificationCode(defaultVerificationCode);
     }
   }, []);
 

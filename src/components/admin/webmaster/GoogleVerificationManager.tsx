@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { 
   Card, 
@@ -40,10 +39,16 @@ const GoogleVerificationManager = () => {
   // Check if verification settings exist
   const hasVerification = !!localStorage.getItem('google-webmaster-settings');
 
+  // After component mounts, show the tag dialog if verification exists and method is html
   useEffect(() => {
-    // Force re-render whenever dialog state changes
-    console.log('Dialog state updated:', { isGoogleDialogOpen, isTagDialogOpen });
-  }, [isGoogleDialogOpen, isTagDialogOpen]);
+    if (hasVerification && verificationMethod === 'html') {
+      // Short delay to ensure component is fully mounted
+      const timer = setTimeout(() => {
+        showHtmlTag();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleAddVerification = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,7 +56,7 @@ const GoogleVerificationManager = () => {
     setIsGoogleDialogOpen(true);
   };
 
-  // Changed this function to not require an event parameter
+  // Function to not require an event parameter
   const handleShowHtmlTag = () => {
     console.log('Show HTML Tag button clicked directly from manager');
     showHtmlTag();
