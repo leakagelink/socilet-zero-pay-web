@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -124,12 +123,17 @@ const Carousel = React.forwardRef<
           return () => clearTimeout(restartTimeout);
         };
         
-        carouselRef?.addEventListener('pointerdown', handleInteraction);
-        
-        return () => {
-          stopAutoplay();
-          carouselRef?.removeEventListener('pointerdown', handleInteraction);
-        };
+        // Use a DOM element reference instead of directly accessing carousel DOM element
+        if (carouselRef && carouselRef.current) {
+          carouselRef.current.addEventListener('pointerdown', handleInteraction);
+          
+          return () => {
+            if (carouselRef && carouselRef.current) {
+              carouselRef.current.removeEventListener('pointerdown', handleInteraction);
+            }
+            stopAutoplay();
+          };
+        }
       }
       
       return () => {

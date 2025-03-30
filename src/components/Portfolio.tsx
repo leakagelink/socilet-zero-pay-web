@@ -59,6 +59,14 @@ const Portfolio = () => {
       image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&h=400',
       description: 'Mobile app for tracking workouts, nutrition, and fitness goals.'
     },
+    {
+      id: 7,
+      title: 'Bharat Startup Solution',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&h=400',
+      description: 'MSMEs & Startups solution funding website built with React. Completed on March 30, 2025.',
+      url: 'https://bharatstartupsolution.com/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
@@ -157,13 +165,25 @@ const Portfolio = () => {
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{portfolioItem.title}</h3>
                 <p className="text-gray-600 mb-4">{portfolioItem.description}</p>
-                <a 
-                  href="#" 
-                  className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
-                >
-                  <span>View Project</span> 
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                </a>
+                {portfolioItem.url ? (
+                  <a 
+                    href={portfolioItem.url}
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
+                  >
+                    <span>Visit Website</span> 
+                    <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                  </a>
+                ) : (
+                  <a 
+                    href="#" 
+                    className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
+                  >
+                    <span>View Project</span> 
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                  </a>
+                )}
               </div>
             </motion.div>
           ))}
