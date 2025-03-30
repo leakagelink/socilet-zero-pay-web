@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -11,7 +10,7 @@ export interface GoogleVerificationSettings {
 
 export const useGoogleVerification = () => {
   // Default Google verification code to the one provided
-  const defaultVerificationCode = '9-T-e6qKoCEslMvWnfKDeXadkedKtT_DtKPKyjY';
+  const defaultVerificationCode = '9-T-e6qKoCEslMvWnfKDeXadkedKtT_DtKhdPKPKyjY';
   
   const [isGoogleDialogOpen, setIsGoogleDialogOpen] = useState(false);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
