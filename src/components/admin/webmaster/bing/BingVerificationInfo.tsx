@@ -35,7 +35,7 @@ const BingVerificationInfo: React.FC<VerificationInfoProps> = ({
         </AlertDescription>
       </Alert>
 
-      <Alert variant="info" className="bg-blue-50 text-blue-800 border-blue-200">
+      <Alert variant="default" className="bg-blue-50 text-blue-800 border-blue-200">
         <AlertDescription className="flex flex-col gap-2">
           <div><span className="font-medium">Important:</span> Make sure the verification meta tag is placed in the <code className="bg-blue-100 px-1 rounded">&lt;head&gt;</code> section of your HTML, before the <code className="bg-blue-100 px-1 rounded">&lt;body&gt;</code> tag.</div>
           <div className="text-xs text-blue-600">If you're using our hosted service, this tag should be automatically injected.</div>
