@@ -31,42 +31,46 @@ const removeLovableElements = () => {
       div.remove();
     }
   });
-  
-  // Make sure we don't accidentally remove meta tags
-  document.querySelectorAll('meta').forEach(meta => {
-    // Preserve all meta tags, especially verification tags
-    if (meta.getAttribute('name') === 'msvalidate.01' || 
-        meta.getAttribute('name') === 'google-site-verification') {
-      // Ensure these critical meta tags are always present in the head
-      if (!document.head.contains(meta)) {
-        document.head.appendChild(meta.cloneNode(true));
-      }
-    }
-  });
 };
 
 // Function to ensure verification meta tags are always present
 const ensureVerificationTags = () => {
-  // Bing verification
-  let bingTag = document.querySelector('meta[name="msvalidate.01"]');
-  if (!bingTag) {
-    bingTag = document.createElement('meta');
-    bingTag.setAttribute('name', 'msvalidate.01');
-    bingTag.setAttribute('content', 'F369CBC92F03EBB72A41A8782CB42881');
-    document.head.appendChild(bingTag);
-  }
+  // Critical verification tags that must always be present
+  const criticalMetaTags = [
+    {
+      name: 'msvalidate.01',
+      content: 'F369CBC92F03EBB72A41A8782CB42881'
+    },
+    {
+      name: 'google-site-verification',
+      content: '9-T-e6qKoCEslMvWnfKDeXadkedKtT_DtKhdPKPKyjY'
+    }
+  ];
   
-  // Google verification
-  let googleTag = document.querySelector('meta[name="google-site-verification"]');
-  if (!googleTag) {
-    googleTag = document.createElement('meta');
-    googleTag.setAttribute('name', 'google-site-verification');
-    googleTag.setAttribute('content', '9-T-e6qKoCEslMvWnfKDeXadkedKtT_DtKhdPKPKyjY');
-    document.head.appendChild(googleTag);
-  }
+  // Add any missing critical meta tags
+  criticalMetaTags.forEach(metaData => {
+    let metaTag = document.querySelector(`meta[name="${metaData.name}"]`);
+    if (!metaTag) {
+      metaTag = document.createElement('meta');
+      metaTag.setAttribute('name', metaData.name);
+      metaTag.setAttribute('content', metaData.content);
+      
+      // Insert at the beginning of head to ensure it's before body
+      if (document.head.firstChild) {
+        document.head.insertBefore(metaTag, document.head.firstChild);
+      } else {
+        document.head.appendChild(metaTag);
+      }
+      console.log(`Added missing ${metaData.name} verification tag`);
+    } else if (metaTag.getAttribute('content') !== metaData.content) {
+      // Update content if it's wrong
+      metaTag.setAttribute('content', metaData.content);
+      console.log(`Updated ${metaData.name} verification tag content`);
+    }
+  });
 };
 
-// Run the cleanup initially
+// Run the cleanup and ensure verification tags initially
 removeLovableElements();
 ensureVerificationTags();
 
