@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Star, Play, Quote } from "lucide-react";
+import React, { useState } from 'react';
+import { Star, Play, Quote, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
   Carousel,
@@ -9,8 +9,12 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 
 const Testimonials = () => {
+  const [videoOpen, setVideoOpen] = useState(false);
+  const [currentVideoId, setCurrentVideoId] = useState("");
+  
   // Mock testimonials
   const testimonials = [
     {
@@ -47,51 +51,64 @@ const Testimonials = () => {
     },
   ];
 
-  // Video testimonials - 7 videos in portrait orientation
+  // Video testimonials with YouTube shorts
   const videoTestimonials = [
     {
       id: 1,
       name: 'Kavita Singh',
       position: 'Owner, Wellness Center',
-      thumbnail: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&h=600',
+      thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=600',
+      videoId: 'Rz6PVUtVYks', // YouTube short ID
     },
     {
       id: 2,
       name: 'Vikram Mehta',
       position: 'CEO, BuildRight Construction',
       thumbnail: 'https://images.unsplash.com/photo-1600486913747-55e5470d6f40?auto=format&fit=crop&w=400&h=600',
+      videoId: '4oogYX-_a38', // YouTube short ID
     },
     {
       id: 3,
       name: 'Meena Reddy',
       position: 'Director, Education First',
-      thumbnail: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&h=600',
+      thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=600',
+      videoId: 'g57bSleJEEY', // YouTube short ID
     },
     {
       id: 4,
       name: 'Rahul Desai',
       position: 'Startup Founder',
       thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&h=600',
+      videoId: '_8s-7gSdT5E', // YouTube short ID
     },
     {
       id: 5,
       name: 'Ananya Joshi',
       position: 'Marketing Consultant',
       thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&h=600',
+      videoId: '_A-NDWDF9aE', // YouTube short ID
     },
     {
       id: 6,
       name: 'Sanjay Gupta',
       position: 'E-commerce Entrepreneur',
       thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=600',
+      videoId: 'Rz6PVUtVYks', // Duplicate for demo
     },
     {
       id: 7,
       name: 'Neha Sharma',
       position: 'Digital Strategist',
       thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=600',
+      videoId: '4oogYX-_a38', // Duplicate for demo
     },
   ];
+
+  // Function to play video
+  const playVideo = (videoId: string) => {
+    setCurrentVideoId(videoId);
+    setVideoOpen(true);
+  };
 
   // Animation variants
   const fadeInUp = {
@@ -204,6 +221,7 @@ const Testimonials = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                     whileHover={{ scale: 1.02 }}
+                    onClick={() => playVideo(video.videoId)}
                   >
                     <div className="overflow-hidden rounded-2xl w-64 h-96 mx-auto shadow-lg">
                       <img 
@@ -260,6 +278,25 @@ const Testimonials = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Video dialog */}
+      <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+        <DialogContent className="sm:max-w-[800px] p-0 bg-black overflow-hidden">
+          <div className="relative pt-[56.25%] w-full">
+            <iframe
+              className="absolute top-0 left-0 w-full h-full"
+              src={`https://www.youtube.com/embed/${currentVideoId}?autoplay=1`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+          <DialogClose className="absolute top-2 right-2 bg-black/50 text-white p-1 rounded-full">
+            <X className="h-6 w-6" />
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
