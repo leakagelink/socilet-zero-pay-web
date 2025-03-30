@@ -83,6 +83,14 @@ const Portfolio = () => {
       description: 'Empowering industries with cutting-edge solutions in Instrumentation and DCS execution. Expertise in Technical Services, Manpower Services, and Technical Training. Completed on August 14, 2024.',
       url: 'https://devaxi-automation.com/'
     },
+    {
+      id: 10,
+      title: 'Rose Energy Group',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=600&h=400',
+      description: 'Independent exploration and production company focused on responsibly producing energy supplies and contributing to domestic energy security. Based in Oceanside, CA. Completed on September 20, 2024.',
+      url: 'https://roseenergygroup.com/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
