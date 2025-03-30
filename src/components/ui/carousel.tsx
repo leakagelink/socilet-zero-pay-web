@@ -124,9 +124,9 @@ const Carousel = React.forwardRef<
           return () => clearTimeout(restartTimeout);
         };
         
-        // Access the DOM element via the embla API
-        const element = carouselRef.current;
-        if (element) {
+        // Access the DOM element via the embla API if available
+        if (api.rootNode()) {
+          const element = api.rootNode();
           element.addEventListener('pointerdown', handleInteraction);
           
           return () => {

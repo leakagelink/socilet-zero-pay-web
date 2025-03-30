@@ -75,6 +75,14 @@ const Portfolio = () => {
       description: 'Website development company based in Gujarat. Completed on December 15, 2024.',
       url: 'https://shaswatinitialsupportservices.com/'
     },
+    {
+      id: 9,
+      title: 'DEVAXI Automation',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1581244277943-fe4d9aa3faeb?auto=format&fit=crop&w=600&h=400',
+      description: 'Empowering industries with cutting-edge solutions in Instrumentation and DCS execution. Expertise in Technical Services, Manpower Services, and Technical Training. Completed on August 14, 2024.',
+      url: 'https://devaxi-automation.com/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
