@@ -43,14 +43,7 @@ const WhatsAppButton = () => {
             <MessageCircle className="w-7 h-7" />
             <span className="sr-only">Chat on WhatsApp</span>
           </Button>
-          <motion.div
-            className="absolute -top-10 right-0 bg-white px-3 py-2 rounded-lg shadow-md text-sm whitespace-nowrap"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            Chat with us!
-          </motion.div>
+          {/* Removed the popup message that was here */}
         </motion.div>
       )}
     </AnimatePresence>
