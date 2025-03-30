@@ -61,9 +61,8 @@ const Header = () => {
   return (
     <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/90 backdrop-blur-sm py-4'}`}>
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <a href="#" className="flex flex-col" onClick={() => handleNavigation('/')}>
-          <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-700 to-primary-900">socilet</span>
-          <span className="text-xs text-secondary font-medium">Brand Your Dream</span>
+        <a href="#" className="flex items-center" onClick={() => handleNavigation('/')}>
+          <img src="/logo.png" alt="Socilet Logo" className="h-10" />
         </a>
 
         {/* Desktop Navigation */}
