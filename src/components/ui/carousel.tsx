@@ -1,6 +1,8 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
+  type EmblaPluginType,
 } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
@@ -12,21 +14,20 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
 
-type AutoplayPluginType = {
-  name: 'autoplay';
-  options?: {
-    delay?: number;
-    stopOnInteraction?: boolean;
-    stopOnMouseEnter?: boolean;
-    playOnInit?: boolean;
-  };
+// Define an interface for autoplay plugin
+interface AutoplayOptions {
+  delay?: number
+  stopOnInteraction?: boolean
+  stopOnMouseEnter?: boolean
+  playOnInit?: boolean
 }
 
 type CarouselProps = {
   opts?: CarouselOptions
-  plugins?: (CarouselPlugin | AutoplayPluginType)[]
+  plugins?: CarouselPlugin
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
+  autoplayOptions?: AutoplayOptions
 }
 
 type CarouselContextProps = {
@@ -62,6 +63,7 @@ const Carousel = React.forwardRef<
       plugins,
       className,
       children,
+      autoplayOptions,
       ...props
     },
     ref
@@ -76,16 +78,11 @@ const Carousel = React.forwardRef<
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
+    // Handle autoplay if autoplayOptions is provided
     React.useEffect(() => {
-      if (!api || !plugins) return;
-
-      const autoplayPlugin = plugins.find(plugin => 
-        typeof plugin === 'object' && plugin.name === 'autoplay'
-      ) as AutoplayPluginType | undefined;
+      if (!api || !autoplayOptions) return;
       
-      if (!autoplayPlugin) return;
-      
-      const delay = autoplayPlugin.options?.delay || 4000;
+      const delay = autoplayOptions.delay || 4000;
       
       const autoplay = setInterval(() => {
         if (api.canScrollNext()) {
@@ -98,7 +95,7 @@ const Carousel = React.forwardRef<
       return () => {
         clearInterval(autoplay);
       };
-    }, [api, plugins]);
+    }, [api, autoplayOptions]);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
@@ -164,6 +161,7 @@ const Carousel = React.forwardRef<
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          autoplayOptions,
         }}
       >
         <div

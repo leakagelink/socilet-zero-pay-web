@@ -99,15 +99,6 @@ const Testimonials = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
   };
 
-  // Properly typed autoplay plugin
-  const autoplayPlugin = {
-    name: 'autoplay',
-    options: {
-      delay: 4000,
-      stopOnInteraction: false
-    }
-  };
-
   return (
     <section id="testimonials" className="section-padding bg-gradient-to-b from-white to-gray-50 relative">
       {/* Background decorative elements */}
@@ -198,7 +189,10 @@ const Testimonials = () => {
               skipSnaps: false,
               dragFree: true
             }}
-            plugins={[autoplayPlugin]}
+            autoplayOptions={{
+              delay: 4000,
+              stopOnInteraction: false
+            }}
           >
             <CarouselContent>
               {videoTestimonials.map((video) => (
