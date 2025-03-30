@@ -14,6 +14,13 @@ import { toast } from 'sonner';
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
+  // Set default password if none exists
+  useEffect(() => {
+    if (!localStorage.getItem('admin-password')) {
+      localStorage.setItem('admin-password', 'admin123');
+    }
+  }, []);
+  
   // Authentication check using localStorage
   useEffect(() => {
     const adminAuth = localStorage.getItem('admin-auth');
@@ -23,8 +30,11 @@ const Admin = () => {
   }, []);
 
   const handleLogin = (password: string) => {
-    // Simple password check (in a real app, this would be server-side)
-    if (password === 'admin123') {
+    // Get stored password from localStorage
+    const storedPassword = localStorage.getItem('admin-password');
+    
+    // Check if entered password matches stored password
+    if (password === storedPassword) {
       localStorage.setItem('admin-auth', 'authenticated');
       setIsAuthenticated(true);
       toast.success('Login successful');
