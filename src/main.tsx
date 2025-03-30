@@ -45,14 +45,42 @@ const removeLovableElements = () => {
   });
 };
 
+// Function to ensure verification meta tags are always present
+const ensureVerificationTags = () => {
+  // Bing verification
+  let bingTag = document.querySelector('meta[name="msvalidate.01"]');
+  if (!bingTag) {
+    bingTag = document.createElement('meta');
+    bingTag.setAttribute('name', 'msvalidate.01');
+    bingTag.setAttribute('content', 'F369CBC92F03EBB72A41A8782CB42881');
+    document.head.appendChild(bingTag);
+  }
+  
+  // Google verification
+  let googleTag = document.querySelector('meta[name="google-site-verification"]');
+  if (!googleTag) {
+    googleTag = document.createElement('meta');
+    googleTag.setAttribute('name', 'google-site-verification');
+    googleTag.setAttribute('content', '9-T-e6qKoCEslMvWnfKDeXadkedKtT_DtKhdPKPKyjY');
+    document.head.appendChild(googleTag);
+  }
+};
+
 // Run the cleanup initially
 removeLovableElements();
+ensureVerificationTags();
 
 // Also run it after the DOM is loaded
-document.addEventListener('DOMContentLoaded', removeLovableElements);
+document.addEventListener('DOMContentLoaded', () => {
+  removeLovableElements();
+  ensureVerificationTags();
+});
 
 // And periodically check for and remove new elements
-setInterval(removeLovableElements, 1000);
+setInterval(() => {
+  removeLovableElements();
+  ensureVerificationTags();
+}, 1000);
 
 const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
