@@ -78,7 +78,7 @@ const defaultPortfolioItems: PortfolioItem[] = [
     id: 9,
     title: 'DEVAXI Automation',
     category: 'websites',
-    image: 'https://images.unsplash.com/photo-1581244277943-fe4d9aa3faeb?auto=format&fit=crop&w=600&h=400',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&h=400',
     description: 'Empowering industries with cutting-edge solutions in Instrumentation and DCS execution. Expertise in Technical Services, Manpower Services, and Technical Training. Completed on August 14, 2024.',
     url: 'https://devaxi-automation.com/'
   },
@@ -126,7 +126,7 @@ const defaultPortfolioItems: PortfolioItem[] = [
     id: 15,
     title: 'Amazon Pallets Liquidation',
     category: 'websites',
-    image: 'https://images.unsplash.com/photo-1606293459339-a5e322a49a5a?auto=format&fit=crop&w=600&h=400',
+    image: 'https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=600&h=400',
     description: 'For over 10 years, Amazon pallets liquidation has been a leading provider of customer returns, overstock, and end-of-life products sourced from major retailers and manufacturers. We offer a diverse range of liquidation inventory, including electronics, home goods, clothing, toys, general merchandise and much more. Completed on October 07, 2024.',
     url: 'https://amazonpalletsliquidation.com/'
   },
