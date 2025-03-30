@@ -14,6 +14,7 @@ import WebsiteDevelopment from "./pages/WebsiteDevelopment";
 import AppDevelopment from "./pages/AppDevelopment";
 import AiSpokesperson from "./pages/AiSpokesperson";
 import BusinessProfile from "./pages/BusinessProfile";
+import Admin from "./pages/Admin"; // Add import for Admin page
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/app-development" element={<AppDevelopment />} />
           <Route path="/ai-spokesperson" element={<AiSpokesperson />} />
           <Route path="/business-profile" element={<BusinessProfile />} />
+          <Route path="/admin" element={<Admin />} /> {/* Add admin route */}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
