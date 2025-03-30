@@ -43,7 +43,6 @@ const WhatsAppButton = () => {
             <MessageCircle className="w-7 h-7" />
             <span className="sr-only">Chat on WhatsApp</span>
           </Button>
-          {/* Removed the popup message that was here */}
         </motion.div>
       )}
     </AnimatePresence>
