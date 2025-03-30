@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -75,25 +76,66 @@ const Carousel = React.forwardRef<
     )
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
+    const [autoplayInterval, setAutoplayInterval] = React.useState<NodeJS.Timeout | null>(null)
 
-    // Handle autoplay if autoplayOptions is provided
+    // Enhanced autoplay implementation
     React.useEffect(() => {
       if (!api || !autoplayOptions) return;
       
       const delay = autoplayOptions.delay || 4000;
+      const stopOnInteraction = autoplayOptions.stopOnInteraction !== false;
       
-      const autoplay = setInterval(() => {
-        if (api.canScrollNext()) {
-          api.scrollNext();
-        } else {
-          api.scrollTo(0);
+      // Start autoplay
+      const startAutoplay = () => {
+        if (autoplayInterval) clearInterval(autoplayInterval);
+        
+        const interval = setInterval(() => {
+          if (api.canScrollNext()) {
+            api.scrollNext();
+          } else {
+            api.scrollTo(0);
+          }
+        }, delay);
+        
+        setAutoplayInterval(interval);
+      };
+      
+      // Stop autoplay
+      const stopAutoplay = () => {
+        if (autoplayInterval) {
+          clearInterval(autoplayInterval);
+          setAutoplayInterval(null);
         }
-      }, delay);
+      };
+      
+      // Initialize autoplay
+      startAutoplay();
+      
+      // Handle user interaction
+      if (stopOnInteraction) {
+        const handleInteraction = () => {
+          stopAutoplay();
+          
+          // Restart after user interaction stops
+          const restartTimeout = setTimeout(() => {
+            startAutoplay();
+          }, 5000);  // Wait 5 seconds before restarting
+          
+          return () => clearTimeout(restartTimeout);
+        };
+        
+        carouselRef?.addEventListener('pointerdown', handleInteraction);
+        
+        return () => {
+          stopAutoplay();
+          carouselRef?.removeEventListener('pointerdown', handleInteraction);
+        };
+      }
       
       return () => {
-        clearInterval(autoplay);
+        stopAutoplay();
       };
-    }, [api, autoplayOptions]);
+    }, [api, autoplayOptions, carouselRef, autoplayInterval]);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {

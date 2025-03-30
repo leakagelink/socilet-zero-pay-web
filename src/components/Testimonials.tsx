@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Star, Quote, X, Youtube } from "lucide-react";
 import { motion } from "framer-motion";
@@ -10,11 +11,13 @@ import {
 } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Testimonials = () => {
   const [videoOpen, setVideoOpen] = useState(false);
   const [currentVideoId, setCurrentVideoId] = useState("");
   const [thumbnails, setThumbnails] = useState<{[key: string]: string}>({});
+  const isMobile = useIsMobile();
   
   // Mock testimonials
   const testimonials = [
@@ -104,6 +107,131 @@ const Testimonials = () => {
     visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
   };
 
+  // Render video testimonial for non-mobile view
+  const renderVideoGrid = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-16">
+      {videoTestimonials.map((video) => (
+        <motion.div
+          key={video.id}
+          className="relative group cursor-pointer"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: video.id * 0.1 }}
+          whileHover={{ y: -5 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg h-full">
+            <CardContent className="p-0 relative">
+              <div 
+                className="relative aspect-[9/16] overflow-hidden"
+                onClick={() => playVideo(video.videoId)}
+              >
+                {thumbnails[video.videoId] ? (
+                  <img 
+                    src={thumbnails[video.videoId]} 
+                    alt="Video thumbnail"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
+                    <Youtube className="w-10 h-10 text-gray-400" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col items-center justify-center group-hover:bg-black/30 transition-all duration-300">
+                  <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-medium rounded-lg px-2 py-1 flex items-center">
+                    <Youtube className="h-3 w-3 mr-1" />
+                    <span>Shorts</span>
+                  </div>
+                  
+                  <motion.div 
+                    className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-xl"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ scale: 0.9, opacity: 0.8 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400, 
+                      damping: 10,
+                      duration: 0.3
+                    }}
+                  >
+                    <Youtube className="w-8 h-8 text-white" />
+                  </motion.div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+
+  // Render video testimonial carousel for mobile view
+  const renderVideoCarousel = () => (
+    <div className="mb-16 overflow-hidden">
+      <Carousel 
+        className="w-full"
+        opts={{
+          loop: true,
+          align: "start"
+        }}
+        autoplayOptions={{
+          delay: 4000,
+          stopOnInteraction: false
+        }}
+      >
+        <CarouselContent>
+          {videoTestimonials.map((video) => (
+            <CarouselItem key={video.id} className="basis-4/5 pl-4">
+              <motion.div
+                className="relative cursor-pointer"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <Card className="overflow-hidden border-none shadow-lg h-full">
+                  <CardContent className="p-0 relative">
+                    <div 
+                      className="relative aspect-[9/16] overflow-hidden"
+                      onClick={() => playVideo(video.videoId)}
+                    >
+                      {thumbnails[video.videoId] ? (
+                        <img 
+                          src={thumbnails[video.videoId]} 
+                          alt="Video thumbnail"
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
+                          <Youtube className="w-10 h-10 text-gray-400" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col items-center justify-center">
+                        <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-medium rounded-lg px-2 py-1 flex items-center">
+                          <Youtube className="h-3 w-3 mr-1" />
+                          <span>Shorts</span>
+                        </div>
+                        
+                        <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-xl">
+                          <Youtube className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <div className="flex justify-center mt-4 gap-2">
+          <CarouselPrevious className="static transform-none mx-2" />
+          <CarouselNext className="static transform-none mx-2" />
+        </div>
+      </Carousel>
+    </div>
+  );
+
   return (
     <section id="testimonials" className="section-padding bg-gradient-to-b from-white to-gray-50 relative py-20">
       {/* Background decorative elements */}
@@ -189,62 +317,8 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-16">
-          {videoTestimonials.map((video) => (
-            <motion.div
-              key={video.id}
-              className="relative group cursor-pointer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: video.id * 0.1 }}
-              whileHover={{ y: -5 }}
-            >
-              <Card className="overflow-hidden border-none shadow-lg h-full">
-                <CardContent className="p-0 relative">
-                  <div 
-                    className="relative aspect-[9/16] overflow-hidden"
-                    onClick={() => playVideo(video.videoId)}
-                  >
-                    {thumbnails[video.videoId] ? (
-                      <img 
-                        src={thumbnails[video.videoId]} 
-                        alt="Video thumbnail"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 animate-pulse flex items-center justify-center">
-                        <Youtube className="w-10 h-10 text-gray-400" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 flex flex-col items-center justify-center group-hover:bg-black/30 transition-all duration-300">
-                      <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-medium rounded-lg px-2 py-1 flex items-center">
-                        <Youtube className="h-3 w-3 mr-1" />
-                        <span>Shorts</span>
-                      </div>
-                      
-                      <motion.div 
-                        className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-xl"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
-                        initial={{ scale: 0.9, opacity: 0.8 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 400, 
-                          damping: 10,
-                          duration: 0.3
-                        }}
-                      >
-                        <Youtube className="w-8 h-8 text-white" />
-                      </motion.div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        {/* Conditionally render grid or carousel based on screen size */}
+        {isMobile ? renderVideoCarousel() : renderVideoGrid()}
         
         <motion.div 
           className="mt-20 text-center"
