@@ -27,7 +27,6 @@ const Testimonials = () => {
       position: 'CEO, TechSolutions',
       content: 'Working with Socilet was a game-changer for our business. Their zero advance payment model gave us confidence, and they delivered beyond our expectations.',
       rating: 5,
-      image: 'https://randomuser.me/api/portraits/men/32.jpg'
     },
     {
       id: 2,
@@ -35,7 +34,6 @@ const Testimonials = () => {
       position: 'Founder, StyleHub',
       content: 'I was skeptical about the "work first, pay later" model, but Socilet proved their commitment with exceptional work. My e-commerce website is performing brilliantly!',
       rating: 5,
-      image: 'https://randomuser.me/api/portraits/women/44.jpg'
     },
     {
       id: 3,
@@ -43,7 +41,6 @@ const Testimonials = () => {
       position: 'Marketing Director, FoodDelight',
       content: 'The team at Socilet developed our restaurant app with great attention to detail. The work first model was perfect for us as a startup with budget constraints.',
       rating: 5,
-      image: 'https://randomuser.me/api/portraits/men/62.jpg'
     },
     {
       id: 4,
@@ -51,7 +48,6 @@ const Testimonials = () => {
       position: 'Owner, Beauty Salon',
       content: 'Socilet created our business listings and improved our online presence dramatically. The results were visible within weeks with more customers finding our salon online.',
       rating: 5,
-      image: 'https://randomuser.me/api/portraits/women/28.jpg'
     },
   ];
 
@@ -280,13 +276,6 @@ const Testimonials = () => {
                     </div>
                     <p className="text-gray-600 mb-6 italic flex-grow">&quot;{testimonial.content}&quot;</p>
                     <div className="flex items-center mt-auto">
-                      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-100 mr-4 shadow-sm">
-                        <img 
-                          src={testimonial.image} 
-                          alt={testimonial.name}
-                          className="w-full h-full object-cover" 
-                        />
-                      </div>
                       <div>
                         <h4 className="font-bold text-primary-800">{testimonial.name}</h4>
                         <p className="text-sm text-gray-500">{testimonial.position}</p>
