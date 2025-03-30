@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Star, Play } from "lucide-react";
+import { Star, Play, Quote } from "lucide-react";
+import { motion } from "framer-motion";
 import { 
   Carousel,
   CarouselContent,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 
 const Testimonials = () => {
-  // Mock testimonials - in a real scenario, these would come from your backend
+  // Mock testimonials
   const testimonials = [
     {
       id: 1,
@@ -36,9 +37,17 @@ const Testimonials = () => {
       rating: 5,
       image: 'https://randomuser.me/api/portraits/men/62.jpg'
     },
+    {
+      id: 4,
+      name: 'Sunita Verma',
+      position: 'Owner, Beauty Salon',
+      content: 'Socilet created our business listings and improved our online presence dramatically. The results were visible within weeks with more customers finding our salon online.',
+      rating: 5,
+      image: 'https://randomuser.me/api/portraits/women/28.jpg'
+    },
   ];
 
-  // Mock video testimonials - updated for portrait orientation
+  // Mock video testimonials - portrait orientation
   const videoTestimonials = [
     {
       id: 1,
@@ -54,42 +63,68 @@ const Testimonials = () => {
     },
   ];
 
+  // Animation variants
+  const fadeInUp = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
+  };
+
   return (
-    <section id="testimonials" className="section-padding bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-4xl font-bold mb-4 text-primary-800">Client Testimonials</h2>
+    <section id="testimonials" className="section-padding bg-gradient-to-b from-white to-gray-50 relative">
+      {/* Background decorative elements */}
+      <div className="absolute top-40 right-10 w-72 h-72 bg-primary-50 rounded-full filter blur-3xl opacity-50"></div>
+      <div className="absolute bottom-40 left-10 w-72 h-72 bg-secondary/10 rounded-full filter blur-3xl opacity-50"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div 
+          className="text-center max-w-2xl mx-auto mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <h2 className="text-4xl font-bold mb-2 text-primary-800">Client Testimonials</h2>
           <div className="w-24 h-1 bg-secondary mx-auto mb-6 rounded-full"></div>
           <p className="text-gray-600">
             Don't just take our word for it. See what our clients have to say about our work and 
             our unique zero advance payment model.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="mb-20">
-          <Carousel className="w-full">
+        <div className="mb-20 overflow-hidden">
+          <Carousel className="w-full" opts={{ loop: true }}>
             <CarouselContent>
               {testimonials.map(testimonial => (
                 <CarouselItem key={testimonial.id} className="md:basis-1/3 pl-4">
-                  <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow h-full flex flex-col">
+                  <motion.div 
+                    className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-full flex flex-col relative"
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    whileHover={{ y: -5, boxShadow: "0 20px 30px -10px rgba(0,0,0,0.1)" }}
+                  >
+                    <Quote className="w-10 h-10 text-primary-100 absolute top-4 right-4 opacity-40" />
                     <div className="flex items-center mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                       ))}
                     </div>
                     <p className="text-gray-600 mb-6 italic flex-grow">&quot;{testimonial.content}&quot;</p>
-                    <div className="flex items-center">
-                      <img 
-                        src={testimonial.image} 
-                        alt={testimonial.name}
-                        className="w-14 h-14 rounded-full object-cover mr-4 border-2 border-primary-100" 
-                      />
+                    <div className="flex items-center mt-auto">
+                      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-100 mr-4 shadow-sm">
+                        <img 
+                          src={testimonial.image} 
+                          alt={testimonial.name}
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
                       <div>
                         <h4 className="font-bold text-primary-800">{testimonial.name}</h4>
                         <p className="text-sm text-gray-500">{testimonial.position}</p>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -100,43 +135,77 @@ const Testimonials = () => {
           </Carousel>
         </div>
 
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <motion.div 
+          className="text-center max-w-2xl mx-auto mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
           <h3 className="text-2xl font-bold mb-4 text-primary-700">Video Testimonials</h3>
           <p className="text-gray-600 mb-8">
             Watch what our clients have to say about their experience working with Socilet.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
           {videoTestimonials.map(video => (
-            <div key={video.id} className="relative group cursor-pointer mx-auto">
-              <div className="overflow-hidden rounded-xl w-64 h-96 mx-auto">
+            <motion.div 
+              key={video.id} 
+              className="relative group cursor-pointer mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="overflow-hidden rounded-2xl w-64 h-96 mx-auto shadow-lg">
                 <img 
                   src={video.thumbnail} 
                   alt={video.name}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center group-hover:bg-opacity-30 transition-all">
-                  <div className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 flex items-center justify-center group-hover:bg-black/30 transition-all duration-300">
+                  <motion.div 
+                    className="w-16 h-16 rounded-full bg-primary-600 bg-opacity-90 flex items-center justify-center shadow-lg"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ scale: 0.9, opacity: 0.8 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400, 
+                      damping: 10,
+                      duration: 0.3
+                    }}
+                  >
                     <Play className="w-8 h-8 text-white ml-1" />
-                  </div>
+                  </motion.div>
                 </div>
               </div>
               <div className="mt-4 text-center">
                 <h4 className="font-bold text-primary-700">{video.name}</h4>
                 <p className="text-sm text-gray-500">{video.position}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <div className="mt-20 text-center">
-          <div className="inline-block bg-primary-50 px-8 py-4 rounded-full shadow-sm">
-            <p className="text-primary-800 font-medium text-lg">
-              900+ completed projects with 100% client satisfaction
+        <motion.div 
+          className="mt-20 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="inline-block bg-gradient-to-r from-primary-50 to-white px-8 py-4 rounded-full shadow-md border border-primary-100">
+            <p className="text-primary-800 font-medium text-lg flex items-center justify-center">
+              <Star className="w-5 h-5 text-yellow-400 fill-current mr-2" />
+              <span>900+ completed projects with 100% client satisfaction</span>
+              <Star className="w-5 h-5 text-yellow-400 fill-current ml-2" />
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

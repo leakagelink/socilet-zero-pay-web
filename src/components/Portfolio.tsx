@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -14,7 +15,7 @@ const Portfolio = () => {
     { id: 'business', label: 'Business Listings' },
   ];
 
-  // Mock portfolio items - in a real scenario, these would come from your backend
+  // Mock portfolio items
   const portfolioItems = [
     {
       id: 1,
@@ -65,22 +66,57 @@ const Portfolio = () => {
     ? portfolioItems 
     : portfolioItems.filter(item => item.category === activeFilter);
 
+  // Animation variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  };
+
   return (
-    <section id="portfolio" className="section-padding bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-4xl font-bold mb-4">Our Portfolio</h2>
+    <section id="portfolio" className="section-padding bg-gradient-to-b from-gray-50 to-white relative">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 right-0 w-80 h-80 bg-primary-50 rounded-full filter blur-3xl opacity-30"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary-50 rounded-full filter blur-3xl opacity-30"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div 
+          className="text-center max-w-2xl mx-auto mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <h2 className="text-4xl font-bold mb-2">Our Portfolio</h2>
+          <div className="w-20 h-1 bg-primary-600 mx-auto mb-6 rounded-full"></div>
           <p className="text-gray-600">
             Explore our successful projects delivered with our unique zero advance payment model.
             We've completed over 900 projects across various industries.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-wrap justify-center mb-12 gap-2">
+        <motion.div 
+          className="flex flex-wrap justify-center mb-12 gap-2"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           {filters.map(filter => (
-            <button
+            <Button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
+              variant={activeFilter === filter.id ? "default" : "outline"}
               className={`px-4 py-2 rounded-full transition-all ${
                 activeFilter === filter.id
                   ? 'bg-primary-600 text-white'
@@ -88,36 +124,66 @@ const Portfolio = () => {
               }`}
             >
               {filter.label}
-            </button>
+            </Button>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {filteredItems.map(item => (
-            <div key={item.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="overflow-hidden h-48">
+            <motion.div 
+              key={item.id} 
+              className="bg-white rounded-xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500"
+              variants={item}
+              whileHover={{ y: -10 }}
+            >
+              <div className="overflow-hidden h-48 relative">
                 <img 
                   src={item.image} 
                   alt={item.title} 
-                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4">
+                  <span className="text-white font-medium text-sm bg-primary-600 px-3 py-1 rounded-full">
+                    {filters.find(f => f.id === item.category)?.label || item.category}
+                  </span>
+                </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{item.title}</h3>
                 <p className="text-gray-600 mb-4">{item.description}</p>
-                <a href="#" className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium">
-                  View Project <ArrowRight className="ml-2 w-4 h-4" />
+                <a 
+                  href="#" 
+                  className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
+                >
+                  <span>View Project</span> 
+                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                 </a>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="text-center mt-12">
-          <Button className="bg-primary-600 hover:bg-primary-700">
-            View All Projects
+        <motion.div 
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <Button 
+            className="bg-primary-600 hover:bg-primary-700 group"
+            size="lg"
+          >
+            <span>View All Projects</span>
+            <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover:translate-y-[-2px] group-hover:translate-x-[2px]" />
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

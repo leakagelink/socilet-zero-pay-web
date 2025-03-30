@@ -7,10 +7,12 @@ import Portfolio from '../components/Portfolio';
 import Testimonials from '../components/Testimonials';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
+import { Toaster } from 'sonner';
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <Toaster position="top-right" richColors />
       <Header />
       <main>
         <Hero />

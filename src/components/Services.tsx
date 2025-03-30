@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Code, Smartphone, Video, Globe, Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Services = () => {
   const services = [
@@ -30,24 +31,62 @@ const Services = () => {
     }
   ];
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      }
+    }
+  };
+
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  };
+
   return (
-    <section id="services" className="section-padding bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-4xl font-bold mb-4">Our Services</h2>
+    <section id="services" className="section-padding bg-gradient-to-b from-white to-gray-50 relative">
+      {/* Background decorative elements */}
+      <div className="absolute top-20 right-20 w-72 h-72 bg-primary-100 rounded-full filter blur-3xl opacity-20"></div>
+      <div className="absolute bottom-20 left-20 w-72 h-72 bg-secondary/20 rounded-full filter blur-3xl opacity-20"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div 
+          className="text-center max-w-2xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <h2 className="text-4xl font-bold mb-2">Our Services</h2>
+          <div className="w-20 h-1 bg-primary-600 mx-auto mb-6 rounded-full"></div>
           <p className="text-gray-600">
             We offer a range of digital services with our unique zero advance payment model. 
             Pay only after your project is successfully delivered.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div 
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {services.map((service, index) => (
-            <div 
+            <motion.div 
               key={index}
-              className="bg-white border border-gray-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
+              variants={item}
+              whileHover={{ 
+                y: -10,
+                boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
+              }}
+              className="bg-white border border-gray-100 p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-500"
             >
-              <div className="bg-primary-50 w-20 h-20 rounded-full flex items-center justify-center mb-6">
+              <div className="bg-gradient-to-br from-primary-50 to-primary-100 w-20 h-20 rounded-full flex items-center justify-center mb-6">
                 {service.icon}
               </div>
               <h3 className="text-xl font-bold mb-3">{service.title}</h3>
@@ -60,28 +99,39 @@ const Services = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="mt-16 p-8 bg-primary-50 rounded-xl">
+        <motion.div 
+          className="mt-16 p-8 bg-gradient-to-r from-primary-50 to-white rounded-xl border border-primary-100 shadow-md"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-6 md:mb-0">
-              <h3 className="text-2xl font-bold mb-2">Zero Advance Payment Model</h3>
+              <h3 className="text-2xl font-bold mb-2 text-primary-800">Zero Advance Payment Model</h3>
               <p className="text-gray-600 max-w-xl">
                 We believe in our work quality. That's why we only charge after project completion and your satisfaction.
               </p>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-primary-100">
-              <p className="text-lg font-medium text-primary-800">
+            <motion.div 
+              className="bg-white p-5 rounded-lg shadow-lg border border-primary-100"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              <p className="text-lg font-bold text-primary-800 flex items-center">
+                <Check className="w-5 h-5 text-green-500 mr-2" />
                 No advance payment required!
               </p>
               <p className="text-sm text-gray-500">
                 No hidden charges, pay only when satisfied.
               </p>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
