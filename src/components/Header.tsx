@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { Menu, Phone } from "lucide-react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   NavigationMenu,
@@ -85,20 +85,16 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <a 
-            href="/" 
-            className="flex items-center transition-transform hover:scale-105 duration-300" 
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavigation('/');
-            }}
+          <div 
+            onClick={() => handleNavigation('/')}
+            className="flex items-center transition-transform hover:scale-105 duration-300 cursor-pointer" 
           >
             <img 
               src="/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png" 
               alt="Socilet Logo" 
               className="h-14 drop-shadow-sm" 
             />
-          </a>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
@@ -106,26 +102,23 @@ const Header = () => {
               <NavigationMenuList className="space-x-1">
                 {navLinks.map((link) => (
                   <NavigationMenuItem key={link.name}>
-                    <NavigationMenuLink
-                      className={`px-4 py-2 text-sm font-medium rounded-full transition-colors hover:bg-primary-50 hover:text-primary-600 relative ${
+                    <button
+                      onClick={() => handleNavigation(link.href)}
+                      className={`px-4 py-2 text-sm font-medium rounded-full transition-colors hover:bg-primary-50 hover:text-primary-600 cursor-pointer ${
                         isActive(link.path) 
                           ? 'text-primary-600 bg-primary-50 font-semibold' 
                           : 'text-gray-700'
                       }`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(link.href);
-                      }}
                     >
                       {link.name}
-                    </NavigationMenuLink>
+                    </button>
                   </NavigationMenuItem>
                 ))}
               </NavigationMenuList>
             </NavigationMenu>
             
             <Button 
-              className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 gap-2 rounded-full shadow-md hover:shadow-lg transition-all ml-4"
+              className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 gap-2 rounded-full shadow-md hover:shadow-lg transition-all ml-4 cursor-pointer"
               onClick={() => handleNavigation('/#contact')}
             >
               <Phone size={16} className="animate-pulse" />
@@ -145,25 +138,21 @@ const Header = () => {
               <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-gradient-to-b from-white to-blue-50">
                 <nav className="flex flex-col gap-4 mt-8">
                   {navLinks.map((link) => (
-                    <a
+                    <button
                       key={link.name}
-                      href={link.href}
-                      className={`text-lg px-4 py-3 rounded-lg transition-all hover:bg-primary-50 hover:translate-x-1 ${
+                      onClick={() => handleNavigation(link.href)}
+                      className={`text-lg px-4 py-3 rounded-lg transition-all hover:bg-primary-50 hover:translate-x-1 w-full text-left cursor-pointer ${
                         isActive(link.path) 
                           ? 'text-primary-600 bg-primary-50/70 font-medium' 
                           : 'text-gray-700'
                       }`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleNavigation(link.href);
-                      }}
                     >
                       {link.name}
-                    </a>
+                    </button>
                   ))}
                   <div className="mt-4">
                     <Button 
-                      className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 gap-2 rounded-lg"
+                      className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 gap-2 rounded-lg cursor-pointer"
                       onClick={() => handleNavigation('/#contact')}
                     >
                       <Phone size={16} />
