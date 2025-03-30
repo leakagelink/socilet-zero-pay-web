@@ -28,11 +28,15 @@ const VerificationInfo = ({
       </p>
       
       {verificationMethod === 'html' && (
-        <Button variant="outline" size="sm" onClick={onShowHtmlTag}>Show HTML Tag</Button>
+        <Button variant="outline" size="sm" onClick={onShowHtmlTag} className="w-full sm:w-auto">
+          Show HTML Tag
+        </Button>
       )}
       
       {verificationMethod === 'html-file' && (
-        <Button variant="outline" size="sm" onClick={onDownloadFile}>Download Verification File</Button>
+        <Button variant="outline" size="sm" onClick={onDownloadFile} className="w-full sm:w-auto">
+          Download Verification File
+        </Button>
       )}
     </div>
   );

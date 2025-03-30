@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Card, 
   CardContent, 
@@ -14,6 +14,7 @@ import { useGoogleVerification } from './hooks/useGoogleVerification';
 import VerificationDialog from './google/VerificationDialog';
 import HtmlTagDialog from './google/HtmlTagDialog';
 import VerificationInfo from './google/VerificationInfo';
+import { toast } from 'sonner';
 
 const GoogleVerificationManager = () => {
   const {
@@ -39,8 +40,20 @@ const GoogleVerificationManager = () => {
   // Check if verification settings exist
   const hasVerification = !!localStorage.getItem('google-webmaster-settings');
 
-  // Debug logs to check state changes
-  console.log('Dialog state:', { isGoogleDialogOpen, isTagDialogOpen });
+  useEffect(() => {
+    // Force re-render whenever dialog state changes
+    console.log('Dialog state updated:', { isGoogleDialogOpen, isTagDialogOpen });
+  }, [isGoogleDialogOpen, isTagDialogOpen]);
+
+  const handleAddVerification = () => {
+    console.log('Add Verification button clicked');
+    setIsGoogleDialogOpen(true);
+  };
+
+  const handleShowTag = () => {
+    console.log('Show HTML Tag button clicked');
+    showHtmlTag();
+  };
 
   return (
     <>
@@ -58,7 +71,7 @@ const GoogleVerificationManager = () => {
             <VerificationInfo 
               siteUrl={siteUrl}
               verificationMethod={verificationMethod}
-              onShowHtmlTag={showHtmlTag}
+              onShowHtmlTag={handleShowTag}
               onDownloadFile={downloadVerificationFile}
             />
           ) : (
@@ -70,10 +83,7 @@ const GoogleVerificationManager = () => {
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
           <Button 
-            onClick={() => {
-              console.log('Add Verification button clicked');
-              setIsGoogleDialogOpen(true);
-            }} 
+            onClick={handleAddVerification} 
             className="bg-primary-600 hover:bg-primary-700"
           >
             {hasVerification ? 'Update Verification' : 'Add Verification'}
@@ -83,7 +93,10 @@ const GoogleVerificationManager = () => {
             <Button 
               variant="destructive" 
               size="sm"
-              onClick={removeVerification}
+              onClick={() => {
+                removeVerification();
+                toast.success('Verification removed successfully');
+              }}
             >
               Remove Verification
             </Button>
