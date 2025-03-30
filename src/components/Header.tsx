@@ -41,7 +41,7 @@ const Header = () => {
     { name: 'Portfolio', href: '/#portfolio', path: '/' },
     { name: 'Blog', href: '/blog', path: '/blog' },
     { name: 'Track Project', href: '/track-project', path: '/track-project' },
-    { name: 'Affiliate', href: '/affiliate', path: '/affiliate' },
+    { name: 'Affiliate', href: '/affiliate', path: '/affiliate', isHighlighted: true },
     // Removed the Contact link from here
   ];
 
@@ -104,10 +104,14 @@ const Header = () => {
                   <NavigationMenuItem key={link.name}>
                     <button
                       onClick={() => handleNavigation(link.href)}
-                      className={`px-4 py-2 text-sm font-medium rounded-full transition-colors hover:bg-primary-50 hover:text-primary-600 cursor-pointer ${
-                        isActive(link.path) 
-                          ? 'text-primary-600 bg-primary-50 font-semibold' 
-                          : 'text-gray-700'
+                      className={`px-4 py-2 text-sm font-medium rounded-full transition-colors cursor-pointer ${
+                        link.isHighlighted
+                          ? isActive(link.path)
+                            ? 'bg-purple-100 text-purple-700 font-semibold' 
+                            : 'bg-purple-50 text-purple-600 hover:bg-purple-100 hover:text-purple-700'
+                          : isActive(link.path) 
+                            ? 'text-primary-600 bg-primary-50 font-semibold' 
+                            : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
                       }`}
                     >
                       {link.name}
@@ -141,10 +145,14 @@ const Header = () => {
                     <button
                       key={link.name}
                       onClick={() => handleNavigation(link.href)}
-                      className={`text-lg px-4 py-3 rounded-lg transition-all hover:bg-primary-50 hover:translate-x-1 w-full text-left cursor-pointer ${
-                        isActive(link.path) 
-                          ? 'text-primary-600 bg-primary-50/70 font-medium' 
-                          : 'text-gray-700'
+                      className={`text-lg px-4 py-3 rounded-lg transition-all hover:translate-x-1 w-full text-left cursor-pointer ${
+                        link.isHighlighted
+                          ? isActive(link.path) 
+                            ? 'text-purple-700 bg-purple-100/70 font-medium' 
+                            : 'text-purple-600 hover:bg-purple-50'
+                          : isActive(link.path) 
+                            ? 'text-primary-600 bg-primary-50/70 font-medium' 
+                            : 'text-gray-700 hover:bg-primary-50'
                       }`}
                     >
                       {link.name}
