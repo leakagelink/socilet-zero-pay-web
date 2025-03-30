@@ -135,28 +135,28 @@ const Portfolio = () => {
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {filteredItems.map(item => (
+          {filteredItems.map((portfolioItem) => (
             <motion.div 
-              key={item.id} 
+              key={portfolioItem.id} 
               className="bg-white rounded-xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500"
               variants={item}
               whileHover={{ y: -10 }}
             >
               <div className="overflow-hidden h-48 relative">
                 <img 
-                  src={item.image} 
-                  alt={item.title} 
+                  src={portfolioItem.image} 
+                  alt={portfolioItem.title} 
                   className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4">
                   <span className="text-white font-medium text-sm bg-primary-600 px-3 py-1 rounded-full">
-                    {filters.find(f => f.id === item.category)?.label || item.category}
+                    {filters.find(f => f.id === portfolioItem.category)?.label || portfolioItem.category}
                   </span>
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{item.title}</h3>
-                <p className="text-gray-600 mb-4">{item.description}</p>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{portfolioItem.title}</h3>
+                <p className="text-gray-600 mb-4">{portfolioItem.description}</p>
                 <a 
                   href="#" 
                   className="text-primary-600 hover:text-primary-700 inline-flex items-center font-medium group/link"
