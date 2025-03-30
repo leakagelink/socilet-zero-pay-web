@@ -91,6 +91,14 @@ const Portfolio = () => {
       description: 'Independent exploration and production company focused on responsibly producing energy supplies and contributing to domestic energy security. Based in Oceanside, CA. Completed on September 20, 2024.',
       url: 'https://roseenergygroup.com/'
     },
+    {
+      id: 11,
+      title: 'Code Formatter Pro',
+      category: 'websites',
+      image: 'https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=600&h=400',
+      description: 'A simple, elegant tool to format HTML, CSS, JavaScript and Python code. Completed on March 30, 2025.',
+      url: 'https://codeformatter.pro/'
+    },
   ];
 
   // Filter portfolio items based on the active filter
