@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Code, Smartphone, Video, Globe, Check, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
 const Services = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -166,28 +167,33 @@ const Services = () => {
                 We believe in our work quality. That's why we only charge after project completion and your satisfaction.
               </p>
             </div>
-            <motion.div 
-              className="bg-white p-5 rounded-xl shadow-xl border border-primary-100 relative"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
+            <Link to="/zero-advance-payment">
               <motion.div 
-                className="absolute -top-3 -right-3 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  transition: { duration: 2, repeat: Infinity }
-                }}
+                className="bg-white p-5 rounded-xl shadow-xl border border-primary-100 relative"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                !
+                <motion.div 
+                  className="absolute -top-3 -right-3 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    transition: { duration: 2, repeat: Infinity }
+                  }}
+                >
+                  !
+                </motion.div>
+                <p className="text-lg font-bold text-primary-800 flex items-center">
+                  <Check className="w-5 h-5 text-green-500 mr-2" />
+                  No advance payment required!
+                </p>
+                <p className="text-sm text-gray-500 mb-2">
+                  No hidden charges, pay only when satisfied.
+                </p>
+                <Button variant="link" className="p-0 h-auto text-primary-600 flex items-center">
+                  Learn more about our model <ArrowRight className="ml-1 w-4 h-4" />
+                </Button>
               </motion.div>
-              <p className="text-lg font-bold text-primary-800 flex items-center">
-                <Check className="w-5 h-5 text-green-500 mr-2" />
-                No advance payment required!
-              </p>
-              <p className="text-sm text-gray-500">
-                No hidden charges, pay only when satisfied.
-              </p>
-            </motion.div>
+            </Link>
           </div>
         </motion.div>
       </div>
