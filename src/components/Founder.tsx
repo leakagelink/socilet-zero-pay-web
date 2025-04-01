@@ -37,9 +37,9 @@ const Founder = () => {
             <div className="bg-gradient-to-br from-primary-600 to-primary-800 rounded-full w-80 h-80 absolute top-0 left-0 -z-10 opacity-10 blur-3xl"></div>
             <div className="relative z-10">
               <div className="relative mx-auto w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white shadow-xl mb-8">
-                {/* Replace with actual founder image */}
+                {/* Updated founder image */}
                 <img 
-                  src="https://images.unsplash.com/photo-1556157382-97eda2f9e2bf?auto=format&fit=crop&q=80" 
+                  src="/lovable-uploads/2ee68a1b-0ec0-47b8-b622-98ff6c6141b3.png" 
                   alt="Dheeraj Tagde - Founder of Socilet" 
                   className="w-full h-full object-cover"
                 />
