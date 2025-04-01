@@ -13,6 +13,7 @@ import FAQ from '../components/FAQ';
 import BlogPreview from '../components/BlogPreview';
 import WhatsAppButton from '../components/WhatsAppButton';
 import SeoPlans from '../components/SeoPlans';
+import SocialMediaPlans from '../components/SocialMediaPlans';
 import { Toaster } from 'sonner';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
@@ -122,6 +123,9 @@ const Index = () => {
         </section>
         <section id="seo-plans" aria-labelledby="seo-plans-heading">
           <SeoPlans />
+        </section>
+        <section id="social-media-plans" aria-labelledby="social-media-plans-heading">
+          <SocialMediaPlans />
         </section>
         <section id="blog" aria-labelledby="blog-heading">
           <BlogPreview />
