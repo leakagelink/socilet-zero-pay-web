@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
-import { Calendar, Clock, Medal, Instagram, Facebook, Linkedin, Twitter, Youtube, Hashtag, CheckCircle } from "lucide-react";
+import { Calendar, Clock, Medal, Instagram, Facebook, Linkedin, Twitter, Youtube, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -205,7 +204,7 @@ const SocialMediaPlans = () => {
           >
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-xl font-semibold flex items-center gap-2">
-                <Hashtag className="h-5 w-5 text-primary-600" />
+                <span className="text-primary-600">#</span>
                 Plan Comparison
               </h3>
             </div>
