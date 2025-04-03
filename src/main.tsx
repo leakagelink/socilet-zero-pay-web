@@ -96,7 +96,7 @@ const handleSiteVersioning = () => {
   
   if (cacheRefresh === 'true') {
     console.log('Cache refresh requested via URL parameter');
-    // Clear caches if supported
+    // Clear browser caches if supported
     if ('caches' in window) {
       caches.keys().then(cacheNames => {
         cacheNames.forEach(cacheName => {
@@ -105,11 +105,21 @@ const handleSiteVersioning = () => {
       });
     }
     
+    // Clear localStorage cache except critical items
+    Object.keys(localStorage).forEach(key => {
+      if (key !== 'site-version' && !key.includes('auth')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
     // Set current version to match site version
     const siteVersion = localStorage.getItem('site-version');
     if (siteVersion) {
       localStorage.setItem('current-site-version', siteVersion);
     }
+    
+    // Set a flag to force reload assets
+    window.sessionStorage.setItem('force-reload-assets', 'true');
     
     // Remove the parameter from URL
     urlParams.delete('refresh-cache');
@@ -118,6 +128,20 @@ const handleSiteVersioning = () => {
                    window.location.hash;
     window.history.replaceState({}, document.title, newUrl);
   }
+  
+  // Set a unique cache-busting query parameter for all fetch requests
+  const originalFetch = window.fetch;
+  window.fetch = function(input, init) {
+    if (typeof input === 'string' && !input.includes('data:') && !input.includes('blob:')) {
+      const url = new URL(input, window.location.href);
+      // Only add cache busting for our own resources, not external APIs
+      if (url.origin === window.location.origin) {
+        url.searchParams.set('v', localStorage.getItem('site-version') || '1');
+        input = url.toString();
+      }
+    }
+    return originalFetch(input, init);
+  };
 };
 
 // Run the initialization functions

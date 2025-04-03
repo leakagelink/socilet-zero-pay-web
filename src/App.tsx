@@ -16,6 +16,7 @@ import AppDevelopment from "./pages/AppDevelopment";
 import AiSpokesperson from "./pages/AiSpokesperson";
 import BusinessProfile from "./pages/BusinessProfile";
 import Admin from "./pages/Admin";
+import VersionChecker from "./components/VersionChecker";
 
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <VersionChecker />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/blog" element={<Blog />} />

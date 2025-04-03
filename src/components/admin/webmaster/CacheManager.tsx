@@ -9,7 +9,7 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Clock } from 'lucide-react';
+import { RefreshCw, Clock, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 const CacheManager = () => {
@@ -51,9 +51,23 @@ const CacheManager = () => {
         });
       }
       
-      toast.success('Cache cleared successfully, site will use latest version on next load');
+      toast.success('कैश सफलतापूर्वक साफ़ किया गया, अगली लोडिंग पर साइट नवीनतम संस्करण का उपयोग करेगी', {
+        duration: 5000
+      });
       setIsClearing(false);
     }, 1500);
+  };
+  
+  const copyRefreshLink = () => {
+    const currentUrl = window.location.origin;
+    const refreshUrl = `${currentUrl}?refresh-cache=true`;
+    
+    navigator.clipboard.writeText(refreshUrl).then(() => {
+      toast.success('कैश रीफ्रेश लिंक कॉपी किया गया');
+    }).catch(err => {
+      toast.error('कॉपी करने में त्रुटि');
+      console.error('Error copying refresh link:', err);
+    });
   };
 
   return (
@@ -61,22 +75,41 @@ const CacheManager = () => {
       <CardHeader>
         <CardTitle className="flex items-center">
           <RefreshCw className="mr-2 h-5 w-5" />
-          Cache Management
+          कैश प्रबंधन
         </CardTitle>
-        <CardDescription>Clear the website cache to reflect recent changes</CardDescription>
+        <CardDescription>हाल के परिवर्तनों को प्रतिबिंबित करने के लिए वेबसाइट कैश साफ़ करें</CardDescription>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-500 mb-4">
-          Use this option to clear cached data and force reload of content.
-          This may be necessary after making significant changes to the website.
+          कैश किए गए डेटा को साफ़ करने और सामग्री के पुनः लोड करने के लिए इस विकल्प का उपयोग करें।
+          वेबसाइट में महत्वपूर्ण परिवर्तन करने के बाद यह आवश्यक हो सकता है।
         </p>
-        <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
+        <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-4">
           <div className="flex items-start gap-2">
             <Clock className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-amber-800">
-              After clearing the cache, instruct your visitors to refresh their browser 
-              or clear their browser cache to see the latest changes.
+              कैश साफ़ करने के बाद, अपने आगंतुकों को अपना ब्राउज़र रीफ्रेश करने या
+              नवीनतम परिवर्तन देखने के लिए अपना ब्राउज़र कैश साफ़ करने का निर्देश दें।
             </p>
+          </div>
+        </div>
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+          <div className="flex items-start gap-2">
+            <Copy className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs text-blue-800 mb-2">
+                उपयोगकर्ताओं को अपना कैश रीफ्रेश करने के लिए नीचे दिए गए लिंक को साझा करें।
+                यह उन्हें नवीनतम संस्करण पर पुनर्निर्देशित करेगा।
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="bg-white text-xs"
+                onClick={copyRefreshLink}
+              >
+                <Copy className="h-3 w-3 mr-1" /> कैश रीफ्रेश लिंक कॉपी करें
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
@@ -88,10 +121,10 @@ const CacheManager = () => {
           {isClearing ? (
             <>
               <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-              Clearing Cache...
+              कैश साफ़ कर रहा है...
             </>
           ) : (
-            'Clear Cache'
+            'कैश साफ़ करें'
           )}
         </Button>
       </CardFooter>

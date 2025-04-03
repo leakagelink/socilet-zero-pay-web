@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from 'sonner';
 
 const VersionChecker = () => {
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
@@ -24,12 +25,19 @@ const VersionChecker = () => {
       
       // If we have a stored latest version and it's different from current version
       if (latestVersion && (!storedVersion || storedVersion !== latestVersion)) {
+        console.log(`Version mismatch detected. Current: ${storedVersion}, Latest: ${latestVersion}`);
         setShowUpdatePrompt(true);
+        
+        // Show a toast notification about the update
+        toast.info('एक नया अपडेट उपलब्ध है! कृपया पेज रीफ्रेश करें।', {
+          duration: 10000,
+          action: {
+            label: 'अपडेट करें',
+            onClick: () => handleUpdate()
+          }
+        });
       }
     };
-    
-    // Check for updates on initial load
-    checkForUpdates();
     
     // Store current version if not already stored
     if (!localStorage.getItem('current-site-version')) {
@@ -37,8 +45,11 @@ const VersionChecker = () => {
       localStorage.setItem('current-site-version', initialVersion);
     }
     
-    // Set up interval to check for updates (every 5 minutes)
-    const intervalId = setInterval(checkForUpdates, 5 * 60 * 1000);
+    // Check for updates on initial load
+    checkForUpdates();
+    
+    // Set up interval to check for updates more frequently (every 30 seconds)
+    const intervalId = setInterval(checkForUpdates, 30 * 1000);
     
     // Clean up interval on component unmount
     return () => clearInterval(intervalId);
@@ -52,6 +63,14 @@ const VersionChecker = () => {
       localStorage.setItem('current-site-version', latestVersion);
     }
     
+    // Add refresh-cache=true to force cache clearing
+    const url = new URL(window.location.href);
+    url.searchParams.set('refresh-cache', 'true');
+    window.location.href = url.toString();
+  };
+  
+  // Force hard reload with cache bypass
+  const forceHardReload = () => {
     // Clear cache and hard reload the page
     if ('caches' in window) {
       caches.keys().then((keyList) => {
@@ -69,26 +88,41 @@ const VersionChecker = () => {
   if (!showUpdatePrompt) return null;
   
   return (
-    <AlertDialog open={showUpdatePrompt} onOpenChange={setShowUpdatePrompt}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-primary" />
-            New Website Version Available
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            A new version of this website is available. Update now to see the latest content and features.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Later</AlertDialogCancel>
-          <AlertDialogAction onClick={handleUpdate}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Update Now
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <>
+      <AlertDialog open={showUpdatePrompt} onOpenChange={setShowUpdatePrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-primary" />
+              वेबसाइट का नया वर्शन उपलब्ध है
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              इस वेबसाइट का एक नया वर्शन उपलब्ध है। नवीनतम सामग्री और सुविधाओं को देखने के लिए अभी अपडेट करें।
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>बाद में</AlertDialogCancel>
+            <AlertDialogAction onClick={handleUpdate}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              अभी अपडेट करें
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      {/* Fixed button in bottom right corner for manual refresh */}
+      <div className="fixed bottom-24 right-4 z-40">
+        <Button 
+          size="sm"
+          variant="outline" 
+          className="bg-white shadow-md border-primary-100 text-primary-600 hover:bg-primary-50 rounded-full"
+          onClick={forceHardReload}
+        >
+          <RefreshCw className="h-4 w-4 mr-1" />
+          रीफ्रेश करें
+        </Button>
+      </div>
+    </>
   );
 };
 
