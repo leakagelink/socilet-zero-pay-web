@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import Services from '../components/Services';
@@ -15,6 +14,7 @@ import WhatsAppButton from '../components/WhatsAppButton';
 import SeoPlans from '../components/SeoPlans';
 import SocialMediaPlans from '../components/SocialMediaPlans';
 import GoogleAdPlans from '../components/GoogleAdPlans';
+import VersionChecker from '../components/VersionChecker';
 import { Toaster } from 'sonner';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
@@ -36,6 +36,25 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
   
+  useEffect(() => {
+    if (!localStorage.getItem('site-version')) {
+      localStorage.setItem('site-version', new Date().getTime().toString());
+    }
+    
+    const forceCacheRefresh = new URLSearchParams(window.location.search).get('refresh-cache');
+    if (forceCacheRefresh === 'true') {
+      const latestVersion = localStorage.getItem('site-version');
+      if (latestVersion) {
+        localStorage.setItem('current-site-version', latestVersion);
+      }
+      
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      
+      console.log('Cache refresh requested, clearing caches...');
+    }
+  }, []);
+  
   return (
     <div className="min-h-screen">
       <Helmet>
@@ -43,6 +62,7 @@ const Index = () => {
         <meta name="description" content="Socilet offers zero advance payment web & app development services. Get professional websites, mobile apps, and digital branding solutions." />
       </Helmet>
       <Toaster position="top-right" richColors />
+      <VersionChecker />
       <Header />
       <main>
         <Hero />
@@ -50,7 +70,6 @@ const Index = () => {
           <Services />
         </section>
         
-        {/* Zero Advance Payment CTA */}
         <section className="bg-gradient-to-r from-primary-900 to-primary-800 py-16 text-white">
           <div className="container mx-auto px-4">
             <motion.div 
@@ -144,7 +163,6 @@ const Index = () => {
           <Contact />
         </section>
 
-        {/* Google Site Verification Dialog */}
         <Dialog open={isVerificationDialogOpen} onOpenChange={setIsVerificationDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

@@ -1,4 +1,3 @@
-
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -82,9 +81,47 @@ const ensureVerificationTags = () => {
   });
 };
 
-// Run the cleanup and ensure verification tags initially
+// Function to handle site versioning
+const handleSiteVersioning = () => {
+  // Initialize site version if not already set
+  if (!localStorage.getItem('site-version')) {
+    localStorage.setItem('site-version', new Date().getTime().toString());
+  }
+  
+  // Check if we're loading with cache refresh parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const cacheRefresh = urlParams.get('refresh-cache');
+  
+  if (cacheRefresh === 'true') {
+    console.log('Cache refresh requested via URL parameter');
+    // Clear caches if supported
+    if ('caches' in window) {
+      caches.keys().then(cacheNames => {
+        cacheNames.forEach(cacheName => {
+          caches.delete(cacheName);
+        });
+      });
+    }
+    
+    // Set current version to match site version
+    const siteVersion = localStorage.getItem('site-version');
+    if (siteVersion) {
+      localStorage.setItem('current-site-version', siteVersion);
+    }
+    
+    // Remove the parameter from URL
+    urlParams.delete('refresh-cache');
+    const newUrl = window.location.pathname + 
+                   (urlParams.toString() ? '?' + urlParams.toString() : '') + 
+                   window.location.hash;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+};
+
+// Run the initialization functions
 removeLovableElements();
 ensureVerificationTags();
+handleSiteVersioning();
 
 // Also run it after the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
