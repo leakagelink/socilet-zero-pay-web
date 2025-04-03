@@ -14,6 +14,7 @@ import BlogPreview from '../components/BlogPreview';
 import WhatsAppButton from '../components/WhatsAppButton';
 import SeoPlans from '../components/SeoPlans';
 import SocialMediaPlans from '../components/SocialMediaPlans';
+import GoogleAdPlans from '../components/GoogleAdPlans';
 import { Toaster } from 'sonner';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
@@ -126,6 +127,9 @@ const Index = () => {
         </section>
         <section id="social-media-plans" aria-labelledby="social-media-plans-heading">
           <SocialMediaPlans />
+        </section>
+        <section id="google-ad-plans" aria-labelledby="google-ad-plans-heading">
+          <GoogleAdPlans />
         </section>
         <section id="blog" aria-labelledby="blog-heading">
           <BlogPreview />
