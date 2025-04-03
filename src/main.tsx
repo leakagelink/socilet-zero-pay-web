@@ -1,7 +1,9 @@
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import './hideLovable.css' // Import the CSS that hides Lovable elements
+
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+import './hideLovable.css'; // Import the CSS that hides Lovable elements
 
 // Remove any existing Lovable elements
 const removeLovableElements = () => {
@@ -136,4 +138,8 @@ setInterval(() => {
 }, 1000);
 
 const root = createRoot(document.getElementById("root")!);
-root.render(<App />);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
