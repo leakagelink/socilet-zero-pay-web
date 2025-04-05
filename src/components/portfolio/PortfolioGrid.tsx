@@ -31,11 +31,16 @@ const PortfolioGrid: React.FC<PortfolioGridProps> = ({ items, getCategoryLabel }
       className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
       variants={container}
       initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-100px" }}
+      animate="show"
+      layout
     >
       {items.map((portfolioItem) => (
-        <motion.div key={portfolioItem.id} variants={item}>
+        <motion.div 
+          key={portfolioItem.id} 
+          variants={item}
+          layout
+          className="h-full flex"
+        >
           <PortfolioItem 
             {...portfolioItem} 
             categoryLabel={getCategoryLabel(portfolioItem.category)} 

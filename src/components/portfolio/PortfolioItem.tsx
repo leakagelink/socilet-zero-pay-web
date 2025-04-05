@@ -27,22 +27,23 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
     <motion.div 
       className="bg-white rounded-xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500"
       whileHover={{ y: -10 }}
+      layout
     >
-      <div className="overflow-hidden h-48 relative">
+      <div className="overflow-hidden h-52 relative">
         <img 
           src={image} 
           alt={title} 
           className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4">
           <span className="text-white font-medium text-sm bg-primary-600 px-3 py-1 rounded-full">
             {categoryLabel}
           </span>
         </div>
         
         {isReactProject && (
-          <div className="absolute top-2 right-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
+          <div className="absolute top-3 right-3 z-10">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800 shadow-md">
               <Code2 className="w-3 h-3 mr-1" />
               React
             </span>
@@ -50,8 +51,8 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
         )}
       </div>
       <div className="p-6">
-        <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{title}</h3>
-        <p className="text-gray-600 mb-4">{description}</p>
+        <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors line-clamp-1">{title}</h3>
+        <p className="text-gray-600 mb-4 line-clamp-2">{description}</p>
         {url ? (
           <a 
             href={url}

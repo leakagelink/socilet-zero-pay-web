@@ -27,19 +27,26 @@ const PortfolioFilters: React.FC<PortfolioFiltersProps> = ({
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      {filters.map(filter => (
-        <Button
+      {filters.map((filter, index) => (
+        <motion.div
           key={filter.id}
-          onClick={() => onFilterChange(filter.id)}
-          variant={activeFilter === filter.id ? "default" : "outline"}
-          className={`px-4 py-2 rounded-full transition-all ${
-            activeFilter === filter.id
-              ? 'bg-primary-600 text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-100'
-          }`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 * index, duration: 0.4 }}
         >
-          {filter.label}
-        </Button>
+          <Button
+            onClick={() => onFilterChange(filter.id)}
+            variant={activeFilter === filter.id ? "default" : "outline"}
+            className={`px-5 py-2 rounded-full transition-all ${
+              activeFilter === filter.id
+                ? 'bg-primary-600 text-white shadow-md'
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+            size="sm"
+          >
+            {filter.label}
+          </Button>
+        </motion.div>
       ))}
     </motion.div>
   );
