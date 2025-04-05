@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { PortfolioItem } from '../portfolioData';
 import { PORTFOLIO_CATEGORIES } from './portfolioConstants';
 
@@ -103,6 +104,17 @@ const EditPortfolioItemDialog: React.FC<EditPortfolioItemDialogProps> = ({
               onChange={(e) => onCurrentItemChange({...currentItem, url: e.target.value})}
               placeholder="Enter website URL"
             />
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="is-react-project"
+              checked={!!currentItem.isReactProject}
+              onCheckedChange={(checked) => onCurrentItemChange({...currentItem, isReactProject: checked})}
+            />
+            <Label htmlFor="is-react-project" className="font-medium cursor-pointer">
+              React Project
+            </Label>
           </div>
         </div>
         <DialogFooter>

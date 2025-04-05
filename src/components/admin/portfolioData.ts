@@ -6,6 +6,7 @@ export type PortfolioItem = {
   image: string;
   description: string;
   url?: string;
+  isReactProject?: boolean;
 };
 
 // Initial default portfolio items 
@@ -64,7 +65,8 @@ const defaultPortfolioItems: PortfolioItem[] = [
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&h=400',
     description: 'MSMEs & Startups solution funding website built with React and modern frontend technologies. Completed on March 30, 2025.',
-    url: 'https://bharatstartupsolution.com/'
+    url: 'https://bharatstartupsolution.com/',
+    isReactProject: true
   },
   {
     id: 8,
@@ -96,7 +98,8 @@ const defaultPortfolioItems: PortfolioItem[] = [
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=600&h=400',
     description: 'A simple, elegant tool to format HTML, CSS, JavaScript and Python code built using React. Completed on March 30, 2025.',
-    url: 'https://codeformatter.pro/'
+    url: 'https://codeformatter.pro/',
+    isReactProject: true
   },
   {
     id: 12,
@@ -136,7 +139,8 @@ const defaultPortfolioItems: PortfolioItem[] = [
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&h=400',
     description: 'Calculate your return on investment for solar panel installation. A React-based tool helping users determine savings and ROI from switching to solar energy. Completed on March 30, 2025.',
-    url: 'https://solarsavingscalculator.site/'
+    url: 'https://solarsavingscalculator.site/',
+    isReactProject: true
   },
 ];
 

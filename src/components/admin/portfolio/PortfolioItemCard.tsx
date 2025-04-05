@@ -8,7 +8,7 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2, ExternalLink } from 'lucide-react';
+import { Edit, Trash2, ExternalLink, Code2 } from 'lucide-react';
 import { PortfolioItem } from '../portfolioData';
 
 interface PortfolioItemCardProps {
@@ -48,6 +48,15 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
+        
+        {item.isReactProject && (
+          <div className="absolute top-2 left-2">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
+              <Code2 className="w-3 h-3 mr-1" />
+              React
+            </span>
+          </div>
+        )}
       </div>
       <CardHeader>
         <CardTitle className="flex justify-between items-center">

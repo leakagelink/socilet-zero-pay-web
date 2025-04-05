@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink, Code2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export interface PortfolioItemProps {
@@ -11,6 +11,7 @@ export interface PortfolioItemProps {
   description: string;
   url?: string;
   categoryLabel: string;
+  isReactProject?: boolean;
 }
 
 const PortfolioItem: React.FC<PortfolioItemProps> = ({
@@ -19,7 +20,8 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
   image,
   description,
   url,
-  categoryLabel
+  categoryLabel,
+  isReactProject
 }) => {
   return (
     <motion.div 
@@ -37,6 +39,15 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
             {categoryLabel}
           </span>
         </div>
+        
+        {isReactProject && (
+          <div className="absolute top-2 right-2">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
+              <Code2 className="w-3 h-3 mr-1" />
+              React
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2 group-hover:text-primary-600 transition-colors">{title}</h3>
