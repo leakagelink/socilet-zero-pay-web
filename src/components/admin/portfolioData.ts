@@ -142,6 +142,15 @@ const defaultPortfolioItems: PortfolioItem[] = [
     url: 'https://solarsavingscalculator.site/',
     isReactProject: true
   },
+  {
+    id: 17,
+    title: 'PluginPal',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=600&h=400',
+    description: 'Build WordPress Plugins with AI. Create powerful WordPress plugins without writing a single line of code. Our AI-powered platform makes plugin development accessible to everyone. Completed on April 04, 2025.',
+    url: 'https://pluginpal.xyz/',
+    isReactProject: true
+  },
 ];
 
 // Track if we've already initialized the portfolio from localStorage
