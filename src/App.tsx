@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +17,7 @@ import AiSpokesperson from "./pages/AiSpokesperson";
 import BusinessProfile from "./pages/BusinessProfile";
 import Admin from "./pages/Admin";
 import VersionChecker from "./components/VersionChecker";
+import { initializeAnalytics } from './lib/firebase';
 
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient({
@@ -29,6 +30,18 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  // Initialize Firebase Analytics when the app loads
+  useEffect(() => {
+    const setupAnalytics = async () => {
+      const analytics = await initializeAnalytics();
+      if (analytics) {
+        console.log('Firebase Analytics initialized successfully');
+      }
+    };
+    
+    setupAnalytics();
+  }, []);
+
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
