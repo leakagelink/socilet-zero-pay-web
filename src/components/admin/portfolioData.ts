@@ -160,6 +160,15 @@ const defaultPortfolioItems: PortfolioItem[] = [
     url: 'https://desiaicontent.online/',
     isReactProject: true
   },
+  {
+    id: 19,
+    title: 'DocuCreatorPro',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=600&h=400',
+    description: 'AI-Powered Legal Document Generator. Create professional legal agreements, contracts, and affidavits in minutes with our AI-powered document generator. Simple, accurate, and legally sound. Completed on April 04, 2025.',
+    url: 'https://docucreatorpro.online/',
+    isReactProject: true
+  },
 ];
 
 // Track if we've already initialized the portfolio from localStorage
