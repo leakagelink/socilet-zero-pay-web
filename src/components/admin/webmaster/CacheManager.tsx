@@ -37,11 +37,6 @@ const CacheManager = () => {
         });
       }
       
-      // Clear application cache
-      if (window.applicationCache) {
-        window.applicationCache.swapCache();
-      }
-      
       // Clear browser cache for site assets
       if (window.caches) {
         window.caches.keys().then(names => {

@@ -81,7 +81,7 @@ const VersionChecker = () => {
     }
     
     // Force reload the page with cache bypass
-    window.location.reload(true);
+    window.location.reload();
   };
   
   // Return null if no update prompt needed
