@@ -130,6 +130,14 @@ const defaultPortfolioItems: PortfolioItem[] = [
     description: 'For over 10 years, Amazon pallets liquidation has been a leading provider of customer returns, overstock, and end-of-life products sourced from major retailers and manufacturers. We offer a diverse range of liquidation inventory, including electronics, home goods, clothing, toys, general merchandise and much more. Completed on October 07, 2024.',
     url: 'https://amazonpalletsliquidation.com/'
   },
+  {
+    id: 16,
+    title: 'Solar Savings Calculator',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&h=400',
+    description: 'Calculate your return on investment for solar panel installation. A React-based tool helping users determine savings and ROI from switching to solar energy. Completed on March 30, 2025.',
+    url: 'https://solarsavingscalculator.site/'
+  },
 ];
 
 // Load portfolio items from localStorage if available, otherwise use defaults
