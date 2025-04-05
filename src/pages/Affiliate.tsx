@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,9 +9,15 @@ import { useAffiliate } from '../hooks/useAffiliate';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 const Affiliate = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [authChecked, setAuthChecked] = useState(false);
+  
   const {
     affiliate,
     referrals,
@@ -22,40 +28,36 @@ const Affiliate = () => {
     refreshData,
     getAffiliateLink
   } = useAffiliate();
+  
+  // Check authentication status when component mounts
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // If not logged in, redirect to login
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to access the affiliate program",
+        });
+        navigate('/login?redirectTo=/affiliate');
+      }
+      setAuthChecked(true);
+    });
+    
+    return () => unsubscribe();
+  }, [navigate, toast]);
 
-  // If user is not signed in, show this content
-  const renderSignInPrompt = () => (
-    <motion.div 
-      className="max-w-3xl mx-auto text-center bg-white rounded-xl shadow-lg p-8 md:p-12"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h1 className="text-3xl md:text-4xl font-bold mb-4">Join Our Affiliate Program</h1>
-      <div className="w-20 h-1 bg-gradient-to-r from-primary-600 to-primary-400 mx-auto mb-6 rounded-full"></div>
-      
-      <p className="text-gray-600 mb-8 text-lg">
-        Sign in to join our affiliate program and start earning 25% commission on referred projects!
-      </p>
-      
-      <div className="flex flex-col md:flex-row justify-center gap-4">
-        <Button 
-          onClick={() => navigate('/login')}
-          className="bg-primary-600 hover:bg-primary-700"
-          size="lg"
-        >
-          Sign In to Continue
-        </Button>
-        <Button 
-          onClick={() => navigate('/')}
-          variant="outline"
-          size="lg"
-        >
-          Return to Homepage
-        </Button>
+  // If auth check not completed, show loading
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow bg-gray-50 py-12 flex items-center justify-center">
+          <Skeleton className="h-[400px] w-full max-w-3xl mx-auto rounded-xl" />
+        </main>
+        <Footer />
       </div>
-    </motion.div>
-  );
+    );
+  }
 
   // Loading state
   const renderLoading = () => (
@@ -81,8 +83,6 @@ const Affiliate = () => {
         <div className="container mx-auto px-4">
           {loading ? (
             renderLoading()
-          ) : !isAuthenticated ? (
-            renderSignInPrompt()
           ) : affiliate ? (
             <motion.div
               initial={{ opacity: 0 }}

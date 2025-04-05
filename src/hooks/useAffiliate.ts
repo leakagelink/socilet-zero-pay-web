@@ -25,9 +25,11 @@ export const useAffiliate = () => {
 
   // Check authentication status
   useEffect(() => {
+    console.log('Checking authentication status...');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user ? 'Logged in' : 'Not logged in');
       setIsAuthenticated(!!user);
-      setLoading(false);
+      setLoading(!!user); // Only set loading to true if user is authenticated
     });
     return () => unsubscribe();
   }, []);
@@ -35,18 +37,26 @@ export const useAffiliate = () => {
   // Load affiliate data when authenticated
   useEffect(() => {
     const loadAffiliateData = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
       
+      console.log('Loading affiliate data...');
       try {
         setLoading(true);
         const affiliateData = await getCurrentAffiliate();
+        console.log('Affiliate data loaded:', affiliateData);
         setAffiliate(affiliateData);
         
         if (affiliateData) {
+          console.log('Loading referrals and stats...');
           const [referralData, statsData] = await Promise.all([
             getAffiliateReferrals(),
             getAffiliateStats()
           ]);
+          console.log('Referrals loaded:', referralData.length);
+          console.log('Stats loaded:', statsData);
           setReferrals(referralData);
           setStats(statsData);
         }
@@ -73,16 +83,19 @@ export const useAffiliate = () => {
         description: 'Please sign in to join the affiliate program',
         variant: 'destructive'
       });
-      navigate('/login');
+      navigate('/login?redirectTo=/affiliate');
       return null;
     }
 
     try {
       setLoading(true);
+      console.log('Registering affiliate:', name, email);
       const newAffiliate = await registerAffiliate(name, email);
+      console.log('Affiliate registered:', newAffiliate);
       setAffiliate(newAffiliate);
       
       // Reload stats and referrals after registration
+      console.log('Loading referrals and stats after registration...');
       const [referralData, statsData] = await Promise.all([
         getAffiliateReferrals(),
         getAffiliateStats()
@@ -111,19 +124,37 @@ export const useAffiliate = () => {
 
   // Refresh affiliate data
   const refreshData = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to access affiliate data',
+        variant: 'destructive'
+      });
+      navigate('/login?redirectTo=/affiliate');
+      return;
+    }
     
     try {
       setLoading(true);
+      console.log('Refreshing affiliate data...');
       const [affiliateData, referralData, statsData] = await Promise.all([
         getCurrentAffiliate(),
         getAffiliateReferrals(),
         getAffiliateStats()
       ]);
       
+      console.log('Refreshed affiliate data:', affiliateData);
+      console.log('Refreshed referrals:', referralData.length);
+      console.log('Refreshed stats:', statsData);
+      
       setAffiliate(affiliateData);
       setReferrals(referralData);
       setStats(statsData);
+      
+      toast({
+        title: 'Data Refreshed',
+        description: 'Affiliate data has been updated',
+      });
     } catch (error) {
       console.error('Error refreshing affiliate data:', error);
       toast({

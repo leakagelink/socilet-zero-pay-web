@@ -63,7 +63,11 @@ const LoginForm = ({ redirectTo = '/' }: LoginFormProps) => {
         });
       }
       
-      navigate(redirectTo);
+      // Add a small delay to ensure Firebase auth state updates
+      setTimeout(() => {
+        navigate(redirectTo);
+      }, 500);
+      
     } catch (error: any) {
       console.error("Authentication error:", error);
       toast({
