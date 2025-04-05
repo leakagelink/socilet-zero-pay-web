@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from './use-toast';
 import { auth } from '../lib/firebase';
@@ -10,7 +9,7 @@ import {
   AffiliateProfile,
   AffiliateReferral,
   AffiliateStatistics
-} from '../services/affiliateProgram';
+} from '../services/affiliate';
 
 export const useAffiliateProgram = () => {
   const [affiliateProfile, setAffiliateProfile] = useState<AffiliateProfile | null>(null);

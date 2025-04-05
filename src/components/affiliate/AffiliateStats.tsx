@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Users, TrendingUp, BadgePercent, DollarSign } from "lucide-react";
-import { AffiliateStatistics } from '@/services/affiliateProgram';
+import { AffiliateStatistics } from '@/services/affiliate';
 import StatsCard from './ui/StatsCard';
 import { formatCurrency } from './utils/formatters';
 

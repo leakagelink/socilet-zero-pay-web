@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, FileText } from "lucide-react";
-import { AffiliateReferral } from '@/services/affiliateProgram';
+import { AffiliateReferral } from '@/services/affiliate';
 import { formatCurrency, formatDate, getStatusColor } from '../utils/formatters';
 
 type ReferralsTabProps = {

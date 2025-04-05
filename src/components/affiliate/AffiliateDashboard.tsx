@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { AffiliateProfile, AffiliateReferral, AffiliateStatistics } from '@/services/affiliateProgram';
+import { AffiliateProfile, AffiliateReferral, AffiliateStatistics } from '@/services/affiliate';
 import AffiliateLinkCard from './AffiliateLinkCard';
 import AffiliateStatsComponent from './AffiliateStats';
 import ReferralsTab from './tabs/ReferralsTab';
