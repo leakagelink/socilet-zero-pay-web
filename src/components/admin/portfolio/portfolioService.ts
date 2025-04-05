@@ -21,6 +21,18 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
       hasInitializedPortfolio = true;
       const parsedItems = JSON.parse(savedItems);
       console.log(`Loaded ${parsedItems.length} portfolio items from localStorage`);
+      
+      // Ensure all default items are present (especially the ones you mentioned)
+      const existingIds = new Set(parsedItems.map(item => item.id));
+      const missingDefaults = defaultPortfolioItems.filter(item => !existingIds.has(item.id));
+      
+      if (missingDefaults.length > 0) {
+        console.log(`Adding ${missingDefaults.length} missing default items to portfolio`);
+        const updatedItems = [...parsedItems, ...missingDefaults];
+        localStorage.setItem('portfolioItems', JSON.stringify(updatedItems));
+        return updatedItems;
+      }
+      
       return parsedItems;
     }
     
@@ -54,6 +66,16 @@ export const savePortfolioItems = (items: PortfolioItem[]): void => {
   } catch (error) {
     console.error('Error saving portfolio items:', error);
   }
+};
+
+/**
+ * Force reload the portfolio with defaults
+ */
+export const resetToDefaults = (): PortfolioItem[] => {
+  console.log('Resetting portfolio to defaults');
+  localStorage.setItem('portfolioItems', JSON.stringify(defaultPortfolioItems));
+  window.dispatchEvent(new Event('storage'));
+  return defaultPortfolioItems;
 };
 
 // Ensure portfolio items are loaded on module initialization

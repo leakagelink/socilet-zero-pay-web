@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from "framer-motion";
 import PortfolioItem, { PortfolioItemProps } from './PortfolioItem';
 
@@ -28,6 +28,20 @@ const PortfolioGrid: React.FC<PortfolioGridProps> = ({ items, getCategoryLabel }
 
   // Log the number of items being rendered for debugging
   console.log(`Rendering ${items.length} portfolio items in grid`);
+  
+  // Log detailed info about each portfolio item to debug missing projects
+  useEffect(() => {
+    const projectUrls = ['docucreatorpro.online', 'desiaicontent.online', 'pluginpal.xyz'];
+    
+    // Check if our specific projects exist in the provided items
+    projectUrls.forEach(url => {
+      const found = items.some(item => item.url && item.url.includes(url));
+      console.log(`Project ${url} found in grid items: ${found}`);
+    });
+    
+    // Log all project URLs for verification
+    console.log('All URLs in grid items:', items.map(item => item.url || 'no-url'));
+  }, [items]);
   
   return (
     <motion.div 

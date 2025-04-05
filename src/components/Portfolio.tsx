@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useCallback } from 'react';
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -12,9 +13,10 @@ import {
   PaginationNext, 
   PaginationPrevious
 } from "@/components/ui/pagination";
+import { toast } from 'sonner';
 
 // Import the portfolioItems and loadPortfolioItems from our refactored structure
-import { portfolioItems, loadPortfolioItems } from './admin/portfolioData';
+import { portfolioItems, loadPortfolioItems, resetToDefaults } from './admin/portfolioData';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -23,34 +25,54 @@ const Portfolio = () => {
   const [displayedItems, setDisplayedItems] = useState(portfolioItems);
   const [currentPage, setCurrentPage] = useState(1);
   
+  // Load portfolio items function that can be called multiple times
+  const refreshPortfolioItems = useCallback(() => {
+    const items = loadPortfolioItems();
+    console.log(`Portfolio refreshed with ${items.length} items`);
+    setDisplayedItems(items);
+    return items;
+  }, []);
+  
   // Make sure we're always showing the latest portfolio items
   useEffect(() => {
-    // Force reload items from localStorage to get the latest data
-    const items = loadPortfolioItems();
-    setDisplayedItems(items);
+    // Initial load
+    const items = refreshPortfolioItems();
+    
+    // Debug: Check if our specific projects exist
+    const projectUrls = [
+      'docucreatorpro.online', 
+      'desiaicontent.online', 
+      'pluginpal.xyz', 
+      'solarsavingscalculator.site'
+    ];
+    
+    const missingProjects = projectUrls.filter(url => 
+      !items.some(item => item.url && item.url.includes(url))
+    );
+    
+    if (missingProjects.length > 0) {
+      console.warn(`Missing projects in portfolio: ${missingProjects.join(', ')}`);
+      // If specific projects are missing, try reset to defaults as a fallback
+      const resetItems = resetToDefaults();
+      setDisplayedItems(resetItems);
+    }
     
     // Add event listener for storage events to update when localStorage changes
     const handleStorageChange = () => {
-      const updatedItems = loadPortfolioItems();
-      setDisplayedItems(updatedItems);
+      refreshPortfolioItems();
     };
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Debug: Log the number of items loaded
-    console.log(`Portfolio loaded ${items.length} items`);
-    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [refreshPortfolioItems]);
 
-  // Debug: Force refresh on filter change to ensure we get latest items
+  // Refresh on filter change to ensure we get latest items
   useEffect(() => {
-    const items = loadPortfolioItems();
-    setDisplayedItems(items);
-    console.log(`Filter changed, reloaded ${items.length} items`);
-  }, [activeFilter]);
+    refreshPortfolioItems();
+  }, [activeFilter, refreshPortfolioItems]);
 
   const filters = [
     { id: 'all', label: 'All Projects' },
@@ -83,6 +105,13 @@ const Portfolio = () => {
     return filter?.label || categoryId;
   };
 
+  // Force refresh button for debugging
+  const handleForceRefresh = () => {
+    const resetItems = resetToDefaults();
+    setDisplayedItems(resetItems);
+    toast.success('Portfolio reset to defaults and refreshed');
+  };
+
   return (
     <section id="portfolio" className="section-padding bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
       {/* Background decorative elements */}
@@ -103,6 +132,16 @@ const Portfolio = () => {
             Explore our successful projects delivered with our unique zero advance payment model.
             We've completed over 900 projects across various industries.
           </p>
+          
+          {/* Hidden developer button for force refresh - only in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <button 
+              onClick={handleForceRefresh}
+              className="mt-2 text-xs text-gray-400 hover:text-primary-600"
+            >
+              (Reset Portfolio)
+            </button>
+          )}
         </motion.div>
 
         <PortfolioFilters 
