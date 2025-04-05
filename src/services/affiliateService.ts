@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   addDoc, 
@@ -60,21 +59,34 @@ const generateAffiliateCode = (name: string) => {
   return `${base}${random}`;
 };
 
-// Register a new affiliate
+// Register a new affiliate - with improved error handling
 export const registerAffiliate = async (name: string, email: string): Promise<AffiliateUser | null> => {
   try {
+    console.log('affiliateService: Attempting to register affiliate', { name, email });
+    
+    // Verify user is authenticated
     const user = auth.currentUser;
     if (!user) {
-      console.error('Registration failed: User not authenticated');
+      console.error('affiliateService: Registration failed: User not authenticated');
       return null;
     }
-
+    
+    // Check if user is already an affiliate
     const affiliatesRef = collection(db, 'affiliates');
     const q = query(affiliatesRef, where('userId', '==', user.uid));
-    const querySnapshot = await getDocs(q);
+    
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+      console.log('affiliateService: Checked existing affiliate records', querySnapshot.size);
+    } catch (error) {
+      console.error('affiliateService: Error checking existing affiliate:', error);
+      throw new Error('Failed to check existing affiliate record');
+    }
     
     // If user is already an affiliate, return the existing data
     if (!querySnapshot.empty) {
+      console.log('affiliateService: User is already an affiliate, returning existing data');
       const data = querySnapshot.docs[0].data() as AffiliateUser;
       return {
         id: querySnapshot.docs[0].id,
@@ -83,54 +95,79 @@ export const registerAffiliate = async (name: string, email: string): Promise<Af
     }
 
     // Create new affiliate
+    console.log('affiliateService: Creating new affiliate record');
+    const affiliateCode = generateAffiliateCode(name);
+    console.log('affiliateService: Generated affiliate code:', affiliateCode);
+    
     const affiliateData: AffiliateUser = {
       userId: user.uid,
       email: email || user.email || '',
       name,
-      affiliateCode: generateAffiliateCode(name),
+      affiliateCode,
       totalEarnings: 0,
       pendingEarnings: 0,
       paidEarnings: 0,
       createdAt: serverTimestamp()
     };
 
-    const docRef = await addDoc(affiliatesRef, affiliateData);
+    let docRef;
+    try {
+      docRef = await addDoc(affiliatesRef, affiliateData);
+      console.log('affiliateService: Affiliate record created with ID:', docRef.id);
+    } catch (error) {
+      console.error('affiliateService: Error creating affiliate record:', error);
+      throw new Error('Failed to create affiliate record');
+    }
     
     return {
       id: docRef.id,
       ...affiliateData
     };
   } catch (error) {
-    console.error('Error in registerAffiliate:', error);
+    console.error('affiliateService: Error in registerAffiliate:', error);
     return null;
   }
 };
 
-// Get affiliate data for current user
+// Get affiliate data for current user - with improved error handling
 export const getCurrentAffiliate = async (): Promise<AffiliateUser | null> => {
   try {
+    console.log('affiliateService: Getting current affiliate data');
+    
+    // Verify user is authenticated
     const user = auth.currentUser;
     if (!user) {
-      console.log('getCurrentAffiliate: No authenticated user');
+      console.log('affiliateService: getCurrentAffiliate: No authenticated user');
       return null;
     }
 
+    // Query for affiliate record
     const affiliatesRef = collection(db, 'affiliates');
     const q = query(affiliatesRef, where('userId', '==', user.uid));
-    const querySnapshot = await getDocs(q);
+    
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+      console.log('affiliateService: Affiliate query returned', querySnapshot.size, 'records');
+    } catch (error) {
+      console.error('affiliateService: Error querying affiliate:', error);
+      throw new Error('Failed to query affiliate record');
+    }
     
     if (querySnapshot.empty) {
-      console.log('getCurrentAffiliate: No affiliate record found for user');
+      console.log('affiliateService: No affiliate record found for user');
       return null;
     }
 
     const data = querySnapshot.docs[0].data() as AffiliateUser;
+    console.log('affiliateService: Found affiliate record with code:', data.affiliateCode);
+    
     return {
       id: querySnapshot.docs[0].id,
       ...data
     };
   } catch (error) {
-    console.error('Error in getCurrentAffiliate:', error);
+    console.error('affiliateService: Error in getCurrentAffiliate:', error);
     return null;
   }
 };
@@ -246,38 +283,57 @@ export const updateReferralStatus = async (
   }
 };
 
-// Get referrals for current affiliate
+// Get referrals for current affiliate - with improved error handling
 export const getAffiliateReferrals = async (): Promise<ReferralProject[] | null> => {
   try {
+    console.log('affiliateService: Getting referrals for current affiliate');
+    
+    // First get the affiliate record
     const affiliate = await getCurrentAffiliate();
     if (!affiliate || !affiliate.id) {
-      console.log('getAffiliateReferrals: No affiliate found, returning empty array');
+      console.log('affiliateService: No affiliate found, returning empty array');
       return [];
     }
 
+    // Query for referrals
+    console.log('affiliateService: Querying referrals for affiliate ID:', affiliate.id);
     const referralsRef = collection(db, 'referrals');
     const q = query(referralsRef, where('affiliateId', '==', affiliate.id));
-    const querySnapshot = await getDocs(q);
     
-    return querySnapshot.docs.map(doc => ({
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+      console.log('affiliateService: Found', querySnapshot.size, 'referrals');
+    } catch (error) {
+      console.error('affiliateService: Error querying referrals:', error);
+      throw new Error('Failed to query referral records');
+    }
+    
+    const referrals = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     })) as ReferralProject[];
+    
+    console.log('affiliateService: Returning', referrals.length, 'referrals');
+    return referrals;
   } catch (error) {
-    console.error('Error in getAffiliateReferrals:', error);
-    return null;
+    console.error('affiliateService: Error in getAffiliateReferrals:', error);
+    return [];
   }
 };
 
-// Get statistics for current affiliate
+// Get statistics for current affiliate - with improved error handling
 export const getAffiliateStats = async (): Promise<AffiliateStats | null> => {
   try {
+    console.log('affiliateService: Calculating affiliate stats');
+    
+    // Get referrals and affiliate data
     const referralsResult = await getAffiliateReferrals();
     const referrals = referralsResult || [];
     const affiliate = await getCurrentAffiliate();
     
     if (!affiliate) {
-      console.log('getAffiliateStats: No affiliate found, returning default stats');
+      console.log('affiliateService: No affiliate found, returning default stats');
       return {
         totalReferrals: 0,
         pendingReferrals: 0,
@@ -290,6 +346,8 @@ export const getAffiliateStats = async (): Promise<AffiliateStats | null> => {
       };
     }
     
+    // Calculate stats
+    console.log('affiliateService: Calculating stats from', referrals.length, 'referrals');
     const stats: AffiliateStats = {
       totalReferrals: referrals.length,
       pendingReferrals: referrals.filter(r => r.status === 'pending').length,
@@ -301,9 +359,20 @@ export const getAffiliateStats = async (): Promise<AffiliateStats | null> => {
       paidEarnings: affiliate?.paidEarnings || 0
     };
     
+    console.log('affiliateService: Stats calculated:', stats);
     return stats;
   } catch (error) {
-    console.error('Error in getAffiliateStats:', error);
-    return null;
+    console.error('affiliateService: Error in getAffiliateStats:', error);
+    // Return default stats on error
+    return {
+      totalReferrals: 0,
+      pendingReferrals: 0,
+      startedProjects: 0,
+      completedProjects: 0,
+      rejectedProjects: 0,
+      totalEarnings: 0,
+      pendingEarnings: 0,
+      paidEarnings: 0
+    };
   }
 };

@@ -45,11 +45,23 @@ const Affiliate = () => {
         console.log('Affiliate page: User authenticated:', user.email);
       }
       setAuthChecked(true);
+      // Only stop initial loading when auth check completes
       setInitialLoading(false);
     });
     
     return () => unsubscribe();
   }, [navigate, toast]);
+
+  // Debug logs to trace render flow
+  useEffect(() => {
+    console.log('Affiliate page: Render state:', { 
+      initialLoading, 
+      authChecked,
+      isAuthenticated: isAuthenticated ? 'Yes' : 'No',
+      loading: loading ? 'Yes' : 'No',
+      affiliate: affiliate ? 'Exists' : 'Null'
+    });
+  }, [initialLoading, authChecked, isAuthenticated, loading, affiliate]);
 
   // If initial check not completed, show loading
   if (initialLoading) {
@@ -58,7 +70,8 @@ const Affiliate = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow bg-gray-50 py-12 flex items-center justify-center">
-          <div className="max-w-3xl mx-auto w-full">
+          <div className="max-w-3xl mx-auto w-full p-4">
+            <h2 className="text-xl font-semibold mb-4 text-center">Loading Affiliate Dashboard...</h2>
             <Skeleton className="h-[400px] w-full rounded-xl" />
           </div>
         </main>
@@ -88,9 +101,10 @@ const Affiliate = () => {
     );
   }
 
-  // Loading state for affiliate data
+  // Improved loading state with more visible feedback
   const renderLoading = () => (
     <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      <h2 className="text-xl font-semibold mb-6 text-center">Loading Your Affiliate Data...</h2>
       <Skeleton className="h-8 w-64 mb-6" />
       <div className="grid gap-6">
         <Skeleton className="h-24 w-full" />
@@ -107,7 +121,8 @@ const Affiliate = () => {
 
   console.log('Affiliate page: Rendering main content', { 
     affiliate: affiliate ? 'exists' : 'null', 
-    loading
+    loading,
+    referrals: referrals?.length || 0
   });
 
   return (
