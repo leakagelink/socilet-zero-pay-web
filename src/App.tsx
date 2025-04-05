@@ -16,7 +16,6 @@ import AppDevelopment from "./pages/AppDevelopment";
 import AiSpokesperson from "./pages/AiSpokesperson";
 import BusinessProfile from "./pages/BusinessProfile";
 import Admin from "./pages/Admin";
-import Login from "./pages/Login";
 import VersionChecker from "./components/VersionChecker";
 import { initializeAnalytics } from './lib/firebase';
 
@@ -56,7 +55,6 @@ const App = () => {
               <Route path="/blog" element={<Blog />} />
               <Route path="/track-project" element={<TrackMyProject />} />
               <Route path="/affiliate" element={<Affiliate />} />
-              <Route path="/login" element={<Login />} />
               <Route path="/zero-advance-payment" element={<ZeroAdvancePayment />} />
               <Route path="/website-development" element={<WebsiteDevelopment />} />
               <Route path="/app-development" element={<AppDevelopment />} />
