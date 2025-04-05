@@ -151,6 +151,15 @@ const defaultPortfolioItems: PortfolioItem[] = [
     url: 'https://pluginpal.xyz/',
     isReactProject: true
   },
+  {
+    id: 18,
+    title: 'Desi AI Content',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?auto=format&fit=crop&w=600&h=400',
+    description: 'AI Content for Small Businesses. Generate social media captions, business bios, and festival content in multiple Indian languages with our AI-powered tools tailored for local businesses. Completed on April 04, 2025.',
+    url: 'https://desiaicontent.online/',
+    isReactProject: true
+  },
 ];
 
 // Track if we've already initialized the portfolio from localStorage
