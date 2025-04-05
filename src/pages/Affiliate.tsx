@@ -1,172 +1,95 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { auth } from '../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 import AffiliateRegistration from '../components/affiliate/AffiliateRegistration';
 import AffiliateDashboard from '../components/affiliate/AffiliateDashboard';
-import { useAffiliate } from '../hooks/useAffiliate';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../lib/firebase';
-import { useToast } from '@/hooks/use-toast';
+import { useAffiliateProgram } from '../hooks/useAffiliateProgram';
 
 const Affiliate = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [authChecked, setAuthChecked] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   const {
-    affiliate,
+    affiliateProfile,
+    affiliateStats,
     referrals,
-    stats,
-    loading,
-    isAuthenticated,
-    register,
+    registerAsAffiliate,
     refreshData,
-    getAffiliateLink
-  } = useAffiliate();
-  
-  // Check authentication status when component mounts
+    generateAffiliateLink,
+    isLoading: dataLoading,
+  } = useAffiliateProgram();
+
+  // Authentication check
   useEffect(() => {
-    console.log('Affiliate page: Checking authentication');
+    console.log('Affiliate: Checking authentication status');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        console.log('Affiliate page: User not authenticated, redirecting to login');
+        console.log('Affiliate: User not authenticated, redirecting to login');
         toast({
           title: "Authentication Required",
           description: "Please sign in to access the affiliate program",
         });
         navigate('/login?redirectTo=/affiliate');
       } else {
-        console.log('Affiliate page: User authenticated:', user.email);
+        console.log('Affiliate: User authenticated:', user.email);
+        setIsAuthenticated(true);
       }
-      setAuthChecked(true);
-      // Only stop initial loading when auth check completes
-      setInitialLoading(false);
+      setIsLoading(false);
     });
     
     return () => unsubscribe();
   }, [navigate, toast]);
 
-  // Debug logs to trace render flow
-  useEffect(() => {
-    console.log('Affiliate page: Render state:', { 
-      initialLoading, 
-      authChecked,
-      isAuthenticated: isAuthenticated ? 'Yes' : 'No',
-      loading: loading ? 'Yes' : 'No',
-      affiliate: affiliate ? 'Exists' : 'Null'
-    });
-  }, [initialLoading, authChecked, isAuthenticated, loading, affiliate]);
-
-  // If initial check not completed, show loading
-  if (initialLoading) {
-    console.log('Affiliate page: Initial loading');
+  if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow bg-gray-50 py-12 flex items-center justify-center">
-          <div className="max-w-3xl mx-auto w-full p-4">
-            <h2 className="text-xl font-semibold mb-4 text-center">Loading Affiliate Dashboard...</h2>
-            <Skeleton className="h-[400px] w-full rounded-xl" />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p>Loading...</p>
           </div>
         </main>
         <Footer />
       </div>
     );
   }
-
-  // If auth checked and not authenticated, this component will unmount due to redirect
-  // But include fallback just in case
-  if (authChecked && !isAuthenticated) {
-    console.log('Affiliate page: Auth checked but not authenticated');
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow bg-gray-50 py-12 flex items-center justify-center">
-          <div className="max-w-md mx-auto text-center p-8 bg-white rounded-xl shadow">
-            <h2 className="text-xl font-semibold mb-4">Authentication Required</h2>
-            <p className="mb-4">Please sign in to access the affiliate program</p>
-            <Button onClick={() => navigate('/login?redirectTo=/affiliate')}>
-              Go to Login
-            </Button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  // Improved loading state with more visible feedback
-  const renderLoading = () => (
-    <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
-      <h2 className="text-xl font-semibold mb-6 text-center">Loading Your Affiliate Data...</h2>
-      <Skeleton className="h-8 w-64 mb-6" />
-      <div className="grid gap-6">
-        <Skeleton className="h-24 w-full" />
-        <div className="grid gap-4 md:grid-cols-4">
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
-          <Skeleton className="h-32 w-full" />
-        </div>
-        <Skeleton className="h-64 w-full" />
-      </div>
-    </div>
-  );
-
-  console.log('Affiliate page: Rendering main content', { 
-    affiliate: affiliate ? 'exists' : 'null', 
-    loading,
-    referrals: referrals?.length || 0
-  });
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow bg-gray-50 py-12">
         <div className="container mx-auto px-4">
-          {loading ? (
-            renderLoading()
-          ) : affiliate ? (
+          {isAuthenticated && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8"
             >
-              <AffiliateDashboard
-                affiliate={affiliate}
-                referrals={referrals}
-                stats={stats || {
-                  totalReferrals: 0,
-                  pendingReferrals: 0,
-                  startedProjects: 0,
-                  completedProjects: 0,
-                  rejectedProjects: 0,
-                  totalEarnings: 0,
-                  pendingEarnings: 0,
-                  paidEarnings: 0
-                }}
-                getAffiliateLink={getAffiliateLink}
-                onRefresh={refreshData}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="max-w-md mx-auto"
-            >
-              <AffiliateRegistration 
-                onRegister={register}
-                isLoading={loading}
-              />
+              {affiliateProfile ? (
+                <AffiliateDashboard
+                  profile={affiliateProfile}
+                  referrals={referrals}
+                  stats={affiliateStats}
+                  onRefresh={refreshData}
+                  isLoading={dataLoading}
+                  generateAffiliateLink={generateAffiliateLink}
+                />
+              ) : (
+                <AffiliateRegistration 
+                  onRegister={registerAsAffiliate}
+                  isLoading={dataLoading}
+                />
+              )}
             </motion.div>
           )}
         </div>

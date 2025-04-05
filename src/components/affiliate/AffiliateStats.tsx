@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { Users, TrendingUp, BadgePercent, DollarSign } from "lucide-react";
-import { AffiliateStats as AffiliateStatsType } from '@/services/affiliateService';
+import { AffiliateStatistics } from '@/services/affiliateProgram';
 import StatsCard from './ui/StatsCard';
 import { formatCurrency } from './utils/formatters';
 
 type AffiliateStatsProps = {
-  stats: AffiliateStatsType;
+  stats: AffiliateStatistics;
 };
 
 const AffiliateStats = ({ stats }: AffiliateStatsProps) => {
@@ -16,21 +16,21 @@ const AffiliateStats = ({ stats }: AffiliateStatsProps) => {
         title="Total Referrals"
         value={stats.totalReferrals.toString()}
         icon={<Users className="h-4 w-4" />}
-        description="Total number of referrals"
+        description="All clients referred"
         className="bg-blue-50"
       />
       <StatsCard
         title="Active Projects"
-        value={stats.startedProjects.toString()}
+        value={stats.activeProjects.toString()}
         icon={<TrendingUp className="h-4 w-4" />}
         description="Projects in progress"
         className="bg-green-50"
       />
       <StatsCard
-        title="Complete Projects"
+        title="Completed Projects"
         value={stats.completedProjects.toString()}
         icon={<BadgePercent className="h-4 w-4" />}
-        description="Successfully completed"
+        description="Successfully delivered"
         className="bg-purple-50"
       />
       <StatsCard
