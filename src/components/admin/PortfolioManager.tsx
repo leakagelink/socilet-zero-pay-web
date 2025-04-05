@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -18,6 +17,16 @@ const PortfolioManager = () => {
   // Load items when component mounts
   useEffect(() => {
     setPortfolioItems(loadPortfolioItems());
+    
+    // Add listener for storage events to update when changes occur in other components
+    const handleStorageChange = () => {
+      setPortfolioItems(loadPortfolioItems());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleAddItem = (newItem: Omit<PortfolioItem, 'id'>) => {

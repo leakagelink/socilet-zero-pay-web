@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { motion } from "framer-motion";
 import PortfolioFilters from './portfolio/PortfolioFilters';
 import PortfolioGrid from './portfolio/PortfolioGrid';
 
-// Import the portfolioItems directly to ensure we're using the latest data
+// Import the portfolioItems and loadPortfolioItems from our refactored structure
 import { portfolioItems, loadPortfolioItems } from './admin/portfolioData';
 
 const Portfolio = () => {
