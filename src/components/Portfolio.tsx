@@ -6,16 +6,30 @@ import { motion } from "framer-motion";
 import PortfolioFilters from './portfolio/PortfolioFilters';
 import PortfolioGrid from './portfolio/PortfolioGrid';
 
-// Import the loadPortfolioItems function to get the current portfolio data
-import { loadPortfolioItems } from './admin/portfolioData';
+// Import the portfolioItems directly to ensure we're using the latest data
+import { portfolioItems, loadPortfolioItems } from './admin/portfolioData';
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
-  const [portfolioItems, setPortfolioItems] = useState([]);
+  const [displayedItems, setDisplayedItems] = useState(portfolioItems);
   
-  // Load portfolio items when component mounts
+  // Make sure we're always showing the latest portfolio items
   useEffect(() => {
-    setPortfolioItems(loadPortfolioItems());
+    // Force reload items from localStorage to get the latest data
+    const items = loadPortfolioItems();
+    setDisplayedItems(items);
+    
+    // Add event listener for storage events to update when localStorage changes
+    const handleStorageChange = () => {
+      const updatedItems = loadPortfolioItems();
+      setDisplayedItems(updatedItems);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const filters = [
@@ -28,8 +42,8 @@ const Portfolio = () => {
 
   // Filter portfolio items based on the active filter
   const filteredItems = activeFilter === 'all' 
-    ? portfolioItems 
-    : portfolioItems.filter(item => item.category === activeFilter);
+    ? displayedItems 
+    : displayedItems.filter(item => item.category === activeFilter);
 
   // Helper function to get category label from category id
   const getCategoryLabel = (categoryId: string) => {
