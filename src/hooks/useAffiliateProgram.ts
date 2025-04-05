@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useToast } from './use-toast';
 import { auth } from '../lib/firebase';
@@ -25,6 +26,7 @@ export const useAffiliateProgram = () => {
     paidEarnings: 0
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false);
   const { toast } = useToast();
 
   // Load affiliate data on mount
@@ -81,9 +83,14 @@ export const useAffiliateProgram = () => {
 
   // Register as an affiliate
   const registerAsAffiliate = async (name: string, email: string) => {
+    if (isRegistering) {
+      console.log('Registration already in progress, ignoring duplicate request');
+      return false;
+    }
+    
     try {
-      setIsLoading(true);
-      console.log('useAffiliateProgram: Registering new affiliate');
+      setIsRegistering(true);
+      console.log('useAffiliateProgram: Registering new affiliate', { name, email });
       
       const newProfile = await registerAffiliate(name, email);
       if (newProfile) {
@@ -107,7 +114,7 @@ export const useAffiliateProgram = () => {
       });
       return false;
     } finally {
-      setIsLoading(false);
+      setIsRegistering(false);
     }
   };
 
@@ -142,6 +149,7 @@ export const useAffiliateProgram = () => {
     affiliateStats,
     referrals,
     isLoading,
+    isRegistering,
     registerAsAffiliate,
     refreshData,
     generateAffiliateLink

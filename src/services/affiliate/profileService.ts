@@ -54,10 +54,11 @@ export const getAffiliateProfile = async (): Promise<AffiliateProfile | null> =>
  */
 export const registerAffiliate = async (name: string, email: string): Promise<AffiliateProfile | null> => {
   try {
+    console.log('affiliateProgram: Starting affiliate registration process');
     const user = auth.currentUser;
     if (!user) {
       console.error('affiliateProgram: Registration failed - user not authenticated');
-      return null;
+      throw new Error('User not authenticated');
     }
 
     // Check if already registered
@@ -69,6 +70,8 @@ export const registerAffiliate = async (name: string, email: string): Promise<Af
 
     // Create new profile
     const affiliateCode = generateUniqueCode(name);
+    console.log('affiliateProgram: Generated affiliate code:', affiliateCode);
+    
     const profileData: AffiliateProfile = {
       userId: user.uid,
       name,
@@ -80,9 +83,10 @@ export const registerAffiliate = async (name: string, email: string): Promise<Af
       createdAt: serverTimestamp()
     };
 
-    console.log('affiliateProgram: Creating new affiliate profile');
+    console.log('affiliateProgram: Creating new affiliate profile with data:', JSON.stringify(profileData));
     const affiliatesRef = collection(db, 'affiliates');
     const docRef = await addDoc(affiliatesRef, profileData);
+    console.log('affiliateProgram: Created affiliate profile with ID:', docRef.id);
     
     return {
       id: docRef.id,
@@ -90,7 +94,7 @@ export const registerAffiliate = async (name: string, email: string): Promise<Af
     };
   } catch (error) {
     console.error('Error registering affiliate:', error);
-    return null;
+    throw error; // Rethrow to allow proper error handling in the hook
   }
 };
 

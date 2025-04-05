@@ -40,6 +40,8 @@ const AffiliateRegistration = ({ onRegister, isLoading }: AffiliateRegistrationP
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (isLoading) return; // Prevent multiple submissions
+    console.log('AffiliateRegistration: Submitting form with values:', values);
     await onRegister(values.name, values.email);
   };
 
@@ -83,7 +85,7 @@ const AffiliateRegistration = ({ onRegister, isLoading }: AffiliateRegistrationP
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your full name" {...field} />
+                      <Input placeholder="Enter your full name" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -97,7 +99,7 @@ const AffiliateRegistration = ({ onRegister, isLoading }: AffiliateRegistrationP
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Enter your email" {...field} />
+                      <Input type="email" placeholder="Enter your email" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

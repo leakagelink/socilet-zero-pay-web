@@ -26,6 +26,7 @@ const Affiliate = () => {
     refreshData,
     generateAffiliateLink,
     isLoading: dataLoading,
+    isRegistering
   } = useAffiliateProgram();
 
   // Authentication check
@@ -87,7 +88,7 @@ const Affiliate = () => {
               ) : (
                 <AffiliateRegistration 
                   onRegister={registerAsAffiliate}
-                  isLoading={dataLoading}
+                  isLoading={isRegistering || dataLoading}
                 />
               )}
             </motion.div>
