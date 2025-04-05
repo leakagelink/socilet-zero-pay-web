@@ -140,10 +140,29 @@ const defaultPortfolioItems: PortfolioItem[] = [
   },
 ];
 
+// Track if we've already initialized the portfolio from localStorage
+let hasInitializedPortfolio = false;
+
 // Load portfolio items from localStorage if available, otherwise use defaults
 export const loadPortfolioItems = (): PortfolioItem[] => {
+  // Check if we have already saved portfolio items
   const savedItems = localStorage.getItem('portfolioItems');
-  return savedItems ? JSON.parse(savedItems) : defaultPortfolioItems;
+  
+  // If there are saved items, return those
+  if (savedItems) {
+    hasInitializedPortfolio = true;
+    return JSON.parse(savedItems);
+  }
+  
+  // If we haven't initialized yet, use defaults and save them
+  if (!hasInitializedPortfolio) {
+    hasInitializedPortfolio = true;
+    localStorage.setItem('portfolioItems', JSON.stringify(defaultPortfolioItems));
+    return defaultPortfolioItems;
+  }
+  
+  // Return empty array if items were deleted and no saved data exists
+  return [];
 };
 
 // Save portfolio items to localStorage

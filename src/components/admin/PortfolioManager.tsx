@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
@@ -10,13 +10,20 @@ import EditPortfolioItemDialog from './portfolio/EditPortfolioItemDialog';
 import { PORTFOLIO_CATEGORIES } from './portfolio/portfolioConstants';
 
 const PortfolioManager = () => {
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(loadPortfolioItems());
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentItem, setCurrentItem] = useState<PortfolioItem | null>(null);
 
+  // Load items when component mounts
+  useEffect(() => {
+    setPortfolioItems(loadPortfolioItems());
+  }, []);
+
   const handleAddItem = (newItem: Omit<PortfolioItem, 'id'>) => {
-    const id = Math.max(0, ...portfolioItems.map(item => item.id)) + 1;
+    const id = portfolioItems.length > 0 
+      ? Math.max(0, ...portfolioItems.map(item => item.id)) + 1 
+      : 1;
     const updatedItems = [...portfolioItems, { id, ...newItem }];
     setPortfolioItems(updatedItems);
     savePortfolioItems(updatedItems); // Save to localStorage
@@ -67,17 +74,26 @@ const PortfolioManager = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {portfolioItems.map((item) => (
-          <PortfolioItemCard
-            key={item.id}
-            item={item}
-            categoryLabel={getCategoryLabel(item.category)}
-            onEdit={openEditDialog}
-            onDelete={handleDeleteItem}
-          />
-        ))}
-      </div>
+      {portfolioItems.length === 0 ? (
+        <div className="text-center py-8 border border-dashed rounded-lg">
+          <p className="text-gray-500 mb-4">No portfolio items found.</p>
+          <Button variant="outline" onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" /> Add Your First Item
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {portfolioItems.map((item) => (
+            <PortfolioItemCard
+              key={item.id}
+              item={item}
+              categoryLabel={getCategoryLabel(item.category)}
+              onEdit={openEditDialog}
+              onDelete={handleDeleteItem}
+            />
+          ))}
+        </div>
+      )}
 
       <AddPortfolioItemDialog
         open={isAddDialogOpen}

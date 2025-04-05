@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -11,9 +11,12 @@ import { loadPortfolioItems } from './admin/portfolioData';
 
 const Portfolio = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [portfolioItems, setPortfolioItems] = useState([]);
   
-  // Load portfolio items from localStorage
-  const portfolioItems = loadPortfolioItems();
+  // Load portfolio items when component mounts
+  useEffect(() => {
+    setPortfolioItems(loadPortfolioItems());
+  }, []);
 
   const filters = [
     { id: 'all', label: 'All Projects' },
