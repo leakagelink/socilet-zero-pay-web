@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,10 +37,20 @@ const Portfolio = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
+    // Debug: Log the number of items loaded
+    console.log(`Portfolio loaded ${items.length} items`);
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  // Debug: Force refresh on filter change to ensure we get latest items
+  useEffect(() => {
+    const items = loadPortfolioItems();
+    setDisplayedItems(items);
+    console.log(`Filter changed, reloaded ${items.length} items`);
+  }, [activeFilter]);
 
   const filters = [
     { id: 'all', label: 'All Projects' },

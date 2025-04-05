@@ -26,6 +26,9 @@ const PortfolioGrid: React.FC<PortfolioGridProps> = ({ items, getCategoryLabel }
     show: { y: 0, opacity: 1, transition: { duration: 0.5 } }
   };
 
+  // Log the number of items being rendered for debugging
+  console.log(`Rendering ${items.length} portfolio items in grid`);
+  
   return (
     <motion.div 
       className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -34,19 +37,25 @@ const PortfolioGrid: React.FC<PortfolioGridProps> = ({ items, getCategoryLabel }
       animate="show"
       layout
     >
-      {items.map((portfolioItem) => (
-        <motion.div 
-          key={portfolioItem.id} 
-          variants={item}
-          layout
-          className="h-full flex"
-        >
-          <PortfolioItem 
-            {...portfolioItem} 
-            categoryLabel={getCategoryLabel(portfolioItem.category)} 
-          />
-        </motion.div>
-      ))}
+      {items.length ? (
+        items.map((portfolioItem) => (
+          <motion.div 
+            key={portfolioItem.id} 
+            variants={item}
+            layout
+            className="h-full flex"
+          >
+            <PortfolioItem 
+              {...portfolioItem} 
+              categoryLabel={getCategoryLabel(portfolioItem.category)} 
+            />
+          </motion.div>
+        ))
+      ) : (
+        <div className="col-span-3 text-center py-12">
+          <p className="text-gray-500">No portfolio items to display.</p>
+        </div>
+      )}
     </motion.div>
   );
 };
