@@ -11,33 +11,46 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { AffiliateReferral, ReferralStatus } from './types';
-import { getAffiliateProfile, getAffiliateByCode } from './profileService';
+import { ReferralProject, ReferralStatus, AffiliateUser } from './types';
+import { getCurrentAffiliate, getAffiliateByCode } from './profileService';
 
 /**
  * Get all referrals for the current affiliate
  */
-export const getAffiliateReferrals = async (): Promise<AffiliateReferral[]> => {
+export const getAffiliateReferrals = async (): Promise<ReferralProject[] | null> => {
   try {
-    const profile = await getAffiliateProfile();
-    if (!profile || !profile.id) {
+    console.log('affiliateService: Getting referrals for current affiliate');
+    
+    // First get the affiliate record
+    const affiliate = await getCurrentAffiliate();
+    if (!affiliate || !affiliate.id) {
+      console.log('affiliateService: No affiliate found, returning empty array');
       return [];
     }
 
-    console.log('affiliateProgram: Fetching referrals for affiliate ID', profile.id);
+    // Query for referrals
+    console.log('affiliateService: Querying referrals for affiliate ID:', affiliate.id);
     const referralsRef = collection(db, 'referrals');
-    const q = query(referralsRef, where('affiliateId', '==', profile.id));
-    const snapshot = await getDocs(q);
-
-    const referrals = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data() as AffiliateReferral
-    }));
+    const q = query(referralsRef, where('affiliateId', '==', affiliate.id));
     
-    console.log('affiliateProgram: Found', referrals.length, 'referrals');
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+      console.log('affiliateService: Found', querySnapshot.size, 'referrals');
+    } catch (error) {
+      console.error('affiliateService: Error querying referrals:', error);
+      throw new Error('Failed to query referral records');
+    }
+    
+    const referrals = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as ReferralProject[];
+    
+    console.log('affiliateService: Returning', referrals.length, 'referrals');
     return referrals;
   } catch (error) {
-    console.error('Error fetching affiliate referrals:', error);
+    console.error('affiliateService: Error in getAffiliateReferrals:', error);
     return [];
   }
 };
@@ -45,26 +58,25 @@ export const getAffiliateReferrals = async (): Promise<AffiliateReferral[]> => {
 /**
  * Track a new referral
  */
-export const createReferral = async (
-  affiliateCode: string,
-  clientName: string,
-  clientEmail: string,
-  isReseller: boolean = false
-): Promise<AffiliateReferral | null> => {
+export const trackReferral = async (
+  affiliateCode: string, 
+  referredEmail: string, 
+  referredName: string,
+  isResale: boolean = false
+): Promise<ReferralProject | null> => {
   try {
     const affiliate = await getAffiliateByCode(affiliateCode);
     if (!affiliate || !affiliate.id) {
-      console.error('affiliateProgram: Invalid affiliate code', affiliateCode);
       return null;
     }
 
-    const referralData: AffiliateReferral = {
+    const referralData: ReferralProject = {
       affiliateId: affiliate.id,
-      clientName,
-      clientEmail,
+      referredEmail,
+      referredName,
       status: 'pending',
-      commissionRate: isReseller ? 0 : 0.25, // 25% for regular, 0% for reseller
-      isReseller,
+      commissionRate: isResale ? 0 : 0.25, // 25% for regular referrals, 0% for resale
+      isResale,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     };
@@ -72,73 +84,66 @@ export const createReferral = async (
     const referralsRef = collection(db, 'referrals');
     const docRef = await addDoc(referralsRef, referralData);
     
-    console.log('affiliateProgram: Created new referral', docRef.id);
     return {
       id: docRef.id,
       ...referralData
     };
   } catch (error) {
-    console.error('Error creating referral:', error);
+    console.error('Error in trackReferral:', error);
     return null;
   }
 };
 
 /**
- * Update a referral's status and details
+ * Update referral status
  */
 export const updateReferralStatus = async (
-  referralId: string,
-  status: ReferralStatus,
-  details?: {
-    projectName?: string;
-    serviceAmount?: number;
-  }
+  referralId: string, 
+  status: ReferralStatus, 
+  projectData?: { projectName?: string, serviceAmount?: number }
 ): Promise<boolean> => {
   try {
     const referralRef = doc(db, 'referrals', referralId);
     const referralSnap = await getDoc(referralRef);
     
     if (!referralSnap.exists()) {
-      console.error('affiliateProgram: Referral not found', referralId);
       return false;
     }
     
-    const referral = referralSnap.data() as AffiliateReferral;
-    let commissionAmount = undefined;
+    const referral = referralSnap.data() as ReferralProject;
     
-    // Calculate commission if project completed
-    if (status === 'completed' && details?.serviceAmount && !referral.isReseller) {
-      commissionAmount = details.serviceAmount * referral.commissionRate;
+    // Calculate commission if project is completed and has a service amount
+    let commissionAmount = undefined;
+    if (status === 'completed' && projectData?.serviceAmount && !referral.isResale) {
+      commissionAmount = projectData.serviceAmount * referral.commissionRate;
       
-      // Update affiliate earnings
-      if (commissionAmount > 0 && referral.affiliateId) {
+      // Update affiliate earnings if there's a commission
+      if (referral.affiliateId && commissionAmount > 0) {
         const affiliateRef = doc(db, 'affiliates', referral.affiliateId);
         const affiliateSnap = await getDoc(affiliateRef);
         
         if (affiliateSnap.exists()) {
-          const affiliate = affiliateSnap.data();
+          const affiliate = affiliateSnap.data() as AffiliateUser;
           await updateDoc(affiliateRef, {
             totalEarnings: (affiliate.totalEarnings || 0) + commissionAmount,
             pendingEarnings: (affiliate.pendingEarnings || 0) + commissionAmount
           });
-          console.log('affiliateProgram: Updated affiliate earnings', commissionAmount);
         }
       }
     }
     
-    // Update referral
+    // Update the referral with new status and project info
     await updateDoc(referralRef, {
       status,
-      ...(details?.projectName && { projectName: details.projectName }),
-      ...(details?.serviceAmount && { serviceAmount: details.serviceAmount }),
+      ...(projectData?.projectName && { projectName: projectData.projectName }),
+      ...(projectData?.serviceAmount && { serviceAmount: projectData.serviceAmount }),
       ...(commissionAmount !== undefined && { commissionAmount }),
       updatedAt: serverTimestamp()
     });
     
-    console.log('affiliateProgram: Updated referral status to', status);
     return true;
   } catch (error) {
-    console.error('Error updating referral:', error);
+    console.error("Error in updateReferralStatus:", error);
     return false;
   }
 };

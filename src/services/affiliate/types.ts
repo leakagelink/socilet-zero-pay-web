@@ -1,11 +1,11 @@
 
-// Types for the affiliate program
+// Types for the affiliate system
 
-export type AffiliateProfile = {
+export type AffiliateUser = {
   id?: string;
   userId: string;
-  name: string;
   email: string;
+  name: string;
   affiliateCode: string;
   totalEarnings: number;
   pendingEarnings: number;
@@ -13,27 +13,27 @@ export type AffiliateProfile = {
   createdAt?: any;
 };
 
-export type ReferralStatus = 'pending' | 'active' | 'completed' | 'rejected';
+export type ReferralStatus = 'pending' | 'started' | 'rejected' | 'completed';
 
-export type AffiliateReferral = {
+export type ReferralProject = {
   id?: string;
   affiliateId: string;
-  clientName: string;
-  clientEmail: string;
+  referredEmail: string;
+  referredName: string;
   projectName?: string;
   status: ReferralStatus;
   commissionRate: number;
   serviceAmount?: number;
   commissionAmount?: number;
-  isReseller: boolean;
+  isResale: boolean;
   createdAt?: any;
   updatedAt?: any;
 };
 
-export type AffiliateStatistics = {
+export type AffiliateStats = {
   totalReferrals: number;
   pendingReferrals: number;
-  activeProjects: number;
+  startedProjects: number;
   completedProjects: number;
   rejectedProjects: number;
   totalEarnings: number;

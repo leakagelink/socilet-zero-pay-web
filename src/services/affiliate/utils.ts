@@ -1,11 +1,11 @@
 
-// Utility functions for the affiliate program
+// Utility functions for the affiliate system
 
 /**
- * Generates a unique affiliate code based on the user's name
+ * Generate a unique affiliate code based on the user's name
  */
-export const generateUniqueCode = (name: string) => {
-  const base = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 6);
+export const generateAffiliateCode = (name: string) => {
+  const base = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 8);
   const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
   return `${base}${random}`;
 };

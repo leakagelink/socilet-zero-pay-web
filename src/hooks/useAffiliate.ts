@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -11,7 +10,7 @@ import {
   getCurrentAffiliate,
   getAffiliateReferrals,
   getAffiliateStats
-} from '../services/affiliateService';
+} from '../services/affiliate';
 import { useToast } from './use-toast';
 
 export const useAffiliate = () => {
@@ -24,7 +23,6 @@ export const useAffiliate = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check authentication status
   useEffect(() => {
     console.log('useAffiliate: Checking authentication status...');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -32,20 +30,18 @@ export const useAffiliate = () => {
       console.log('useAffiliate: Auth state changed:', isAuthed ? 'Logged in' : 'Not logged in');
       setIsAuthenticated(isAuthed);
       if (!isAuthed) {
-        // Clear data if not authenticated
         setAffiliate(null);
         setReferrals([]);
         setStats(null);
         setDataLoaded(false);
         setLoading(false);
       } else {
-        setLoading(true); // Set loading to true when user is authenticated, will load data
+        setLoading(true);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // Load affiliate data when authenticated - now with improved error handling
   const loadAffiliateData = useCallback(async () => {
     if (!isAuthenticated) {
       console.log('useAffiliate: Not authenticated, skipping data load');
@@ -57,7 +53,6 @@ export const useAffiliate = () => {
     try {
       setLoading(true);
       
-      // First check if user is an affiliate
       const affiliateData = await getCurrentAffiliate();
       console.log('useAffiliate: Affiliate data loaded:', affiliateData ? 'exists' : 'null');
       setAffiliate(affiliateData);
@@ -65,7 +60,6 @@ export const useAffiliate = () => {
       if (affiliateData) {
         console.log('useAffiliate: Loading referrals and stats...');
         try {
-          // Load referrals and stats in parallel
           const [referralData, statsData] = await Promise.all([
             getAffiliateReferrals(),
             getAffiliateStats()
@@ -74,7 +68,6 @@ export const useAffiliate = () => {
           console.log('useAffiliate: Referrals loaded:', referralData?.length || 0);
           console.log('useAffiliate: Stats loaded:', statsData ? 'exists' : 'null');
           
-          // Set data even if empty arrays (better than null)
           setReferrals(referralData || []);
           setStats(statsData || {
             totalReferrals: 0,
@@ -88,7 +81,6 @@ export const useAffiliate = () => {
           });
         } catch (error) {
           console.error('useAffiliate: Error loading referrals or stats:', error);
-          // Set empty arrays/defaults even if error
           setReferrals([]);
           setStats({
             totalReferrals: 0,
@@ -120,7 +112,6 @@ export const useAffiliate = () => {
         description: 'Failed to load affiliate data. Please try again.',
         variant: 'destructive'
       });
-      // Set empty data on error
       setAffiliate(null);
       setReferrals([]);
       setStats(null);
@@ -130,14 +121,12 @@ export const useAffiliate = () => {
     }
   }, [isAuthenticated, toast]);
 
-  // Load data when authentication state changes
   useEffect(() => {
     if (isAuthenticated && !dataLoaded) {
       loadAffiliateData();
     }
   }, [isAuthenticated, dataLoaded, loadAffiliateData]);
 
-  // Register new affiliate - now with better error handling
   const register = async (name: string, email: string) => {
     if (!isAuthenticated) {
       console.log('useAffiliate: Not authenticated for registration, redirecting to login');
@@ -162,7 +151,6 @@ export const useAffiliate = () => {
       console.log('useAffiliate: Affiliate registered successfully:', newAffiliate.affiliateCode);
       setAffiliate(newAffiliate);
       
-      // Reload stats and referrals after registration
       try {
         console.log('useAffiliate: Loading referrals and stats after registration...');
         const [referralData, statsData] = await Promise.all([
@@ -179,7 +167,6 @@ export const useAffiliate = () => {
         });
       } catch (error) {
         console.error('useAffiliate: Error loading data after registration:', error);
-        // Set defaults
         setReferrals([]);
         setStats({
           totalReferrals: 0,
@@ -212,7 +199,6 @@ export const useAffiliate = () => {
     }
   };
 
-  // Refresh affiliate data - with improved error handling
   const refreshData = async () => {
     if (!isAuthenticated) {
       console.log('useAffiliate: Not authenticated for refresh, redirecting to login');
@@ -229,12 +215,10 @@ export const useAffiliate = () => {
       setLoading(true);
       console.log('useAffiliate: Refreshing affiliate data...');
       
-      // First check if user is still an affiliate
       const affiliateData = await getCurrentAffiliate();
       console.log('useAffiliate: Refreshed affiliate data:', affiliateData ? 'exists' : 'null');
       
       if (!affiliateData) {
-        // If no longer an affiliate (unlikely but possible)
         setAffiliate(null);
         setReferrals([]);
         setStats(null);
@@ -252,7 +236,6 @@ export const useAffiliate = () => {
       
       setAffiliate(affiliateData);
       
-      // Now load referrals and stats
       try {
         const [referralData, statsData] = await Promise.all([
           getAffiliateReferrals(),
@@ -289,7 +272,6 @@ export const useAffiliate = () => {
     }
   };
 
-  // Generate affiliate link
   const getAffiliateLink = (affiliateCode: string) => {
     return `${window.location.origin}/?ref=${affiliateCode}`;
   };

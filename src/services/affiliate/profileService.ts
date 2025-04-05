@@ -11,71 +11,55 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db, auth } from '../../lib/firebase';
-import { AffiliateProfile } from './types';
-import { generateUniqueCode } from './utils';
-
-/**
- * Get affiliate profile for current user
- */
-export const getAffiliateProfile = async (): Promise<AffiliateProfile | null> => {
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      console.log('affiliateProgram: No authenticated user');
-      return null;
-    }
-
-    console.log('affiliateProgram: Querying affiliate profile for', user.uid);
-    const affiliatesRef = collection(db, 'affiliates');
-    const q = query(affiliatesRef, where('userId', '==', user.uid));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      console.log('affiliateProgram: No profile found');
-      return null;
-    }
-
-    const doc = snapshot.docs[0];
-    const data = doc.data() as AffiliateProfile;
-    
-    console.log('affiliateProgram: Profile found with code', data.affiliateCode);
-    return {
-      id: doc.id,
-      ...data
-    };
-  } catch (error) {
-    console.error('Error fetching affiliate profile:', error);
-    return null;
-  }
-};
+import { AffiliateUser } from './types';
+import { generateAffiliateCode } from './utils';
 
 /**
  * Register a new affiliate
  */
-export const registerAffiliate = async (name: string, email: string): Promise<AffiliateProfile | null> => {
+export const registerAffiliate = async (name: string, email: string): Promise<AffiliateUser | null> => {
   try {
-    console.log('affiliateProgram: Starting affiliate registration process');
+    console.log('affiliateService: Attempting to register affiliate', { name, email });
+    
+    // Verify user is authenticated
     const user = auth.currentUser;
     if (!user) {
-      console.error('affiliateProgram: Registration failed - user not authenticated');
-      throw new Error('User not authenticated');
+      console.error('affiliateService: Registration failed: User not authenticated');
+      return null;
     }
-
-    // Check if already registered
-    const existingProfile = await getAffiliateProfile();
-    if (existingProfile) {
-      console.log('affiliateProgram: User already registered as affiliate');
-      return existingProfile;
-    }
-
-    // Create new profile
-    const affiliateCode = generateUniqueCode(name);
-    console.log('affiliateProgram: Generated affiliate code:', affiliateCode);
     
-    const profileData: AffiliateProfile = {
+    // Check if user is already an affiliate
+    const affiliatesRef = collection(db, 'affiliates');
+    const q = query(affiliatesRef, where('userId', '==', user.uid));
+    
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+      console.log('affiliateService: Checked existing affiliate records', querySnapshot.size);
+    } catch (error) {
+      console.error('affiliateService: Error checking existing affiliate:', error);
+      throw new Error('Failed to check existing affiliate record');
+    }
+    
+    // If user is already an affiliate, return the existing data
+    if (!querySnapshot.empty) {
+      console.log('affiliateService: User is already an affiliate, returning existing data');
+      const data = querySnapshot.docs[0].data() as AffiliateUser;
+      return {
+        id: querySnapshot.docs[0].id,
+        ...data
+      };
+    }
+
+    // Create new affiliate
+    console.log('affiliateService: Creating new affiliate record');
+    const affiliateCode = generateAffiliateCode(name);
+    console.log('affiliateService: Generated affiliate code:', affiliateCode);
+    
+    const affiliateData: AffiliateUser = {
       userId: user.uid,
-      name,
       email: email || user.email || '',
+      name,
       affiliateCode,
       totalEarnings: 0,
       pendingEarnings: 0,
@@ -83,41 +67,90 @@ export const registerAffiliate = async (name: string, email: string): Promise<Af
       createdAt: serverTimestamp()
     };
 
-    console.log('affiliateProgram: Creating new affiliate profile with data:', JSON.stringify(profileData));
-    const affiliatesRef = collection(db, 'affiliates');
-    const docRef = await addDoc(affiliatesRef, profileData);
-    console.log('affiliateProgram: Created affiliate profile with ID:', docRef.id);
+    let docRef;
+    try {
+      docRef = await addDoc(affiliatesRef, affiliateData);
+      console.log('affiliateService: Affiliate record created with ID:', docRef.id);
+    } catch (error) {
+      console.error('affiliateService: Error creating affiliate record:', error);
+      throw new Error('Failed to create affiliate record');
+    }
     
     return {
       id: docRef.id,
-      ...profileData
+      ...affiliateData
     };
   } catch (error) {
-    console.error('Error registering affiliate:', error);
-    throw error; // Rethrow to allow proper error handling in the hook
+    console.error('affiliateService: Error in registerAffiliate:', error);
+    return null;
   }
 };
 
 /**
- * Get affiliate by code (for tracking referrals)
+ * Get affiliate data for current user
  */
-export const getAffiliateByCode = async (code: string): Promise<AffiliateProfile | null> => {
+export const getCurrentAffiliate = async (): Promise<AffiliateUser | null> => {
   try {
-    const affiliatesRef = collection(db, 'affiliates');
-    const q = query(affiliatesRef, where('affiliateCode', '==', code));
-    const snapshot = await getDocs(q);
+    console.log('affiliateService: Getting current affiliate data');
     
-    if (snapshot.empty) {
+    // Verify user is authenticated
+    const user = auth.currentUser;
+    if (!user) {
+      console.log('affiliateService: getCurrentAffiliate: No authenticated user');
       return null;
     }
 
-    const doc = snapshot.docs[0];
+    // Query for affiliate record
+    const affiliatesRef = collection(db, 'affiliates');
+    const q = query(affiliatesRef, where('userId', '==', user.uid));
+    
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+      console.log('affiliateService: Affiliate query returned', querySnapshot.size, 'records');
+    } catch (error) {
+      console.error('affiliateService: Error querying affiliate:', error);
+      throw new Error('Failed to query affiliate record');
+    }
+    
+    if (querySnapshot.empty) {
+      console.log('affiliateService: No affiliate record found for user');
+      return null;
+    }
+
+    const data = querySnapshot.docs[0].data() as AffiliateUser;
+    console.log('affiliateService: Found affiliate record with code:', data.affiliateCode);
+    
     return {
-      id: doc.id,
-      ...doc.data() as AffiliateProfile
+      id: querySnapshot.docs[0].id,
+      ...data
     };
   } catch (error) {
-    console.error('Error fetching affiliate by code:', error);
+    console.error('affiliateService: Error in getCurrentAffiliate:', error);
+    return null;
+  }
+};
+
+/**
+ * Get affiliate by code
+ */
+export const getAffiliateByCode = async (code: string): Promise<AffiliateUser | null> => {
+  try {
+    const affiliatesRef = collection(db, 'affiliates');
+    const q = query(affiliatesRef, where('affiliateCode', '==', code));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      return null;
+    }
+
+    const data = querySnapshot.docs[0].data() as AffiliateUser;
+    return {
+      id: querySnapshot.docs[0].id,
+      ...data
+    };
+  } catch (error) {
+    console.error('Error in getAffiliateByCode:', error);
     return null;
   }
 };
@@ -137,7 +170,7 @@ export const processAffiliatePayment = async (
       return false;
     }
     
-    const affiliate = affiliateSnap.data() as AffiliateProfile;
+    const affiliate = affiliateSnap.data() as AffiliateUser;
     
     if (affiliate.pendingEarnings < amount) {
       return false;
