@@ -4,5 +4,6 @@ export type { PortfolioItem } from './portfolio/types';
 export { 
   loadPortfolioItems,
   savePortfolioItems,
-  portfolioItems 
+  portfolioItems,
+  resetToDefaults 
 } from './portfolio/portfolioService';
