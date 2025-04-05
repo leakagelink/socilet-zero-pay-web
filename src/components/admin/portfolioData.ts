@@ -5,5 +5,6 @@ export {
   loadPortfolioItems,
   savePortfolioItems,
   portfolioItems,
-  resetToDefaults 
+  resetToDefaults,
+  permanentlyDeleteItem
 } from './portfolio/portfolioService';

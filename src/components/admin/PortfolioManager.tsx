@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import { PortfolioItem, loadPortfolioItems, savePortfolioItems } from './portfolioData';
+import { PortfolioItem, loadPortfolioItems, savePortfolioItems, permanentlyDeleteItem } from './portfolioData';
 import PortfolioItemCard from './portfolio/PortfolioItemCard';
 import AddPortfolioItemDialog from './portfolio/AddPortfolioItemDialog';
 import EditPortfolioItemDialog from './portfolio/EditPortfolioItemDialog';
@@ -55,11 +56,11 @@ const PortfolioManager = () => {
   };
 
   const handleDeleteItem = (id: number) => {
-    if (confirm('Are you sure you want to delete this item?')) {
-      const updatedItems = portfolioItems.filter(item => item.id !== id);
-      setPortfolioItems(updatedItems);
-      savePortfolioItems(updatedItems); // Save to localStorage
-      toast.success('Portfolio item deleted successfully');
+    if (confirm('Are you sure you want to delete this item? This will permanently remove it and prevent it from reappearing.')) {
+      // Use the new permanently delete function
+      permanentlyDeleteItem(id);
+      setPortfolioItems(prevItems => prevItems.filter(item => item.id !== id));
+      toast.success('Portfolio item permanently deleted');
     }
   };
 
