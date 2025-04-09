@@ -3,6 +3,7 @@ import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -35,10 +36,10 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-6">Services</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Website Development</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">App Development</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">AI Spokesperson</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Business Profile Listing</a></li>
+              <li><Link to="/website-development" className="text-gray-400 hover:text-white transition-colors">Website Development</Link></li>
+              <li><Link to="/app-development" className="text-gray-400 hover:text-white transition-colors">App Development</Link></li>
+              <li><Link to="/ai-spokesperson" className="text-gray-400 hover:text-white transition-colors">AI Spokesperson</Link></li>
+              <li><Link to="/business-profile" className="text-gray-400 hover:text-white transition-colors">Business Profile Listing</Link></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Digital Marketing</a></li>
             </ul>
           </div>
@@ -47,9 +48,10 @@ const Footer = () => {
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Portfolio</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Testimonials</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li><Link to="/tools" className="text-gray-400 hover:text-white transition-colors">Tools</Link></li>
+              <li><Link to="/portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</Link></li>
+              <li><Link to="/testimonials" className="text-gray-400 hover:text-white transition-colors">Testimonials</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
