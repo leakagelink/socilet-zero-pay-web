@@ -19,7 +19,7 @@ import { Toaster } from 'sonner';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, ArrowRight, Check, Info, Code, FileText, Terminal, Wrench } from 'lucide-react';
+import { Shield, ArrowRight, Check, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -135,157 +135,30 @@ const Index = () => {
         <section id="technologies" aria-labelledby="technologies-heading">
           <Technologies />
         </section>
-        
-        <section className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <motion.div
-              className="mb-12 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Free Tools</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Explore our collection of free tools designed to help developers, businesses, and individuals.
-              </p>
-            </motion.div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <motion.div 
-                className="bg-white rounded-lg shadow-md p-6 border border-gray-100"
-                whileHover={{ y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-                  <Code className="w-6 h-6 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Code Formatter</h3>
-                <p className="text-gray-600 text-sm mb-4">Format HTML, CSS, JavaScript and Python code with a simple, elegant tool.</p>
-                <a 
-                  href="https://codeformatter.pro/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 font-medium text-sm inline-flex items-center hover:underline"
-                >
-                  Try it now <ArrowRight className="ml-1 w-4 h-4" />
-                </a>
-              </motion.div>
-              
-              <motion.div 
-                className="bg-white rounded-lg shadow-md p-6 border border-gray-100"
-                whileHover={{ y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Legal Document Generator</h3>
-                <p className="text-gray-600 text-sm mb-4">Create professional legal agreements with our AI-powered generator.</p>
-                <a 
-                  href="https://docucreatorpro.online/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-green-600 font-medium text-sm inline-flex items-center hover:underline"
-                >
-                  Try it now <ArrowRight className="ml-1 w-4 h-4" />
-                </a>
-              </motion.div>
-              
-              <motion.div 
-                className="bg-white rounded-lg shadow-md p-6 border border-gray-100"
-                whileHover={{ y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-              >
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-4">
-                  <Terminal className="w-6 h-6 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">WordPress Plugin Builder</h3>
-                <p className="text-gray-600 text-sm mb-4">Create powerful WordPress plugins without writing code using AI.</p>
-                <a 
-                  href="https://pluginpal.xyz/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-purple-600 font-medium text-sm inline-flex items-center hover:underline"
-                >
-                  Try it now <ArrowRight className="ml-1 w-4 h-4" />
-                </a>
-              </motion.div>
-              
-              <motion.div 
-                className="bg-white rounded-lg shadow-md p-6 border border-gray-100"
-                whileHover={{ y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-              >
-                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-                  <Wrench className="w-6 h-6 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">More Tools</h3>
-                <p className="text-gray-600 text-sm mb-4">Explore our full collection of tools for businesses and developers.</p>
-                <Link 
-                  to="/tools"
-                  className="text-orange-600 font-medium text-sm inline-flex items-center hover:underline"
-                >
-                  View all tools <ArrowRight className="ml-1 w-4 h-4" />
-                </Link>
-              </motion.div>
-            </div>
-            
-            <div className="text-center mt-10">
-              <Link to="/tools">
-                <Button variant="outline" className="group">
-                  Explore all tools
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-        
         <section id="founder" aria-labelledby="founder-heading">
           <Founder />
         </section>
-        
         <section id="portfolio" aria-labelledby="portfolio-heading">
           <Portfolio />
         </section>
-        
         <section id="seo-plans" aria-labelledby="seo-plans-heading">
           <SeoPlans />
         </section>
-        
         <section id="social-media-plans" aria-labelledby="social-media-plans-heading">
           <SocialMediaPlans />
         </section>
-        
         <section id="google-ad-plans" aria-labelledby="google-ad-plans-heading">
           <GoogleAdPlans />
         </section>
-        
         <section id="blog" aria-labelledby="blog-heading">
           <BlogPreview />
         </section>
-        
         <section id="testimonials" aria-labelledby="testimonials-heading">
           <Testimonials />
         </section>
-        
         <section id="faq" aria-labelledby="faq-heading">
           <FAQ />
         </section>
-        
         <section id="contact" aria-labelledby="contact-heading">
           <Contact />
         </section>
