@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,8 +28,23 @@ const Portfolio = () => {
   const refreshPortfolioItems = useCallback(() => {
     const items = loadPortfolioItems();
     console.log(`Portfolio refreshed with ${items.length} items`);
-    setDisplayedItems(items);
-    return items;
+    
+    // Sort items to show React projects first
+    const sortedItems = [...items].sort((a, b) => {
+      // If both or neither are React projects, keep original order
+      if ((a.isReactProject && b.isReactProject) || (!a.isReactProject && !b.isReactProject)) {
+        return 0;
+      }
+      // If a is a React project and b is not, a comes first
+      if (a.isReactProject && !b.isReactProject) {
+        return -1;
+      }
+      // If b is a React project and a is not, b comes first
+      return 1;
+    });
+    
+    setDisplayedItems(sortedItems);
+    return sortedItems;
   }, []);
   
   // Make sure we're always showing the latest portfolio items
@@ -54,7 +68,19 @@ const Portfolio = () => {
       console.warn(`Missing projects in portfolio: ${missingProjects.join(', ')}`);
       // If specific projects are missing, try reset to defaults as a fallback
       const resetItems = resetToDefaults();
-      setDisplayedItems(resetItems);
+      
+      // Sort reset items to show React projects first
+      const sortedResetItems = [...resetItems].sort((a, b) => {
+        if ((a.isReactProject && b.isReactProject) || (!a.isReactProject && !b.isReactProject)) {
+          return 0;
+        }
+        if (a.isReactProject && !b.isReactProject) {
+          return -1;
+        }
+        return 1;
+      });
+      
+      setDisplayedItems(sortedResetItems);
     }
     
     // Add event listener for storage events to update when localStorage changes

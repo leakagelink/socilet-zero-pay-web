@@ -1,56 +1,7 @@
-
 import { PortfolioItem } from '../portfolio/types';
 
 // Initial default portfolio items 
 export const defaultPortfolioItems: PortfolioItem[] = [
-  {
-    id: 1,
-    title: 'E-commerce Website',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=600&h=400',
-    description: 'A full-featured e-commerce platform with payment integration and inventory management.',
-    url: ''
-  },
-  {
-    id: 2,
-    title: 'Restaurant App',
-    category: 'apps',
-    image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&h=400',
-    description: 'Mobile application for a restaurant chain with online ordering and table reservation.',
-    url: ''
-  },
-  {
-    id: 3,
-    title: 'Corporate AI Presenter',
-    category: 'ai',
-    image: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=600&h=400',
-    description: 'Custom AI spokesperson for corporate presentations and marketing videos.',
-    url: ''
-  },
-  {
-    id: 4,
-    title: 'Local Business Directory',
-    category: 'business',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=600&h=400',
-    description: 'Comprehensive business listings across multiple platforms for local businesses.',
-    url: ''
-  },
-  {
-    id: 5,
-    title: 'Educational Platform',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=600&h=400',
-    description: 'Online learning platform with course management and virtual classrooms.',
-    url: ''
-  },
-  {
-    id: 6,
-    title: 'Fitness Tracking App',
-    category: 'apps',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&h=400',
-    description: 'Mobile app for tracking workouts, nutrition, and fitness goals.',
-    url: ''
-  },
   {
     id: 7,
     title: 'Bharat Startup Solution',
