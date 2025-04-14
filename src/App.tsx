@@ -17,6 +17,9 @@ import AiSpokesperson from "./pages/AiSpokesperson";
 import BusinessProfile from "./pages/BusinessProfile";
 import Admin from "./pages/Admin";
 import FaqPage from "./pages/FaqPage";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CookiePolicy from "./pages/CookiePolicy";
 import VersionChecker from "./components/VersionChecker";
 import { initializeAnalytics } from './lib/firebase';
 
@@ -63,6 +66,9 @@ const App = () => {
               <Route path="/business-profile" element={<BusinessProfile />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/faq" element={<FaqPage />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

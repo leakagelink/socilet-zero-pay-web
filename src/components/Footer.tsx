@@ -3,6 +3,7 @@ import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -35,22 +36,22 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-6">Services</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Website Development</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">App Development</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">AI Spokesperson</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Business Profile Listing</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Digital Marketing</a></li>
+              <li><Link to="/website-development" className="text-gray-400 hover:text-white transition-colors">Website Development</Link></li>
+              <li><Link to="/app-development" className="text-gray-400 hover:text-white transition-colors">App Development</Link></li>
+              <li><Link to="/ai-spokesperson" className="text-gray-400 hover:text-white transition-colors">AI Spokesperson</Link></li>
+              <li><Link to="/business-profile" className="text-gray-400 hover:text-white transition-colors">Business Profile Listing</Link></li>
+              <li><Link to="/zero-advance-payment" className="text-gray-400 hover:text-white transition-colors">Digital Marketing</Link></li>
             </ul>
           </div>
           
           <div>
             <h4 className="text-lg font-bold mb-6">Quick Links</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Portfolio</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Testimonials</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/#portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</Link></li>
+              <li><Link to="/#testimonials" className="text-gray-400 hover:text-white transition-colors">Testimonials</Link></li>
+              <li><Link to="/#contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
+              <li><Link to="/faq" className="text-gray-400 hover:text-white transition-colors">FAQ</Link></li>
             </ul>
           </div>
           
@@ -75,9 +76,9 @@ const Footer = () => {
               &copy; {new Date().getFullYear()} Socilet. All rights reserved.
             </p>
             <div className="text-gray-400 text-sm">
-              <a href="#" className="hover:text-white mr-4">Terms of Service</a>
-              <a href="#" className="hover:text-white mr-4">Privacy Policy</a>
-              <a href="#" className="hover:text-white">Cookie Policy</a>
+              <Link to="/terms-of-service" className="hover:text-white mr-4">Terms of Service</Link>
+              <Link to="/privacy-policy" className="hover:text-white mr-4">Privacy Policy</Link>
+              <Link to="/cookie-policy" className="hover:text-white">Cookie Policy</Link>
             </div>
           </div>
         </div>
