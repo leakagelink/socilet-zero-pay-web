@@ -23,6 +23,7 @@ export const useNavigation = () => {
     { name: 'Services', href: '/#services', path: '/', hasDropdown: true },
     { name: 'Portfolio', href: '/#portfolio', path: '/' },
     { name: 'Blog', href: '/blog', path: '/blog' },
+    { name: 'FAQ', href: '/faq', path: '/faq' },
     { name: 'Track Project', href: '/track-project', path: '/track-project' },
     { name: 'Affiliate', href: '/affiliate', path: '/affiliate', isHighlighted: true },
   ];
