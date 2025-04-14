@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
-import WhatsAppButton from '../components/WhatsAppButton';
+import SupportBar from '../components/SupportBar';
 import VersionChecker from '../components/VersionChecker';
 import { Toaster } from 'sonner';
 import { Helmet } from 'react-helmet';
@@ -33,7 +33,7 @@ const Index = () => {
         />
       </main>
       <Footer />
-      <WhatsAppButton />
+      <SupportBar />
     </div>
   );
 };
