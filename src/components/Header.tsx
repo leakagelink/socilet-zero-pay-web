@@ -16,11 +16,13 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,12 +96,12 @@ const Header = () => {
           {/* Logo */}
           <div 
             onClick={() => handleNavigation('/')}
-            className="flex items-center transition-transform hover:scale-105 duration-300 cursor-pointer" 
+            className={`flex items-center transition-transform hover:scale-105 duration-300 cursor-pointer ${isMobile ? 'ml-0' : ''}`}
           >
             <img 
               src="/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png" 
               alt="Socilet Logo" 
-              className="h-14 drop-shadow-sm" 
+              className={`${isMobile ? 'h-10' : 'h-14'} drop-shadow-sm`}
             />
           </div>
 
@@ -177,7 +179,7 @@ const Header = () => {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-gradient-to-b from-white to-blue-50">
+              <SheetContent side="right" className={`${isMobile ? 'w-full' : 'w-[300px] sm:w-[400px]'} bg-gradient-to-b from-white to-blue-50`}>
                 <nav className="flex flex-col gap-4 mt-8">
                   {navLinks.map((link) => (
                     <div key={link.name} className="w-full">

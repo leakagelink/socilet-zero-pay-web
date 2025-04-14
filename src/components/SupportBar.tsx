@@ -7,11 +7,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from 'sonner';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const SupportBar = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
   const phoneNumber = "919301499921"; // Phone number without the + sign
   const email = "hello@socilet.com";
 
@@ -47,7 +49,7 @@ const SupportBar = () => {
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3"
+            className={`fixed ${isMobile ? 'bottom-4 right-4' : 'bottom-6 right-6'} z-50 flex flex-col items-end space-y-3`}
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
@@ -57,7 +59,7 @@ const SupportBar = () => {
             <AnimatePresence>
               {isExpanded && (
                 <motion.div
-                  className="flex flex-col items-end space-y-2"
+                  className={`flex flex-col items-end space-y-2 ${isMobile ? 'mb-1' : ''}`}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
@@ -114,15 +116,15 @@ const SupportBar = () => {
             >
               <Button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className={`rounded-full p-0 w-14 h-14 shadow-lg flex items-center justify-center ${
+                className={`rounded-full p-0 ${isMobile ? 'w-12 h-12' : 'w-14 h-14'} shadow-lg flex items-center justify-center ${
                   isExpanded ? "bg-red-500 hover:bg-red-600" : "bg-gradient-to-br from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700"
                 }`}
                 id="support-button"
               >
                 {isExpanded ? (
-                  <X className="w-6 h-6 text-white" />
+                  <X className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-white`} />
                 ) : (
-                  <MessageCircle className="w-6 h-6 text-white" />
+                  <MessageCircle className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-white`} />
                 )}
                 <span className="sr-only">Support Options</span>
               </Button>
@@ -147,7 +149,7 @@ const SupportBar = () => {
       
       {/* Contact Dialog */}
       <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className={`${isMobile ? 'w-[90%] max-w-[90%] px-4 py-5' : 'sm:max-w-[425px]'}`}>
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-primary-800">Contact Us</DialogTitle>
             <DialogDescription>
