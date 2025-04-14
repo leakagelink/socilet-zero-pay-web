@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { WhatsappIcon, Mail, Phone, X, MessageCircle } from "lucide-react";
+import { MessageSquare, Mail, Phone, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -69,7 +69,7 @@ const SupportBar = () => {
                     whileTap={{ scale: 0.95 }}
                     onClick={handleWhatsAppClick}
                   >
-                    <WhatsappIcon className="h-5 w-5 mr-2 text-green-500" />
+                    <MessageSquare className="h-5 w-5 mr-2 text-green-500" />
                     <span className="text-sm font-medium">WhatsApp</span>
                   </motion.div>
                   
