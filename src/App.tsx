@@ -20,6 +20,7 @@ import FaqPage from "./pages/FaqPage";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
+import ReferralLanding from "./pages/ReferralLanding";
 import VersionChecker from "./components/VersionChecker";
 import { initializeAnalytics } from './lib/firebase';
 
@@ -69,6 +70,7 @@ const App = () => {
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/refer/:referrerId" element={<ReferralLanding />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
