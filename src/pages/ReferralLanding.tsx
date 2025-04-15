@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Helmet } from "react-helmet";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -11,19 +11,29 @@ import ReferredProjectForm from '@/components/affiliate/ReferredProjectForm';
 
 const ReferralLanding = () => {
   const { referrerId } = useParams<{ referrerId: string }>();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const refFromQuery = queryParams.get('ref');
+  
   const [referrerName, setReferrerName] = useState<string>("");
+  const [actualReferrerId, setActualReferrerId] = useState<string>("");
   
   useEffect(() => {
-    // In a real implementation, this would fetch referrer info from an API
-    // For demo, just set a cookie or localStorage to track the referrer
-    if (referrerId) {
-      localStorage.setItem('referredBy', referrerId);
+    // Get referrerId either from URL path or query parameter
+    const refId = referrerId || refFromQuery;
+    
+    if (refId) {
+      setActualReferrerId(refId);
+      localStorage.setItem('referredBy', refId);
       
       // For demonstration purposes, we'll pretend to look up the referrer's name
       // In a real app, this would come from an API call
       setReferrerName("Your Affiliate Partner");
+      console.log("Referral tracking active for referrer ID:", refId);
+    } else {
+      console.error("No referrer ID found in URL path or query parameters");
     }
-  }, [referrerId]);
+  }, [referrerId, refFromQuery]);
   
   return (
     <>
@@ -51,7 +61,7 @@ const ReferralLanding = () => {
           </motion.div>
           
           <div className="my-12">
-            <ReferredProjectForm referrerId={referrerId || 'unknown'} />
+            <ReferredProjectForm referrerId={actualReferrerId || 'unknown'} />
           </div>
           
           <div className="max-w-3xl mx-auto mt-16">
