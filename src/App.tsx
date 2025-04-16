@@ -45,6 +45,23 @@ const App = () => {
     };
     
     setupAnalytics();
+    
+    // Add AdSense-related meta tag to head
+    const adsenseMetaTag = document.createElement('meta');
+    adsenseMetaTag.name = 'google-adsense-account';
+    adsenseMetaTag.content = 'ca-pub-placeholder'; // Replace with your actual AdSense Publisher ID when you get one
+    document.head.appendChild(adsenseMetaTag);
+    
+    // Add AdSense consent mode meta tag
+    const consentMetaTag = document.createElement('meta');
+    consentMetaTag.name = 'ad-consent';
+    consentMetaTag.content = 'pending';
+    document.head.appendChild(consentMetaTag);
+    
+    return () => {
+      document.head.removeChild(adsenseMetaTag);
+      document.head.removeChild(consentMetaTag);
+    };
   }, []);
 
   return (

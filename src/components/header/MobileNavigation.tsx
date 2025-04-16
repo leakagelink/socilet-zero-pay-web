@@ -31,10 +31,18 @@ const MobileNavigation = () => {
   };
 
   return (
-    <div className="lg:hidden flex items-center">
+    <div className="lg:hidden flex items-center space-x-2">
+      <Button 
+        className="px-3 py-1 h-auto bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 rounded-lg text-xs"
+        onClick={() => handleNavigation('/#contact')}
+      >
+        <Phone size={14} className="mr-1" />
+        <span>Contact</span>
+      </Button>
+
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="border-none hover:bg-gray-100 ml-auto">
+          <Button variant="outline" size="icon" className="border-none hover:bg-gray-100">
             <Menu className="h-6 w-6 text-primary-600" />
             <span className="sr-only">Toggle menu</span>
           </Button>
@@ -105,13 +113,6 @@ const MobileNavigation = () => {
           </nav>
         </SheetContent>
       </Sheet>
-      <Button 
-        className="ml-2 px-3 py-1 h-auto bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 rounded-lg text-xs"
-        onClick={() => handleNavigation('/#contact')}
-      >
-        <Phone size={14} className="mr-1" />
-        <span className="sr-only sm:not-sr-only">Contact</span>
-      </Button>
     </div>
   );
 };
