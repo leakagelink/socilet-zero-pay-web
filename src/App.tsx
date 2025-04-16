@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -49,7 +48,7 @@ const App = () => {
     // Add AdSense-related meta tag to head
     const adsenseMetaTag = document.createElement('meta');
     adsenseMetaTag.name = 'google-adsense-account';
-    adsenseMetaTag.content = 'ca-pub-placeholder'; // Replace with your actual AdSense Publisher ID when you get one
+    adsenseMetaTag.content = 'ca-pub-4580754396684091'; // Updated with actual AdSense Publisher ID
     document.head.appendChild(adsenseMetaTag);
     
     // Add AdSense consent mode meta tag
