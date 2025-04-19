@@ -21,7 +21,15 @@ const MobileNavigation = () => {
   };
 
   return (
-    <div className="lg:hidden flex items-center space-x-2">
+    <div className="lg:hidden flex items-center">
+      <Button 
+        className="bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 rounded-lg h-8 px-3 py-0 text-xs mr-2"
+        onClick={() => handleNavigation('/#contact')}
+      >
+        <Phone size={14} className="mr-1" />
+        <span>Contact</span>
+      </Button>
+      
       <Button
         variant="ghost"
         size="sm"
@@ -31,18 +39,10 @@ const MobileNavigation = () => {
         {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
       </Button>
       
-      <Button 
-        className="bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 rounded-lg h-8 px-3 py-0 text-xs"
-        onClick={() => handleNavigation('/#contact')}
-      >
-        <Phone size={14} className="mr-1" />
-        <span>Contact</span>
-      </Button>
-      
-      {/* Collapsible navigation menu */}
+      {/* Mobile dropdown menu */}
       {isMenuOpen && (
         <nav className="absolute top-full left-0 right-0 bg-white shadow-md mt-1 py-2 z-50">
-          <div className="grid grid-cols-2 gap-2 px-4">
+          <div className="grid grid-cols-2 gap-1 px-2">
             {navLinks.map((link) => (
               !link.hasDropdown ? (
                 <Button
@@ -76,7 +76,7 @@ const MobileNavigation = () => {
                     {link.name}
                   </Button>
                   
-                  <div className="w-full pl-4">
+                  <div className="w-full pl-2">
                     <div className="grid grid-cols-2 gap-1">
                       {servicePages.map((service) => (
                         <Button
@@ -84,7 +84,7 @@ const MobileNavigation = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleLinkClick(service.href)}
-                          className="text-xs justify-start h-8 text-gray-600 hover:bg-primary-50"
+                          className="text-xs justify-start h-7 py-0 text-gray-600 hover:bg-primary-50"
                         >
                           • {service.name}
                         </Button>
