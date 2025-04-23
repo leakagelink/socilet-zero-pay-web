@@ -15,16 +15,17 @@ const Index = () => {
   const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
   
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden w-full">
       <Helmet>
         <title>Socilet - Brand Your Dream | Web & App Development Services</title>
         <meta name="description" content="Socilet offers zero advance payment web & app development services. Get professional websites, mobile apps, and digital branding solutions." />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
       </Helmet>
       <Toaster position="top-right" richColors />
       <VersionChecker />
       <CacheRefresher />
       <Header />
-      <main>
+      <main className="w-full overflow-hidden">
         <Hero />
         <MainContent />
         <VerificationDialog 

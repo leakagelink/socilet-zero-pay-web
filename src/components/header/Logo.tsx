@@ -17,7 +17,7 @@ const Logo = ({ onClick }: LogoProps) => {
       <img 
         src="/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png" 
         alt="Socilet Logo" 
-        className={`${isMobile ? 'h-10' : 'h-14'} drop-shadow-sm`}
+        className={`${isMobile ? 'h-8' : 'h-14'} drop-shadow-sm`}
       />
     </div>
   );

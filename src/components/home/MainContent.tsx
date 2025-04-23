@@ -15,44 +15,44 @@ import ZeroAdvanceSection from './ZeroAdvanceSection';
 
 const MainContent: React.FC = () => {
   return (
-    <>
-      <section id="services" aria-labelledby="services-heading">
+    <div className="w-full overflow-x-hidden">
+      <section id="services" aria-labelledby="services-heading" className="w-full overflow-hidden">
         <Services />
       </section>
       
       <ZeroAdvanceSection />
       
-      <section id="technologies" aria-labelledby="technologies-heading">
+      <section id="technologies" aria-labelledby="technologies-heading" className="w-full overflow-hidden">
         <Technologies />
       </section>
-      <section id="founder" aria-labelledby="founder-heading">
+      <section id="founder" aria-labelledby="founder-heading" className="w-full overflow-hidden">
         <Founder />
       </section>
-      <section id="portfolio" aria-labelledby="portfolio-heading">
+      <section id="portfolio" aria-labelledby="portfolio-heading" className="w-full overflow-hidden">
         <Portfolio />
       </section>
-      <section id="seo-plans" aria-labelledby="seo-plans-heading">
+      <section id="seo-plans" aria-labelledby="seo-plans-heading" className="w-full overflow-hidden">
         <SeoPlans />
       </section>
-      <section id="social-media-plans" aria-labelledby="social-media-plans-heading">
+      <section id="social-media-plans" aria-labelledby="social-media-plans-heading" className="w-full overflow-hidden">
         <SocialMediaPlans />
       </section>
-      <section id="google-ad-plans" aria-labelledby="google-ad-plans-heading">
+      <section id="google-ad-plans" aria-labelledby="google-ad-plans-heading" className="w-full overflow-hidden">
         <GoogleAdPlans />
       </section>
-      <section id="blog" aria-labelledby="blog-heading">
+      <section id="blog" aria-labelledby="blog-heading" className="w-full overflow-hidden">
         <BlogPreview />
       </section>
-      <section id="testimonials" aria-labelledby="testimonials-heading">
+      <section id="testimonials" aria-labelledby="testimonials-heading" className="w-full overflow-hidden">
         <Testimonials />
       </section>
-      <section id="faq" aria-labelledby="faq-heading">
+      <section id="faq" aria-labelledby="faq-heading" className="w-full overflow-hidden">
         <FAQ />
       </section>
-      <section id="contact" aria-labelledby="contact-heading">
+      <section id="contact" aria-labelledby="contact-heading" className="w-full overflow-hidden">
         <Contact />
       </section>
-    </>
+    </div>
   );
 };
 

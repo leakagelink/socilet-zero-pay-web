@@ -21,28 +21,28 @@ const MobileNavigation = () => {
   };
 
   return (
-    <div className="lg:hidden flex items-center gap-1">
+    <div className="lg:hidden flex items-center gap-0.5">
       <Button 
-        className="bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 rounded-lg h-8 px-2.5 py-0 text-xs"
+        className="bg-gradient-to-r from-primary-600 to-primary-700 hover:opacity-90 rounded-lg h-7 px-2 py-0 text-xs"
         onClick={() => handleNavigation('/#contact')}
       >
-        <Phone size={14} className="mr-1" />
+        <Phone size={12} className="mr-1" />
         <span>Contact</span>
       </Button>
       
       <Button
         variant="ghost"
         size="sm"
-        className="p-1 h-8 w-8"
+        className="p-0.5 h-7 w-7 min-w-0"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
-        {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
       </Button>
       
       {/* Mobile dropdown menu */}
       {isMenuOpen && (
-        <nav className="absolute top-full left-0 right-0 bg-white shadow-md mt-0.5 py-1.5 z-50">
-          <div className="grid grid-cols-2 gap-0.5 px-1.5">
+        <nav className="absolute top-full left-0 right-0 bg-white shadow-md mt-0.5 py-1 z-50 max-w-full">
+          <div className="grid grid-cols-2 gap-0.5 px-1">
             {navLinks.map((link) => (
               !link.hasDropdown ? (
                 <Button
@@ -50,7 +50,7 @@ const MobileNavigation = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleLinkClick(link.href)}
-                  className={`text-xs h-7 rounded-full ${
+                  className={`text-xs h-6 rounded-full ${
                     link.isHighlighted
                       ? isActive(link.path) 
                         ? 'text-purple-700 bg-purple-100/70 font-medium' 
@@ -67,7 +67,7 @@ const MobileNavigation = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`text-xs h-7 rounded-full w-full justify-start ${
+                    className={`text-xs h-6 rounded-full w-full justify-start ${
                       isActive(link.path) 
                         ? 'text-primary-600 bg-primary-50/70 font-medium' 
                         : 'text-gray-700 hover:bg-primary-50'
@@ -76,7 +76,7 @@ const MobileNavigation = () => {
                     {link.name}
                   </Button>
                   
-                  <div className="w-full pl-1.5">
+                  <div className="w-full pl-1">
                     <div className="grid grid-cols-2 gap-0.5">
                       {servicePages.map((service) => (
                         <Button
@@ -84,7 +84,7 @@ const MobileNavigation = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleLinkClick(service.href)}
-                          className="text-xs justify-start h-6 py-0 text-gray-600 hover:bg-primary-50"
+                          className="text-xs justify-start h-5 py-0 text-gray-600 hover:bg-primary-50"
                         >
                           • {service.name}
                         </Button>
