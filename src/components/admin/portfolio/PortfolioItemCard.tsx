@@ -57,6 +57,14 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({
             </span>
           </div>
         )}
+
+        {item.isWordPressProject && (
+          <div className="absolute top-2 left-2">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              WordPress
+            </span>
+          </div>
+        )}
       </div>
       <CardHeader>
         <CardTitle className="flex justify-between items-center">

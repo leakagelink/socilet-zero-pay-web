@@ -5,20 +5,30 @@ import { loadPortfolioItems, resetToDefaults } from '@/components/admin/portfoli
 export const usePortfolioItems = (activeFilter: string) => {
   const [displayedItems, setDisplayedItems] = useState<PortfolioItem[]>([]);
   
-  // Sort items with React projects first
-  const sortItemsByReactFirst = (items: PortfolioItem[]): PortfolioItem[] => {
-    return [...items].sort((a, b) => {
-      // If both or neither are React projects, keep original order
-      if ((a.isReactProject && b.isReactProject) || (!a.isReactProject && !b.isReactProject)) {
-        return 0;
-      }
-      // If a is a React project and b is not, a comes first
-      if (a.isReactProject && !b.isReactProject) {
-        return -1;
-      }
-      // If b is a React project and a is not, b comes first
-      return 1;
+  // Sort items with React projects first, and ensure Bharat Startup is at the top
+  const sortItemsByPriority = (items: PortfolioItem[]): PortfolioItem[] => {
+    // First make a copy to avoid mutating the original array
+    const sortedItems = [...items];
+    
+    // Sort by priority: Bharat Startup first, then React projects, then WordPress, then others
+    sortedItems.sort((a, b) => {
+      // Bharat Startup Solution should always be first
+      if (a.title === 'Bharat Startup Solution') return -1;
+      if (b.title === 'Bharat Startup Solution') return 1;
+      
+      // Then React projects
+      if (a.isReactProject && !b.isReactProject) return -1;
+      if (!a.isReactProject && b.isReactProject) return 1;
+      
+      // Then WordPress projects
+      if (a.isWordPressProject && !b.isWordPressProject) return -1;
+      if (!a.isWordPressProject && b.isWordPressProject) return 1;
+      
+      // Otherwise maintain original order
+      return 0;
     });
+    
+    return sortedItems;
   };
 
   // Load portfolio items function that can be called multiple times
@@ -26,8 +36,8 @@ export const usePortfolioItems = (activeFilter: string) => {
     const items = loadPortfolioItems();
     console.log(`Portfolio refreshed with ${items.length} items`);
     
-    // Sort items to show React projects first
-    const sortedItems = sortItemsByReactFirst(items);
+    // Sort items according to priority
+    const sortedItems = sortItemsByPriority(items);
     setDisplayedItems(sortedItems);
     return sortedItems;
   }, []);
@@ -35,7 +45,7 @@ export const usePortfolioItems = (activeFilter: string) => {
   // Force refresh button for debugging
   const handleForceRefresh = useCallback(() => {
     const resetItems = resetToDefaults();
-    const sortedItems = sortItemsByReactFirst(resetItems);
+    const sortedItems = sortItemsByPriority(resetItems);
     setDisplayedItems(sortedItems);
     return resetItems;
   }, []);
@@ -50,7 +60,10 @@ export const usePortfolioItems = (activeFilter: string) => {
       'docucreatorpro.online', 
       'desiaicontent.online', 
       'pluginpal.xyz', 
-      'solarsavingscalculator.site'
+      'solarsavingscalculator.site',
+      'lakshmikagriculture.com',
+      'inning.live',
+      'sossplacementsprivatelimited.com'
     ];
     
     const missingProjects = projectUrls.filter(url => 
@@ -61,7 +74,7 @@ export const usePortfolioItems = (activeFilter: string) => {
       console.warn(`Missing projects in portfolio: ${missingProjects.join(', ')}`);
       // If specific projects are missing, try reset to defaults as a fallback
       const resetItems = resetToDefaults();
-      const sortedResetItems = sortItemsByReactFirst(resetItems);
+      const sortedResetItems = sortItemsByPriority(resetItems);
       setDisplayedItems(sortedResetItems);
     }
     

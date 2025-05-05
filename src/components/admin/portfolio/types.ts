@@ -7,4 +7,5 @@ export type PortfolioItem = {
   description: string;
   url?: string;
   isReactProject?: boolean;
+  isWordPressProject?: boolean;
 };

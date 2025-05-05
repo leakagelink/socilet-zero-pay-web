@@ -12,6 +12,7 @@ export interface PortfolioItemProps {
   url?: string;
   categoryLabel: string;
   isReactProject?: boolean;
+  isWordPressProject?: boolean;
 }
 
 const PortfolioItem: React.FC<PortfolioItemProps> = ({
@@ -21,7 +22,8 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
   description,
   url,
   categoryLabel,
-  isReactProject
+  isReactProject,
+  isWordPressProject
 }) => {
   return (
     <motion.div 
@@ -46,6 +48,14 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800 shadow-md">
               <Code2 className="w-3 h-3 mr-1" />
               React
+            </span>
+          </div>
+        )}
+
+        {isWordPressProject && (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 shadow-md">
+              WordPress
             </span>
           </div>
         )}

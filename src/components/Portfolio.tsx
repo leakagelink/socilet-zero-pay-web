@@ -8,6 +8,7 @@ import PortfolioPagination from './portfolio/PortfolioPagination';
 import ViewAllProjectsButton from './portfolio/ViewAllProjectsButton';
 import EmptyPortfolioState from './portfolio/EmptyPortfolioState';
 import { usePortfolioItems } from '@/hooks/usePortfolioItems';
+import PortfolioTabs from './portfolio/PortfolioTabs';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -61,17 +62,12 @@ const Portfolio = () => {
           isDevelopment={process.env.NODE_ENV === 'development'}
         />
 
-        <PortfolioFilters 
-          filters={filters} 
-          activeFilter={activeFilter} 
-          onFilterChange={setActiveFilter} 
-        />
-
         {filteredItems.length === 0 ? (
           <EmptyPortfolioState />
         ) : (
           <>
-            <PortfolioGrid 
+            {/* Use the new tabs component instead of filters */}
+            <PortfolioTabs 
               items={paginatedItems}
               getCategoryLabel={getCategoryLabel}
             />
