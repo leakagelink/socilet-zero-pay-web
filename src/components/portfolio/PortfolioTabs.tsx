@@ -14,7 +14,6 @@ const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ items, getCategoryLabel }
   // Filter items by technology
   const reactProjects = items.filter(item => item.isReactProject);
   const wordpressProjects = items.filter(item => item.isWordPressProject);
-  const otherProjects = items.filter(item => !item.isReactProject && !item.isWordPressProject);
   
   // Animation variants
   const containerVariants = {
@@ -34,22 +33,22 @@ const PortfolioTabs: React.FC<PortfolioTabsProps> = ({ items, getCategoryLabel }
     >
       <Tabs defaultValue="all" className="w-full mb-8">
         <div className="flex justify-center mb-6">
-          <TabsList className="bg-gray-100 p-1">
+          <TabsList className="bg-gray-100 p-1 flex flex-wrap justify-center">
             <TabsTrigger 
               value="all"
-              className="px-6 py-2 data-[state=active]:bg-white rounded-md"
+              className="px-4 py-2 data-[state=active]:bg-white rounded-md"
             >
               All Projects
             </TabsTrigger>
             <TabsTrigger 
               value="react" 
-              className="px-6 py-2 data-[state=active]:bg-white rounded-md"
+              className="px-4 py-2 data-[state=active]:bg-white rounded-md"
             >
               React
             </TabsTrigger>
             <TabsTrigger 
               value="wordpress" 
-              className="px-6 py-2 data-[state=active]:bg-white rounded-md"
+              className="px-4 py-2 data-[state=active]:bg-white rounded-md"
             >
               WordPress
             </TabsTrigger>

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, ExternalLink, Code2 } from 'lucide-react';
-import { PortfolioItem } from '../portfolioData';
+import { PortfolioItem } from './types';
 
 interface PortfolioItemCardProps {
   item: PortfolioItem;
@@ -31,6 +31,12 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({
           src={item.image} 
           alt={item.title} 
           className="w-full h-full object-cover"
+          onError={(e) => {
+            // Fallback image if the original fails to load
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; // Prevent infinite loop
+            target.src = 'https://images.unsplash.com/photo-1551867633-194f125bcc72?auto=format&fit=crop&w=600&h=400';
+          }}
         />
         <div className="absolute top-2 right-2 flex space-x-2">
           <Button 

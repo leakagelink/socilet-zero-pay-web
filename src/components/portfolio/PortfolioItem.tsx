@@ -27,7 +27,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
 }) => {
   return (
     <motion.div 
-      className="bg-white rounded-xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500"
+      className="bg-white rounded-xl overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-500 w-full"
       whileHover={{ y: -10 }}
       layout
     >
@@ -36,6 +36,12 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
           src={image} 
           alt={title} 
           className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
+          onError={(e) => {
+            // Fallback image if the original fails to load
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; // Prevent infinite loop
+            target.src = 'https://images.unsplash.com/photo-1551867633-194f125bcc72?auto=format&fit=crop&w=600&h=400';
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-start p-4">
           <span className="text-white font-medium text-sm bg-primary-600 px-3 py-1 rounded-full">

@@ -1,5 +1,5 @@
 
-import { PortfolioItem } from '../portfolio/types';
+import { PortfolioItem } from './types';
 
 // Initial default portfolio items 
 export const defaultPortfolioItems: PortfolioItem[] = [
@@ -125,7 +125,7 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     title: 'PinnacleSyncTech',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1573164574572-cb89e39749b4?auto=format&fit=crop&w=600&h=400',
-    description: 'Welcome to PinnacleSyncTech, where we bridge the gap between top-tier IT talent and innovative companies striving for excellence. Founded on a commitment to excellence and a passion for technology, we specialize in providing exceptional IT staffing solutions. Completed on April 26, 2024.',
+    description: 'Welcome to PinnacleSyncTech, where we bridge the gap between top-tier IT talent and innovative companies striving for excellence. Founded on a commitment to excellence and a passion for technology, we specialize in providing exceptional IT staffing solutions.',
     url: 'https://pinnaclesynctech.com/',
     isWordPressProject: true
   },
@@ -134,7 +134,7 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     title: 'ICARUS HR',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=600&h=400',
-    description: 'Welcome to ICARUS HR, where talent and opportunity converge to create impactful careers and thriving teams. At ICARUS HR, we believe recruitment is more than just filling roles—it\'s about forging meaningful connections between visionary companies and exceptional talent. Completed on November 24, 2024.',
+    description: 'Welcome to ICARUS HR, where talent and opportunity converge to create impactful careers and thriving teams. At ICARUS HR, we believe recruitment is more than just filling roles—it\'s about forging meaningful connections between visionary companies and exceptional talent.',
     url: 'https://icarushr.com/',
     isWordPressProject: true
   },
@@ -143,8 +143,36 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     title: 'Amazon Pallets Liquidation',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=600&h=400',
-    description: 'For over 10 years, Amazon pallets liquidation has been a leading provider of customer returns, overstock, and end-of-life products sourced from major retailers and manufacturers. We offer a diverse range of liquidation inventory, including electronics, home goods, clothing, toys, general merchandise and much more. Completed on October 07, 2024.',
+    description: 'For over 10 years, Amazon pallets liquidation has been a leading provider of customer returns, overstock, and end-of-life products sourced from major retailers and manufacturers. We offer a diverse range of liquidation inventory.',
     url: 'https://amazonpalletsliquidation.com/',
     isWordPressProject: true
   },
+  // New WordPress websites
+  {
+    id: 23,
+    title: 'Lakshmi Krupa Agriculture',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&h=400',
+    description: 'Your trusted partner in the wholesale supply of fresh fruits and vegetables. With a mission to bridge the gap between quality produce and market demand, we bring farm-fresh goodness directly from the source to your table.',
+    url: 'https://lakshmikrupaagriculture.com/',
+    isWordPressProject: true
+  },
+  {
+    id: 24,
+    title: 'Asset Security',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1639762681057-408e52192e55?auto=format&fit=crop&w=600&h=400',
+    description: 'Your trusted partner in cryptocurrency recovery and financial chargeback solutions. Founded on the principles of restoring financial security and empowering both individuals and businesses in the digital age.',
+    url: 'https://assetsecurity.tech/',
+    isWordPressProject: true
+  },
+  {
+    id: 25,
+    title: 'ALRIGHT Nutrition',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1490645935967-10de6ba82061?auto=format&fit=crop&w=600&h=400',
+    description: 'Welcome to ARNO Enterprises, the proud creators of the ALRIGHT™ brand. We\'re more than just a business—we\'re a passionate team dedicated to bringing you top-quality, affordable products that make a difference in your life.',
+    url: 'https://alrightnutrition.com/',
+    isWordPressProject: true
+  }
 ];

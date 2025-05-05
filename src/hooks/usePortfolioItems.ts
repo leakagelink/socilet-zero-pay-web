@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { PortfolioItem } from '@/components/admin/portfolio/types';
 import { loadPortfolioItems, resetToDefaults } from '@/components/admin/portfolioData';
@@ -63,7 +64,12 @@ export const usePortfolioItems = (activeFilter: string) => {
       'solarsavingscalculator.site',
       'lakshmikagriculture.com',
       'inning.live',
-      'sossplacementsprivatelimited.com'
+      'sossplacementsprivatelimited.com',
+      'lakshmikrupaagriculture.com',
+      'assetsecurity.tech',
+      'alrightnutrition.com',
+      'pinnaclesynctech.com',
+      'icarushr.com'
     ];
     
     const missingProjects = projectUrls.filter(url => 

@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import PortfolioFilters from './portfolio/PortfolioFilters';
-import PortfolioGrid from './portfolio/PortfolioGrid';
 import PortfolioHeader from './portfolio/PortfolioHeader';
 import PortfolioPagination from './portfolio/PortfolioPagination';
 import ViewAllProjectsButton from './portfolio/ViewAllProjectsButton';
@@ -66,7 +64,7 @@ const Portfolio = () => {
           <EmptyPortfolioState />
         ) : (
           <>
-            {/* Use the new tabs component instead of filters */}
+            {/* Use the tabs component for filtering */}
             <PortfolioTabs 
               items={paginatedItems}
               getCategoryLabel={getCategoryLabel}
