@@ -12,6 +12,7 @@ import SeoPlans from '../SeoPlans';
 import SocialMediaPlans from '../SocialMediaPlans';
 import GoogleAdPlans from '../GoogleAdPlans';
 import ZeroAdvanceSection from './ZeroAdvanceSection';
+import TeamShowcase from '../TeamShowcase';
 
 const MainContent: React.FC = () => {
   return (
@@ -21,6 +22,10 @@ const MainContent: React.FC = () => {
       </section>
       
       <ZeroAdvanceSection />
+      
+      <section id="team" aria-labelledby="team-heading" className="w-full overflow-hidden">
+        <TeamShowcase />
+      </section>
       
       <section id="technologies" aria-labelledby="technologies-heading" className="w-full overflow-hidden">
         <Technologies />
