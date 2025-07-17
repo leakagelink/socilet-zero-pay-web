@@ -1,3 +1,4 @@
+
 import { PortfolioItem } from './types';
 import { defaultPortfolioItems } from './portfolioItems';
 
@@ -22,8 +23,8 @@ const filterDeletedItems = (items: PortfolioItem[]): PortfolioItem[] => {
  */
 export const loadPortfolioItems = (): PortfolioItem[] => {
   try {
-    // Force refresh to include the reordered portfolio with Lakshmik Agriculture before Solar Savings Calculator
-    console.log('Force loading latest portfolio items with Lakshmik Agriculture repositioned');
+    // Force refresh to include the updated portfolio order with Lakshmik Agriculture after Desi AI Content
+    console.log('Force loading latest portfolio items with updated order: Lakshmik Agriculture after Desi AI Content');
     
     // Get the latest default items and filter out permanently deleted ones
     const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
@@ -34,13 +35,13 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
     if (savedItems) {
       const parsedItems = JSON.parse(savedItems);
       
-      // Check if the portfolio order is correct (Lakshmik Agriculture before Solar Savings Calculator)
+      // Check if the portfolio order is correct (Lakshmik Agriculture after Desi AI Content)
+      const desiAIIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 3);
       const lakshmikIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 6);
-      const solarIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 5);
       
-      if (lakshmikIndex === -1 || solarIndex === -1 || lakshmikIndex > solarIndex) {
+      if (desiAIIndex === -1 || lakshmikIndex === -1 || lakshmikIndex !== desiAIIndex + 1) {
         // Update with latest project order
-        console.log('Updating portfolio order with Lakshmik Agriculture before Solar Savings Calculator');
+        console.log('Updating portfolio order with Lakshmik Agriculture after Desi AI Content');
         const finalItems = filterDeletedItems(defaultPortfolioItems);
         localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
         console.log(`Portfolio updated with correct order`);
@@ -118,6 +119,6 @@ export const resetToDefaults = (): PortfolioItem[] => {
 };
 
 // Force clear and reload portfolio items with updated order
-console.log('Force refreshing portfolio with updated order');
+console.log('Force refreshing portfolio with Lakshmik Agriculture after Desi AI Content');
 localStorage.removeItem('portfolioItems'); // Clear existing data
 export const portfolioItems: PortfolioItem[] = loadPortfolioItems();

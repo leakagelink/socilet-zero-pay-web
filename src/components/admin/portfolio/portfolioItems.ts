@@ -48,21 +48,21 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     isReactProject: true
   },
   {
-    id: 4,
-    title: 'PluginPal XYZ',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&h=600',
-    description: 'WordPress plugin marketplace and development platform.',
-    url: 'https://pluginpal.xyz',
-    isWordPressProject: true
-  },
-  {
     id: 6,
     title: 'Lakshmik Agriculture',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&h=600',
     description: 'Agricultural products and farming solutions platform.',
     url: 'https://lakshmikagriculture.com',
+    isWordPressProject: true
+  },
+  {
+    id: 4,
+    title: 'PluginPal XYZ',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&h=600',
+    description: 'WordPress plugin marketplace and development platform.',
+    url: 'https://pluginpal.xyz',
     isWordPressProject: true
   },
   {
