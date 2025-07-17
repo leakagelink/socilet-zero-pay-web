@@ -3,22 +3,23 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import './hideLovable.css'; // Import the CSS that hides Lovable elements
+import './hideLovable.css'; // Import the CSS that hides unwanted elements
 import { AuthProvider } from "@/hooks/useAuth";
 
-// Remove any existing Lovable elements
-const removeLovableElements = () => {
-  // Find and remove any scripts related to Lovable or GPT Engineer
+// Remove any existing unwanted elements
+const removeUnwantedElements = () => {
+  // Find and remove any scripts related to unwanted platforms
   document.querySelectorAll('script').forEach(script => {
     if (script.src.includes('lovable') || 
         script.src.includes('gpteng') || 
         script.innerHTML.includes('lovable') || 
-        script.innerHTML.includes('gpteng')) {
+        script.innerHTML.includes('gpteng') ||
+        script.src.includes('gptengineer')) {
       script.remove();
     }
   });
 
-  // Find and remove any dynamic elements related to Lovable or GPT Engineer
+  // Find and remove any dynamic elements related to unwanted platforms
   document.querySelectorAll('div').forEach(div => {
     if ((div.id && (div.id.includes('lovable') || div.id.includes('gpteng'))) || 
         (div.className && (div.className.includes('lovable') || div.className.includes('gpteng'))) ||
@@ -27,7 +28,7 @@ const removeLovableElements = () => {
     }
   });
 
-  // Remove any fixed position elements that might be the popup
+  // Remove any fixed position elements that might be popups
   document.querySelectorAll('div[style*="position: fixed"]').forEach(div => {
     if (!div.id || (div.id !== 'root' && !div.closest('#root'))) {
       div.remove();
@@ -146,19 +147,19 @@ const handleSiteVersioning = () => {
 };
 
 // Run the initialization functions
-removeLovableElements();
+removeUnwantedElements();
 ensureVerificationTags();
 handleSiteVersioning();
 
 // Also run it after the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  removeLovableElements();
+  removeUnwantedElements();
   ensureVerificationTags();
 });
 
 // And periodically check for and remove new elements
 setInterval(() => {
-  removeLovableElements();
+  removeUnwantedElements();
   ensureVerificationTags();
 }, 1000);
 

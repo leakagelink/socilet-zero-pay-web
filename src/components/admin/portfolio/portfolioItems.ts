@@ -1,4 +1,3 @@
-
 import { PortfolioItem } from './types';
 
 export const defaultPortfolioItems: PortfolioItem[] = [
@@ -27,6 +26,15 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&h=600',
     description: 'AI-powered document creation and management platform for businesses.',
     url: 'https://docucreatorpro.online',
+    isReactProject: true
+  },
+  {
+    id: 14,
+    title: 'Surprise Saga',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=800&h=600',
+    description: 'अपने प्यार को अनोखे तरीके से express करें। Custom songs, videos और unique gifts बनवाएं जो दिल छू जाएं।',
+    url: 'https://surprisesaga.com/',
     isReactProject: true
   },
   {
@@ -72,15 +80,6 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     image: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=800&h=600',
     description: 'Live cricket scoring and sports analytics platform.',
     url: 'https://inning.live',
-    isReactProject: true
-  },
-  {
-    id: 14,
-    title: 'Surprise Saga',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=800&h=600',
-    description: 'अपने प्यार को अनोखे तरीके से express करें। Custom songs, videos और unique gifts बनवाएं जो दिल छू जाएं।',
-    url: 'https://surprisesaga.com/',
     isReactProject: true
   },
   {

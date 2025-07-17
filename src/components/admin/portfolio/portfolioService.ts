@@ -23,8 +23,8 @@ const filterDeletedItems = (items: PortfolioItem[]): PortfolioItem[] => {
  */
 export const loadPortfolioItems = (): PortfolioItem[] => {
   try {
-    // Force refresh to include the updated Surprise Saga project
-    console.log('Force loading latest portfolio items with updated Surprise Saga project');
+    // Force refresh to include the reordered portfolio with Surprise Saga before Desi AI Content
+    console.log('Force loading latest portfolio items with Surprise Saga repositioned');
     
     // Get the latest default items and filter out permanently deleted ones
     const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
@@ -35,15 +35,16 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
     if (savedItems) {
       const parsedItems = JSON.parse(savedItems);
       
-      // Check if the Surprise Saga project (id: 14) has the correct URL
-      const surpriseSagaProject = parsedItems.find((item: PortfolioItem) => item.id === 14);
+      // Check if the portfolio order is correct (Surprise Saga before Desi AI Content)
+      const surpriseSagaIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 14);
+      const desiAIIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 3);
       
-      if (!surpriseSagaProject || surpriseSagaProject.url !== 'https://surprisesaga.com/' || surpriseSagaProject.title !== 'Surprise Saga') {
-        // Update with latest project data
-        console.log('Updating Surprise Saga project with new title and URL');
+      if (surpriseSagaIndex === -1 || desiAIIndex === -1 || surpriseSagaIndex > desiAIIndex) {
+        // Update with latest project order
+        console.log('Updating portfolio order with Surprise Saga before Desi AI Content');
         const finalItems = filterDeletedItems(defaultPortfolioItems);
         localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
-        console.log(`Portfolio updated with Surprise Saga project`);
+        console.log(`Portfolio updated with correct order`);
         return finalItems;
       }
       
@@ -110,14 +111,14 @@ export const permanentlyDeleteItem = (id: number): void => {
  * Will still exclude permanently deleted items
  */
 export const resetToDefaults = (): PortfolioItem[] => {
-  console.log('Resetting portfolio to defaults with updated Surprise Saga project');
+  console.log('Resetting portfolio to defaults with updated order');
   const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
   localStorage.setItem('portfolioItems', JSON.stringify(filteredDefaults));
   window.dispatchEvent(new Event('storage'));
   return filteredDefaults;
 };
 
-// Force clear and reload portfolio items with updated project
-console.log('Force refreshing portfolio with updated Surprise Saga project');
+// Force clear and reload portfolio items with updated order
+console.log('Force refreshing portfolio with updated order');
 localStorage.removeItem('portfolioItems'); // Clear existing data
 export const portfolioItems: PortfolioItem[] = loadPortfolioItems();
