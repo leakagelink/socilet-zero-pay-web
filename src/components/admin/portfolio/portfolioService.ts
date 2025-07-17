@@ -23,48 +23,45 @@ const filterDeletedItems = (items: PortfolioItem[]): PortfolioItem[] => {
  */
 export const loadPortfolioItems = (): PortfolioItem[] => {
   try {
-    // Check if we have already saved portfolio items
+    // Force refresh to include the new personalized gift project
+    console.log('Force loading latest portfolio items including personalized gift project');
+    
+    // Get the latest default items and filter out permanently deleted ones
+    const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
+    
+    // Check if we have saved items
     const savedItems = localStorage.getItem('portfolioItems');
     
-    // Log for debugging
-    console.log(`Loading portfolio items: ${savedItems ? 'Found saved items' : 'No saved items found'}`);
-    
-    // If there are saved items, check if they include the new personalized gift project
     if (savedItems) {
       const parsedItems = JSON.parse(savedItems);
       
-      // Check if the new project (id: 14) exists
+      // Check if the personalized gift project (id: 14) exists
       const hasPersonalizedGiftProject = parsedItems.some((item: PortfolioItem) => item.id === 14);
       
       if (!hasPersonalizedGiftProject) {
         // Add the new project and save
-        console.log('Adding new personalized gift project to existing items');
-        const updatedItems = [...parsedItems, defaultPortfolioItems.find(item => item.id === 14)].filter(Boolean);
-        const filteredItems = filterDeletedItems(updatedItems);
-        localStorage.setItem('portfolioItems', JSON.stringify(filteredItems));
-        return filteredItems;
+        console.log('Adding personalized gift project to existing portfolio');
+        const personalizedGiftProject = defaultPortfolioItems.find(item => item.id === 14);
+        if (personalizedGiftProject) {
+          const updatedItems = [...parsedItems, personalizedGiftProject];
+          const finalItems = filterDeletedItems(updatedItems);
+          localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
+          console.log(`Portfolio updated with ${finalItems.length} items including new project`);
+          return finalItems;
+        }
       }
       
-      hasInitializedPortfolio = true;
-      console.log(`Loaded ${parsedItems.length} portfolio items from localStorage`);
-      
-      // Filter out permanently deleted items
-      return filterDeletedItems(parsedItems);
+      // Return existing items (filtered)
+      const finalItems = filterDeletedItems(parsedItems);
+      console.log(`Loaded ${finalItems.length} portfolio items from localStorage`);
+      return finalItems;
     }
     
-    // If we haven't initialized yet, use defaults and save them (excluding permanently deleted ones)
-    if (!hasInitializedPortfolio) {
-      hasInitializedPortfolio = true;
-      console.log(`Initializing with ${defaultPortfolioItems.length} default portfolio items`);
-      
-      // Filter out permanently deleted items from defaults
-      const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
-      localStorage.setItem('portfolioItems', JSON.stringify(filteredDefaults));
-      return filteredDefaults;
-    }
+    // No saved items, use defaults
+    console.log(`Initializing with ${filteredDefaults.length} default portfolio items`);
+    localStorage.setItem('portfolioItems', JSON.stringify(filteredDefaults));
+    return filteredDefaults;
     
-    // Return empty array if items were deleted and no saved data exists
-    return [];
   } catch (error) {
     console.error('Error loading portfolio items:', error);
     // In case of error, return defaults (filtered)
@@ -124,7 +121,7 @@ export const resetToDefaults = (): PortfolioItem[] => {
   return filteredDefaults;
 };
 
-// Ensure portfolio items are loaded on module initialization
-// This helps with initial rendering
-console.log('Initializing portfolio service module');
+// Force clear and reload portfolio items on module initialization
+console.log('Force refreshing portfolio with latest items including personalized gift project');
+localStorage.removeItem('portfolioItems'); // Clear existing data
 export const portfolioItems: PortfolioItem[] = loadPortfolioItems();
