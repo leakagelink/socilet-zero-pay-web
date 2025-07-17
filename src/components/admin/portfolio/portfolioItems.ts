@@ -1,3 +1,4 @@
+
 import { PortfolioItem } from './types';
 
 export const defaultPortfolioItems: PortfolioItem[] = [
