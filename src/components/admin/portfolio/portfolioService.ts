@@ -29,10 +29,23 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
     // Log for debugging
     console.log(`Loading portfolio items: ${savedItems ? 'Found saved items' : 'No saved items found'}`);
     
-    // If there are saved items, return those (excluding permanently deleted ones)
+    // If there are saved items, check if they include the new personalized gift project
     if (savedItems) {
-      hasInitializedPortfolio = true;
       const parsedItems = JSON.parse(savedItems);
+      
+      // Check if the new project (id: 14) exists
+      const hasPersonalizedGiftProject = parsedItems.some((item: PortfolioItem) => item.id === 14);
+      
+      if (!hasPersonalizedGiftProject) {
+        // Add the new project and save
+        console.log('Adding new personalized gift project to existing items');
+        const updatedItems = [...parsedItems, defaultPortfolioItems.find(item => item.id === 14)].filter(Boolean);
+        const filteredItems = filterDeletedItems(updatedItems);
+        localStorage.setItem('portfolioItems', JSON.stringify(filteredItems));
+        return filteredItems;
+      }
+      
+      hasInitializedPortfolio = true;
       console.log(`Loaded ${parsedItems.length} portfolio items from localStorage`);
       
       // Filter out permanently deleted items
