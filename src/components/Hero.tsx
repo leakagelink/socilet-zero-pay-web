@@ -207,8 +207,8 @@ const Hero = () => {
             >
               <div className="overflow-hidden rounded-lg mb-6">
                 <motion.img 
-                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&h=400" 
-                  alt="Web Development" 
+                  src="/lovable-uploads/1b9d66b2-fe2e-4972-a39c-cbbc782ba6e2.png" 
+                  alt="Socilet Zero Advance Payment" 
                   className="w-full h-auto"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.5 }}
