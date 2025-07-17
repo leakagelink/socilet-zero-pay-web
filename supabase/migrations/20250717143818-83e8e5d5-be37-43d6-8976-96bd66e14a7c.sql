@@ -1,0 +1,1 @@
+INSERT INTO admin_users (user_id, role, permissions) VALUES ('9f7ae62b-d643-4e7b-bd62-f21def49ed11', 'admin', '{"blog": true, "portfolio": true, "webmaster": true, "testimonials": true}');
