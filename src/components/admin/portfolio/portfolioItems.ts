@@ -13,6 +13,15 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     isReactProject: true
   },
   {
+    id: 26,
+    title: 'भारत का No.1 Personalized Gift Platform',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=600&h=400',
+    description: 'अपने प्यार को अनोखे तरीके से express करें। Custom songs, videos और unique gifts बनवाएं जो दिल छू जाएं। A comprehensive platform for creating personalized gifts with custom content creation tools.',
+    url: '',
+    isReactProject: true
+  },
+  {
     id: 20,
     title: 'Lakshmi K Agriculture',
     category: 'websites',
