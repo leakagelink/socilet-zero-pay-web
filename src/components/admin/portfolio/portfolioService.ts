@@ -23,8 +23,8 @@ const filterDeletedItems = (items: PortfolioItem[]): PortfolioItem[] => {
  */
 export const loadPortfolioItems = (): PortfolioItem[] => {
   try {
-    // Force refresh to include the updated URL for personalized gift project
-    console.log('Force loading latest portfolio items with updated URL for personalizedgifts.in');
+    // Force refresh to include the new ConnectWithCA project
+    console.log('Force loading latest portfolio items with ConnectWithCA project added');
     
     // Get the latest default items and filter out permanently deleted ones
     const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
@@ -35,20 +35,19 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
     if (savedItems) {
       const parsedItems = JSON.parse(savedItems);
       
-      // Check if the personalized gift project (id: 14) exists and has correct URL
-      const personalizedGiftProject = parsedItems.find((item: PortfolioItem) => item.id === 14);
+      // Check if the ConnectWithCA project (id: 15) exists
+      const connectWithCAProject = parsedItems.find((item: PortfolioItem) => item.id === 15);
       
-      if (!personalizedGiftProject || personalizedGiftProject.url !== 'https://personalizedgifts.in') {
-        // Update or add the project with correct URL
-        console.log('Updating personalized gift project URL to personalizedgifts.in');
-        const updatedDefaultProject = defaultPortfolioItems.find(item => item.id === 14);
+      if (!connectWithCAProject) {
+        // Add the new project with correct positioning
+        console.log('Adding ConnectWithCA project to existing portfolio');
+        const newProject = defaultPortfolioItems.find(item => item.id === 15);
         
-        if (updatedDefaultProject) {
-          const updatedItems = parsedItems.filter((item: PortfolioItem) => item.id !== 14);
-          updatedItems.push(updatedDefaultProject);
-          const finalItems = filterDeletedItems(updatedItems);
+        if (newProject) {
+          // Remove old items and add updated defaults to maintain correct order
+          const finalItems = filterDeletedItems(defaultPortfolioItems);
           localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
-          console.log(`Portfolio updated with correct URL for personalized gift project`);
+          console.log(`Portfolio updated with ConnectWithCA project`);
           return finalItems;
         }
       }
@@ -116,14 +115,14 @@ export const permanentlyDeleteItem = (id: number): void => {
  * Will still exclude permanently deleted items
  */
 export const resetToDefaults = (): PortfolioItem[] => {
-  console.log('Resetting portfolio to defaults with updated personalizedgifts.in URL');
+  console.log('Resetting portfolio to defaults with ConnectWithCA project');
   const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
   localStorage.setItem('portfolioItems', JSON.stringify(filteredDefaults));
   window.dispatchEvent(new Event('storage'));
   return filteredDefaults;
 };
 
-// Force clear and reload portfolio items with updated URL
-console.log('Force refreshing portfolio with updated personalizedgifts.in URL');
+// Force clear and reload portfolio items with new project
+console.log('Force refreshing portfolio with ConnectWithCA project');
 localStorage.removeItem('portfolioItems'); // Clear existing data
 export const portfolioItems: PortfolioItem[] = loadPortfolioItems();
