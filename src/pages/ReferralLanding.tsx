@@ -61,7 +61,13 @@ const ReferralLanding = () => {
           </motion.div>
           
           <div className="my-12">
-            <ReferredProjectForm referrerId={actualReferrerId || 'unknown'} />
+            <ReferredProjectForm 
+              onClose={() => {}} 
+              onSubmit={async (data) => {
+                console.log('Referral submission:', data, 'for referrer:', actualReferrerId);
+                // Handle referral submission here
+              }}
+            />
           </div>
           
           <div className="max-w-3xl mx-auto mt-16">
