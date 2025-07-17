@@ -18,72 +18,148 @@ const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   
-  // Check if user is admin
+  // Check if user is admin with detailed logging
   const checkAdminStatus = async (userId: string) => {
     try {
+      console.log('Checking admin status for user:', userId);
+      
       const { data, error } = await supabase
         .from('admin_users')
         .select('role')
         .eq('user_id', userId)
         .single();
       
-      if (!error && data) {
+      console.log('Admin check result:', { data, error });
+      
+      if (error) {
+        console.error('Error checking admin status:', error);
+        if (error.code === 'PGRST116') {
+          console.log('User not found in admin_users table');
+          return false;
+        }
+        throw error;
+      }
+      
+      if (data) {
+        console.log('User is admin with role:', data.role);
         setIsAdmin(true);
         return true;
       }
+      
+      console.log('User exists but no admin role found');
       return false;
     } catch (error) {
-      console.error('Error checking admin status:', error);
+      console.error('Error in checkAdminStatus:', error);
+      setAuthError('Failed to check admin status');
       return false;
     }
   };
 
-  // Authentication state management
+  // Initialize authentication
   useEffect(() => {
+    console.log('Admin component mounted, initializing auth...');
+    
+    let timeoutId: NodeJS.Timeout;
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', { event, session: !!session });
+        
+        // Clear any existing timeout
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          console.log('User found in session, checking admin status...');
           const adminStatus = await checkAdminStatus(session.user.id);
           setIsAdmin(adminStatus);
         } else {
+          console.log('No user in session');
           setIsAdmin(false);
         }
-        setLoading(false);
+        
+        // Set a timeout to ensure loading state doesn't persist indefinitely
+        timeoutId = setTimeout(() => {
+          console.log('Setting loading to false after timeout');
+          setLoading(false);
+        }, 100);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        const adminStatus = await checkAdminStatus(session.user.id);
-        setIsAdmin(adminStatus);
+    const checkSession = async () => {
+      try {
+        console.log('Checking for existing session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setAuthError('Failed to get session');
+          setLoading(false);
+          return;
+        }
+        
+        console.log('Existing session check:', { session: !!session });
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          console.log('Existing session found, checking admin status...');
+          const adminStatus = await checkAdminStatus(session.user.id);
+          setIsAdmin(adminStatus);
+        } else {
+          console.log('No existing session found');
+          setIsAdmin(false);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Unexpected error in session check:', error);
+        setAuthError('Unexpected authentication error');
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    checkSession();
+
+    return () => {
+      console.log('Admin component unmounting...');
+      subscription.unsubscribe();
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
     try {
+      console.log('Attempting login for:', email);
+      setAuthError(null);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
+
+      console.log('Login successful:', !!data.user);
 
       if (data.user) {
         const adminStatus = await checkAdminStatus(data.user.id);
         if (!adminStatus) {
+          console.log('User logged in but not admin, signing out...');
           await supabase.auth.signOut();
           toast.error('Access denied. Admin privileges required.');
           return;
@@ -91,33 +167,55 @@ const Admin = () => {
         toast.success('Login successful');
       }
     } catch (error: any) {
+      console.error('Login failed:', error);
       toast.error(error.message || 'Login failed');
+      setAuthError(error.message || 'Login failed');
     }
   };
 
   const handleLogout = async () => {
     try {
+      console.log('Logging out...');
       await supabase.auth.signOut();
       setIsAdmin(false);
+      setAuthError(null);
       toast.success('Logged out successfully');
     } catch (error: any) {
+      console.error('Logout error:', error);
       toast.error(error.message || 'Logout failed');
     }
   };
 
+  // Loading state with more information
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">Loading admin panel...</p>
+          {authError && (
+            <p className="text-red-600 mt-2 text-sm">{authError}</p>
+          )}
+          <p className="text-xs text-gray-400 mt-2">
+            Debug: session={!!session}, user={!!user}, isAdmin={isAdmin}
+          </p>
         </div>
       </div>
     );
   }
 
+  // Show login if not authenticated or not admin
   if (!session || !user || !isAdmin) {
-    return <AdminLogin onLogin={handleLogin} />;
+    return (
+      <div>
+        <AdminLogin onLogin={handleLogin} />
+        {authError && (
+          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {authError}
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
