@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,78 +14,77 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
 // Schema for project submission form
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number." }),
+  projectName: z.string().min(2, { message: "Project name must be at least 2 characters." }),
+  clientName: z.string().min(2, { message: "Client name must be at least 2 characters." }),
+  clientEmail: z.string().email({ message: "Please enter a valid email address." }),
+  clientPhone: z.string().min(10, { message: "Please enter a valid phone number." }),
   projectType: z.string().min(1, { message: "Please select a project type." }),
-  description: z.string().min(10, { message: "Please provide a brief description of your project." }),
-  budget: z.string().min(1, { message: "Please enter your budget." }),
-  timeline: z.string().min(1, { message: "Please select a timeline." }),
+  projectDescription: z.string().min(10, { message: "Please provide a brief description of the project." }),
+  projectBudget: z.number().min(1, { message: "Please enter the project budget." }),
 });
 
 interface ReferredProjectFormProps {
-  referrerId: string;
+  onClose: () => void;
+  onSubmit: (data: z.infer<typeof formSchema>) => Promise<void>;
 }
 
-const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ referrerId }) => {
+const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ onClose, onSubmit }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
+      projectName: "",
+      clientName: "",
+      clientEmail: "",
+      clientPhone: "",
       projectType: "",
-      description: "",
-      budget: "",
-      timeline: "",
+      projectDescription: "",
+      projectBudget: 0,
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // In a real implementation, this would send the form data to an API endpoint
-    console.log("Form values:", values);
-    console.log("Referred by:", referrerId);
-    
-    // For demo, store in localStorage
-    const submissions = JSON.parse(localStorage.getItem('projectSubmissions') || '[]');
-    submissions.push({
-      ...values,
-      referrerId,
-      status: "Pending",
-      id: Date.now(),
-      submittedAt: new Date().toISOString(),
-    });
-    localStorage.setItem('projectSubmissions', JSON.stringify(submissions));
-    
-    // Show success message
-    toast.success("Project submitted successfully! Our team will contact you soon.");
-    form.reset();
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await onSubmit(values);
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Submit Your Project</CardTitle>
-        <CardDescription>
-          Tell us about your project to get started. We'll get back to you within 24 hours.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Refer New Project</DialogTitle>
+          <DialogDescription>
+            Submit details of the client and project you're referring to us.
+          </DialogDescription>
+        </DialogHeader>
+        
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="projectName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Name</FormLabel>
+                  <FormLabel>Project Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
+                    <Input placeholder="Enter project name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="clientName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Client Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter client's full name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -96,12 +94,12 @@ const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ referrerId })
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="clientEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel>Client Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="Your email" {...field} />
+                      <Input type="email" placeholder="Client's email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -110,12 +108,12 @@ const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ referrerId })
               
               <FormField
                 control={form.control}
-                name="phone"
+                name="clientPhone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel>Client Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your contact number" {...field} />
+                      <Input placeholder="Client's phone number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -139,11 +137,12 @@ const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ referrerId })
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="website">Website Development</SelectItem>
-                      <SelectItem value="app">App Development</SelectItem>
-                      <SelectItem value="both">Website & App Development</SelectItem>
-                      <SelectItem value="ai-spokesperson">AI Spokesperson</SelectItem>
-                      <SelectItem value="business-profile">Business Profile</SelectItem>
+                      <SelectItem value="Website Development">Website Development</SelectItem>
+                      <SelectItem value="App Development">App Development</SelectItem>
+                      <SelectItem value="Website & App Development">Website & App Development</SelectItem>
+                      <SelectItem value="AI Spokesperson">AI Spokesperson</SelectItem>
+                      <SelectItem value="Business Profile">Business Profile</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -153,13 +152,32 @@ const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ referrerId })
             
             <FormField
               control={form.control}
-              name="description"
+              name="projectBudget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Budget (₹)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="Enter project budget" 
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="projectDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project Description</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Describe your project requirements..." 
+                      placeholder="Describe the project requirements..." 
                       className="min-h-32"
                       {...field} 
                     />
@@ -169,55 +187,18 @@ const ReferredProjectForm: React.FC<ReferredProjectFormProps> = ({ referrerId })
               )}
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="budget"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estimated Budget (₹)</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Your budget" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="timeline"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Timeline</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select timeline" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="1-2-weeks">1-2 Weeks</SelectItem>
-                        <SelectItem value="3-4-weeks">3-4 Weeks</SelectItem>
-                        <SelectItem value="1-2-months">1-2 Months</SelectItem>
-                        <SelectItem value="3-6-months">3-6 Months</SelectItem>
-                        <SelectItem value="not-sure">Not Sure Yet</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="flex gap-2 pt-4">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" className="flex-1">
+                Submit Referral
+              </Button>
             </div>
-            
-            <Button type="submit" className="w-full">Submit Project</Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 };
 

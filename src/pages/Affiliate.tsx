@@ -1,8 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,6 +9,8 @@ import {
   UserPlus, LogIn, ArrowRight, RefreshCw, 
   DollarSign, Users, Copy, CheckCircle 
 } from "lucide-react";
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,16 +46,34 @@ const loginSchema = z.object({
 });
 
 const Affiliate = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState("register");
-  
-  // For demo/prototype purpose, store affiliate data in localStorage
-  React.useEffect(() => {
-    const storedLoginStatus = localStorage.getItem('affiliateLoggedIn');
-    if (storedLoginStatus === 'true') {
-      setIsLoggedIn(true);
+  const { user, isAffiliate, signIn, signUp, signOut } = useAuth();
+  const [affiliateData, setAffiliateData] = useState<any>(null);
+
+  // Check if user is affiliate and load data
+  useEffect(() => {
+    if (user && isAffiliate) {
+      loadAffiliateData();
     }
-  }, []);
+  }, [user, isAffiliate]);
+
+  const loadAffiliateData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('affiliate_users')
+        .select('*')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      setAffiliateData(data);
+    } catch (error: any) {
+      console.error('Error loading affiliate data:', error);
+    }
+  };
 
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -74,52 +93,63 @@ const Affiliate = () => {
     },
   });
 
-  const onRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
-    // In a real implementation, this would call an API to register the user
-    console.log("Register values:", values);
-    
-    // For demo, save to localStorage
-    localStorage.setItem('affiliateUser', JSON.stringify({
-      name: values.name,
-      email: values.email,
-      phone: values.phone,
-      referralId: `REF${Math.floor(Math.random() * 10000)}`,
-      joinDate: new Date().toISOString(),
-    }));
-    
-    toast.success("Registration successful! Please log in.");
-    setActiveTab("login");
-  };
-
-  const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    // In a real implementation, this would verify credentials with backend
-    console.log("Login values:", values);
-    
-    // For demo, just check if email exists in localStorage
-    const storedUser = localStorage.getItem('affiliateUser');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      if (user.email === values.email) {
-        // In real implementation, would check password hash
-        localStorage.setItem('affiliateLoggedIn', 'true');
-        setIsLoggedIn(true);
-        toast.success("Login successful!");
-      } else {
-        toast.error("Invalid email or password");
+  const onRegisterSubmit = async (values: z.infer<typeof registerSchema>) => {
+    try {
+      const { error } = await signUp(values.email, values.password, values.name);
+      if (error) {
+        toast.error(error);
+        return;
       }
-    } else {
-      toast.error("User not found. Please register first.");
+
+      // Create affiliate user record
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const referralCode = `REF${Math.floor(Math.random() * 10000)}`;
+        
+        const { error: affiliateError } = await supabase
+          .from('affiliate_users')
+          .insert({
+            user_id: user.id,
+            referral_code: referralCode,
+          });
+
+        if (affiliateError) {
+          console.error('Error creating affiliate user:', affiliateError);
+        }
+      }
+
+      toast.success("Registration successful! Please check your email to verify your account.");
+      setActiveTab("login");
+    } catch (error: any) {
+      toast.error("Registration failed: " + error.message);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('affiliateLoggedIn');
-    setIsLoggedIn(false);
-    toast.success("Logged out successfully");
+  const onLoginSubmit = async (values: z.infer<typeof loginSchema>) => {
+    try {
+      const { error } = await signIn(values.email, values.password);
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      toast.success("Login successful!");
+    } catch (error: any) {
+      toast.error("Login failed: " + error.message);
+    }
   };
 
-  if (isLoggedIn) {
-    return <AffiliateDashboard onLogout={handleLogout} />;
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success("Logged out successfully");
+    } catch (error: any) {
+      toast.error("Logout failed: " + error.message);
+    }
+  };
+
+  if (user && isAffiliate) {
+    return <AffiliateDashboard />;
   }
 
   return (

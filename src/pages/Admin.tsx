@@ -10,46 +10,113 @@ import WebsitePhotosManager from '../components/admin/WebsitePhotosManager';
 import WebmasterManager from '../components/admin/WebmasterManager';
 import AdminLogin from '../components/admin/AdminLogin';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
 
 const Admin = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
   
-  // Set default password if none exists
-  useEffect(() => {
-    if (!localStorage.getItem('admin-password')) {
-      localStorage.setItem('admin-password', 'admin123');
-    }
-  }, []);
-  
-  // Authentication check using localStorage
-  useEffect(() => {
-    const adminAuth = localStorage.getItem('admin-auth');
-    if (adminAuth === 'authenticated') {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleLogin = (password: string) => {
-    // Get stored password from localStorage
-    const storedPassword = localStorage.getItem('admin-password');
-    
-    // Check if entered password matches stored password
-    if (password === storedPassword) {
-      localStorage.setItem('admin-auth', 'authenticated');
-      setIsAuthenticated(true);
-      toast.success('Login successful');
-    } else {
-      toast.error('Invalid password');
+  // Check if user is admin
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+      
+      if (!error && data) {
+        setIsAdmin(true);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin-auth');
-    setIsAuthenticated(false);
-    toast.success('Logged out successfully');
+  // Authentication state management
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          const adminStatus = await checkAdminStatus(session.user.id);
+          setIsAdmin(adminStatus);
+        } else {
+          setIsAdmin(false);
+        }
+        setLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const adminStatus = await checkAdminStatus(session.user.id);
+        setIsAdmin(adminStatus);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const adminStatus = await checkAdminStatus(data.user.id);
+        if (!adminStatus) {
+          await supabase.auth.signOut();
+          toast.error('Access denied. Admin privileges required.');
+          return;
+        }
+        toast.success('Login successful');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Login failed');
+    }
   };
 
-  if (!isAuthenticated) {
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setIsAdmin(false);
+      toast.success('Logged out successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Logout failed');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session || !user || !isAdmin) {
     return <AdminLogin onLogin={handleLogin} />;
   }
 

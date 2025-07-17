@@ -6,21 +6,22 @@ import { Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AdminLoginProps {
-  onLogin: (password: string) => void;
+  onLogin: (email: string, password: string) => void;
 }
 
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password.trim() === '') {
-      toast.error('Please enter a password');
+    if (email.trim() === '' || password.trim() === '') {
+      toast.error('Please enter both email and password');
       return;
     }
     
-    onLogin(password);
+    onLogin(email, password);
   };
 
   return (
@@ -33,6 +34,21 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full"
+              placeholder="Enter admin email"
+            />
+          </div>
+          
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
