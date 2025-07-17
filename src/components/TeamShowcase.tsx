@@ -37,12 +37,6 @@ const TeamShowcase = () => {
     },
     {
       id: 5,
-      url: "/lovable-uploads/8f7d1890-35ff-4614-b26e-e2a5f439b2be.png",
-      title: "Web Designer",
-      description: "Crafting user-friendly web experiences"
-    },
-    {
-      id: 6,
       url: "/lovable-uploads/30524eb0-f4b1-469b-af5f-cf1018d53167.png",
       title: "Socilet Team",
       description: "Our dedicated team working to brand your dreams"
@@ -80,7 +74,7 @@ const TeamShowcase = () => {
               loop: true,
             }}
             autoplayOptions={{
-              delay: 4000,
+              delay: 3000,
               stopOnInteraction: false,
               stopOnMouseEnter: true,
             }}
