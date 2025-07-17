@@ -1,4 +1,3 @@
-
 import { PortfolioItem } from './types';
 import { defaultPortfolioItems } from './portfolioItems';
 
@@ -23,8 +22,8 @@ const filterDeletedItems = (items: PortfolioItem[]): PortfolioItem[] => {
  */
 export const loadPortfolioItems = (): PortfolioItem[] => {
   try {
-    // Force refresh to include the reordered portfolio with Surprise Saga before Desi AI Content
-    console.log('Force loading latest portfolio items with Surprise Saga repositioned');
+    // Force refresh to include the reordered portfolio with Lakshmik Agriculture before Solar Savings Calculator
+    console.log('Force loading latest portfolio items with Lakshmik Agriculture repositioned');
     
     // Get the latest default items and filter out permanently deleted ones
     const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
@@ -35,13 +34,13 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
     if (savedItems) {
       const parsedItems = JSON.parse(savedItems);
       
-      // Check if the portfolio order is correct (Surprise Saga before Desi AI Content)
-      const surpriseSagaIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 14);
-      const desiAIIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 3);
+      // Check if the portfolio order is correct (Lakshmik Agriculture before Solar Savings Calculator)
+      const lakshmikIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 6);
+      const solarIndex = parsedItems.findIndex((item: PortfolioItem) => item.id === 5);
       
-      if (surpriseSagaIndex === -1 || desiAIIndex === -1 || surpriseSagaIndex > desiAIIndex) {
+      if (lakshmikIndex === -1 || solarIndex === -1 || lakshmikIndex > solarIndex) {
         // Update with latest project order
-        console.log('Updating portfolio order with Surprise Saga before Desi AI Content');
+        console.log('Updating portfolio order with Lakshmik Agriculture before Solar Savings Calculator');
         const finalItems = filterDeletedItems(defaultPortfolioItems);
         localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
         console.log(`Portfolio updated with correct order`);

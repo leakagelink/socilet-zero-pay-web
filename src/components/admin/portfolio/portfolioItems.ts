@@ -1,3 +1,4 @@
+
 import { PortfolioItem } from './types';
 
 export const defaultPortfolioItems: PortfolioItem[] = [
@@ -56,15 +57,6 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     isWordPressProject: true
   },
   {
-    id: 5,
-    title: 'Solar Savings Calculator',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&h=600',
-    description: 'Calculate your solar energy savings with advanced algorithms.',
-    url: 'https://solarsavingscalculator.site',
-    isReactProject: true
-  },
-  {
     id: 6,
     title: 'Lakshmik Agriculture',
     category: 'websites',
@@ -72,6 +64,15 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     description: 'Agricultural products and farming solutions platform.',
     url: 'https://lakshmikagriculture.com',
     isWordPressProject: true
+  },
+  {
+    id: 5,
+    title: 'Solar Savings Calculator',
+    category: 'websites',
+    image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&h=600',
+    description: 'Calculate your solar energy savings with advanced algorithms.',
+    url: 'https://solarsavingscalculator.site',
+    isReactProject: true
   },
   {
     id: 7,
