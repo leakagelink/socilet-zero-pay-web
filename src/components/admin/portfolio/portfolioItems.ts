@@ -1,5 +1,4 @@
 
-
 import { PortfolioItem } from './types';
 
 export const defaultPortfolioItems: PortfolioItem[] = [
@@ -77,11 +76,11 @@ export const defaultPortfolioItems: PortfolioItem[] = [
   },
   {
     id: 14,
-    title: 'भारत का No.1 Personalized Gift Platform',
+    title: 'Surprise Saga',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=800&h=600',
     description: 'अपने प्यार को अनोखे तरीके से express करें। Custom songs, videos और unique gifts बनवाएं जो दिल छू जाएं।',
-    url: 'https://personalizedgifts.in',
+    url: 'https://surprisesaga.com/',
     isReactProject: true
   },
   {

@@ -23,8 +23,8 @@ const filterDeletedItems = (items: PortfolioItem[]): PortfolioItem[] => {
  */
 export const loadPortfolioItems = (): PortfolioItem[] => {
   try {
-    // Force refresh to include the new ConnectWithCA project
-    console.log('Force loading latest portfolio items with ConnectWithCA project added');
+    // Force refresh to include the updated Surprise Saga project
+    console.log('Force loading latest portfolio items with updated Surprise Saga project');
     
     // Get the latest default items and filter out permanently deleted ones
     const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
@@ -35,21 +35,16 @@ export const loadPortfolioItems = (): PortfolioItem[] => {
     if (savedItems) {
       const parsedItems = JSON.parse(savedItems);
       
-      // Check if the ConnectWithCA project (id: 15) exists
-      const connectWithCAProject = parsedItems.find((item: PortfolioItem) => item.id === 15);
+      // Check if the Surprise Saga project (id: 14) has the correct URL
+      const surpriseSagaProject = parsedItems.find((item: PortfolioItem) => item.id === 14);
       
-      if (!connectWithCAProject) {
-        // Add the new project with correct positioning
-        console.log('Adding ConnectWithCA project to existing portfolio');
-        const newProject = defaultPortfolioItems.find(item => item.id === 15);
-        
-        if (newProject) {
-          // Remove old items and add updated defaults to maintain correct order
-          const finalItems = filterDeletedItems(defaultPortfolioItems);
-          localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
-          console.log(`Portfolio updated with ConnectWithCA project`);
-          return finalItems;
-        }
+      if (!surpriseSagaProject || surpriseSagaProject.url !== 'https://surprisesaga.com/' || surpriseSagaProject.title !== 'Surprise Saga') {
+        // Update with latest project data
+        console.log('Updating Surprise Saga project with new title and URL');
+        const finalItems = filterDeletedItems(defaultPortfolioItems);
+        localStorage.setItem('portfolioItems', JSON.stringify(finalItems));
+        console.log(`Portfolio updated with Surprise Saga project`);
+        return finalItems;
       }
       
       // Return existing items (filtered)
@@ -115,14 +110,14 @@ export const permanentlyDeleteItem = (id: number): void => {
  * Will still exclude permanently deleted items
  */
 export const resetToDefaults = (): PortfolioItem[] => {
-  console.log('Resetting portfolio to defaults with ConnectWithCA project');
+  console.log('Resetting portfolio to defaults with updated Surprise Saga project');
   const filteredDefaults = filterDeletedItems(defaultPortfolioItems);
   localStorage.setItem('portfolioItems', JSON.stringify(filteredDefaults));
   window.dispatchEvent(new Event('storage'));
   return filteredDefaults;
 };
 
-// Force clear and reload portfolio items with new project
-console.log('Force refreshing portfolio with ConnectWithCA project');
+// Force clear and reload portfolio items with updated project
+console.log('Force refreshing portfolio with updated Surprise Saga project');
 localStorage.removeItem('portfolioItems'); // Clear existing data
 export const portfolioItems: PortfolioItem[] = loadPortfolioItems();
