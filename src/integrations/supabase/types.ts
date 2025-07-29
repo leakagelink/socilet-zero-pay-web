@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      affiliate_users: {
+        Row: {
+          created_at: string
+          id: string
+          referral_code: string
+          status: string
+          total_earnings: number
+          total_referrals: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referral_code: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referral_code?: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       domain_registrations: {
         Row: {
           created_at: string
@@ -250,6 +307,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          affiliate_id: string
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          commission_amount: number | null
+          created_at: string
+          id: string
+          project_budget: number | null
+          project_description: string | null
+          project_name: string
+          project_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          commission_amount?: number | null
+          created_at?: string
+          id?: string
+          project_budget?: number | null
+          project_description?: string | null
+          project_name: string
+          project_type: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          commission_amount?: number | null
+          created_at?: string
+          id?: string
+          project_budget?: number | null
+          project_description?: string | null
+          project_name?: string
+          project_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       server_metrics: {
         Row: {
