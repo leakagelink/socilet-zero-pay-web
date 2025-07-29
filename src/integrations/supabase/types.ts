@@ -10,119 +10,219 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
-      admin_users: {
+      domain_registrations: {
         Row: {
           created_at: string
+          domain_name: string
+          dynadot_order_id: string | null
+          expires_at: string | null
           id: string
-          permissions: Json | null
-          role: Database["public"]["Enums"]["user_role"]
+          registered_at: string | null
+          registration_price: number
+          registration_years: number
+          status: string
+          stripe_payment_intent_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          domain_name: string
+          dynadot_order_id?: string | null
+          expires_at?: string | null
+          id?: string
+          registered_at?: string | null
+          registration_price: number
+          registration_years?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          domain_name?: string
+          dynadot_order_id?: string | null
+          expires_at?: string | null
+          id?: string
+          registered_at?: string | null
+          registration_price?: number
+          registration_years?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      domain_searches: {
+        Row: {
+          created_at: string
+          domain_name: string
+          id: string
+          is_available: boolean
+          price: number | null
+          search_date: string
+          tld: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          domain_name: string
+          id?: string
+          is_available: boolean
+          price?: number | null
+          search_date?: string
+          tld: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          domain_name?: string
+          id?: string
+          is_available?: boolean
+          price?: number | null
+          search_date?: string
+          tld?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      domain_transfers: {
+        Row: {
+          auth_code: string | null
+          completed_at: string | null
+          created_at: string
+          domain_name: string
+          dynadot_transfer_id: string | null
+          id: string
+          initiated_at: string
+          status: string
+          stripe_payment_intent_id: string | null
+          transfer_price: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          auth_code?: string | null
+          completed_at?: string | null
+          created_at?: string
+          domain_name: string
+          dynadot_transfer_id?: string | null
+          id?: string
+          initiated_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          transfer_price?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          auth_code?: string | null
+          completed_at?: string | null
+          created_at?: string
+          domain_name?: string
+          dynadot_transfer_id?: string | null
+          id?: string
+          initiated_at?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          transfer_price?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      domains: {
+        Row: {
+          created_at: string
+          dns_configured: boolean
+          domain_name: string
+          id: string
+          ssl_enabled: boolean
+          status: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          dns_configured?: boolean
+          domain_name: string
           id?: string
-          permissions?: Json | null
-          role?: Database["public"]["Enums"]["user_role"]
+          ssl_enabled?: boolean
+          status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          dns_configured?: boolean
+          domain_name?: string
           id?: string
-          permissions?: Json | null
-          role?: Database["public"]["Enums"]["user_role"]
+          ssl_enabled?: boolean
+          status?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
       }
-      affiliate_users: {
+      hosting_plans: {
         Row: {
+          bandwidth_gb: number | null
+          billing_period: string
           created_at: string
-          id: string
-          referral_code: string
-          status: string | null
-          total_earnings: number | null
-          total_referrals: number | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          referral_code: string
-          status?: string | null
-          total_earnings?: number | null
-          total_referrals?: number | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          referral_code?: string
-          status?: string | null
-          total_earnings?: number | null
-          total_referrals?: number | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      portfolio_items: {
-        Row: {
-          category: string
-          created_at: string
-          created_by: string | null
           description: string | null
-          display_order: number | null
+          domains_allowed: number
+          email_accounts: number
+          features: Json | null
           id: string
-          image_url: string | null
-          is_active: boolean | null
-          is_react_project: boolean | null
-          project_url: string | null
-          title: string
+          is_active: boolean
+          name: string
+          price: number
+          storage_gb: number
           updated_at: string
         }
         Insert: {
-          category: string
+          bandwidth_gb?: number | null
+          billing_period: string
           created_at?: string
-          created_by?: string | null
           description?: string | null
-          display_order?: number | null
+          domains_allowed?: number
+          email_accounts?: number
+          features?: Json | null
           id?: string
-          image_url?: string | null
-          is_active?: boolean | null
-          is_react_project?: boolean | null
-          project_url?: string | null
-          title: string
+          is_active?: boolean
+          name: string
+          price: number
+          storage_gb: number
           updated_at?: string
         }
         Update: {
-          category?: string
+          bandwidth_gb?: number | null
+          billing_period?: string
           created_at?: string
-          created_by?: string | null
           description?: string | null
-          display_order?: number | null
+          domains_allowed?: number
+          email_accounts?: number
+          features?: Json | null
           id?: string
-          image_url?: string | null
-          is_active?: boolean | null
-          is_react_project?: boolean | null
-          project_url?: string | null
-          title?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          storage_gb?: number
           updated_at?: string
         }
         Relationships: []
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          company_name: string | null
           created_at: string
-          email: string | null
           full_name: string | null
           id: string
           phone: string | null
@@ -130,8 +230,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          avatar_url?: string | null
+          company_name?: string | null
           created_at?: string
-          email?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -139,8 +240,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          avatar_url?: string | null
+          company_name?: string | null
           created_at?: string
-          email?: string | null
           full_name?: string | null
           id?: string
           phone?: string | null
@@ -149,64 +251,156 @@ export type Database = {
         }
         Relationships: []
       }
-      referrals: {
+      server_metrics: {
         Row: {
-          affiliate_id: string
-          client_email: string
-          client_name: string
-          client_phone: string
-          commission_amount: number | null
-          commission_paid: boolean | null
-          created_at: string
+          cpu_usage: number
           id: string
-          project_budget: number | null
-          project_description: string | null
-          project_name: string
-          project_type: string
-          referred_user_id: string | null
-          status: string | null
-          updated_at: string
+          memory_usage: number
+          recorded_at: string
+          storage_usage: number
+          uptime_percentage: number
+          user_id: string
         }
         Insert: {
-          affiliate_id: string
-          client_email: string
-          client_name: string
-          client_phone: string
-          commission_amount?: number | null
-          commission_paid?: boolean | null
-          created_at?: string
+          cpu_usage?: number
           id?: string
-          project_budget?: number | null
-          project_description?: string | null
-          project_name: string
-          project_type: string
-          referred_user_id?: string | null
-          status?: string | null
-          updated_at?: string
+          memory_usage?: number
+          recorded_at?: string
+          storage_usage?: number
+          uptime_percentage?: number
+          user_id: string
         }
         Update: {
-          affiliate_id?: string
-          client_email?: string
-          client_name?: string
-          client_phone?: string
-          commission_amount?: number | null
-          commission_paid?: boolean | null
+          cpu_usage?: number
+          id?: string
+          memory_usage?: number
+          recorded_at?: string
+          storage_usage?: number
+          uptime_percentage?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          stripe_customer_id: string | null
+          subscribed: boolean
+          subscription_end: string | null
+          subscription_tier: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          stripe_customer_id?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          stripe_customer_id?: string | null
+          subscribed?: boolean
+          subscription_end?: string | null
+          subscription_tier?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      usage_metrics: {
+        Row: {
+          bandwidth_used_mb: number
+          created_at: string
+          id: string
+          month: number
+          storage_used_mb: number
+          subscription_id: string
+          updated_at: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          bandwidth_used_mb?: number
           created_at?: string
           id?: string
-          project_budget?: number | null
-          project_description?: string | null
-          project_name?: string
-          project_type?: string
-          referred_user_id?: string | null
-          status?: string | null
+          month: number
+          storage_used_mb?: number
+          subscription_id: string
           updated_at?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          bandwidth_used_mb?: number
+          created_at?: string
+          id?: string
+          month?: number
+          storage_used_mb?: number
+          subscription_id?: string
+          updated_at?: string
+          user_id?: string
+          year?: number
         }
         Relationships: [
           {
-            foreignKeyName: "referrals_affiliate_id_fkey"
-            columns: ["affiliate_id"]
+            foreignKeyName: "usage_metrics_subscription_id_fkey"
+            columns: ["subscription_id"]
             isOneToOne: false
-            referencedRelation: "affiliate_users"
+            referencedRelation: "user_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          plan_id: string
+          started_at: string
+          status: string
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id: string
+          started_at?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id?: string
+          started_at?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "hosting_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -216,17 +410,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_user_role: {
-        Args: { user_uuid: string }
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      is_admin: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      user_role: "admin" | "affiliate" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -353,8 +540,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      user_role: ["admin", "affiliate", "user"],
-    },
+    Enums: {},
   },
 } as const
