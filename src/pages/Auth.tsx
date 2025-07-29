@@ -1,18 +1,25 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { validatePasswordStrength } from '@/lib/auth';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<{ isValid: boolean; errors: string[] }>({ 
+    isValid: false, 
+    errors: [] 
+  });
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -23,8 +30,23 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
+  // Real-time password validation for signup
+  useEffect(() => {
+    if (password) {
+      setPasswordStrength(validatePasswordStrength(password));
+    } else {
+      setPasswordStrength({ isValid: false, errors: [] });
+    }
+  }, [password]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email.trim() || !password.trim()) {
+      toast.error('Please enter both email and password');
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -35,8 +57,8 @@ const Auth = () => {
         toast.success('Login successful!');
         navigate('/');
       }
-    } catch (error) {
-      toast.error('An unexpected error occurred');
+    } catch (error: any) {
+      toast.error(error.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -44,6 +66,17 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email.trim() || !password.trim() || !fullName.trim()) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    
+    if (!passwordStrength.isValid) {
+      toast.error('Please ensure your password meets all requirements');
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -52,9 +85,13 @@ const Auth = () => {
         toast.error(error);
       } else {
         toast.success('Account created successfully! Please check your email to verify your account.');
+        // Reset form
+        setEmail('');
+        setPassword('');
+        setFullName('');
       }
-    } catch (error) {
-      toast.error('An unexpected error occurred');
+    } catch (error: any) {
+      toast.error(error.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +101,7 @@ const Auth = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <Helmet>
         <title>Authentication - Socilet</title>
+        <meta name="description" content="Secure login and registration for Socilet services" />
       </Helmet>
       
       <Card className="w-full max-w-md">
@@ -94,6 +132,7 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -108,6 +147,7 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -134,6 +174,7 @@ const Auth = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -148,6 +189,7 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -158,18 +200,34 @@ const Auth = () => {
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="Create a password"
+                    placeholder="Create a secure password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={12}
+                    disabled={isLoading}
                   />
+                  
+                  {password && !passwordStrength.isValid && (
+                    <Alert className="mt-2">
+                      <AlertDescription>
+                        <div className="text-sm">
+                          <p className="font-medium mb-1">Password requirements not met:</p>
+                          <ul className="list-disc list-inside space-y-1">
+                            {passwordStrength.errors.map((error, index) => (
+                              <li key={index} className="text-xs">{error}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
                 
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={isLoading}
+                  disabled={isLoading || !passwordStrength.isValid}
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>

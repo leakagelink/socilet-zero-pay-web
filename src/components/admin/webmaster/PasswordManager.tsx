@@ -21,23 +21,26 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from '@/integrations/supabase/client';
+import { validatePasswordStrength } from '@/lib/auth';
 
 const PasswordManager = () => {
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleChangePassword = () => {
-    // Validate current password
-    if (currentPassword !== localStorage.getItem('admin-password')) {
-      toast.error('Current password is incorrect');
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill in all fields');
       return;
     }
 
-    // Validate new password
-    if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
+    // Validate new password strength
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      toast.error(`Password requirements not met: ${passwordValidation.errors.join(', ')}`);
       return;
     }
 
@@ -47,16 +50,37 @@ const PasswordManager = () => {
       return;
     }
 
-    // Update password in localStorage
-    localStorage.setItem('admin-password', newPassword);
+    setIsLoading(true);
     
-    // Close dialog and reset forms
-    setIsPasswordDialogOpen(false);
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    
-    toast.success('Password updated successfully');
+    try {
+      // Verify current password by attempting to update with it
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Close dialog and reset forms
+      setIsPasswordDialogOpen(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      
+      toast.success('Password updated successfully. Please log in again.');
+      
+      // Force logout to require re-authentication with new password
+      setTimeout(() => {
+        window.location.href = '/auth';
+      }, 2000);
+      
+    } catch (error: any) {
+      console.error('Password update error:', error);
+      toast.error('Failed to update password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -67,26 +91,32 @@ const PasswordManager = () => {
             <Key className="mr-2 h-5 w-5" />
             Admin Password
           </CardTitle>
-          <CardDescription>Change your admin panel access password</CardDescription>
+          <CardDescription>
+            Change your admin account password. Your new password must meet security requirements.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-500">
-            For security, change your password regularly. Your password should be 
-            at least 6 characters and include a mix of letters and numbers.
+          <p className="text-sm text-gray-500 mb-2">
+            Password requirements:
           </p>
+          <ul className="text-xs text-gray-400 space-y-1">
+            <li>• At least 12 characters long</li>
+            <li>• Must contain uppercase and lowercase letters</li>
+            <li>• Must contain at least one number</li>
+            <li>• Must contain at least one special character</li>
+          </ul>
         </CardContent>
         <CardFooter>
           <Button onClick={() => setIsPasswordDialogOpen(true)}>Change Password</Button>
         </CardFooter>
       </Card>
 
-      {/* Password Change Dialog */}
       <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Change Admin Password</DialogTitle>
             <DialogDescription>
-              Update your admin password below. Make sure to use a strong, secure password.
+              Update your password below. You'll need to log in again after changing it.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -100,6 +130,7 @@ const PasswordManager = () => {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="col-span-3"
+                disabled={isLoading}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -112,6 +143,7 @@ const PasswordManager = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="col-span-3"
+                disabled={isLoading}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -124,15 +156,23 @@ const PasswordManager = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="col-span-3"
+                disabled={isLoading}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsPasswordDialogOpen(false)}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
-            <Button onClick={handleChangePassword}>
-              Update Password
+            <Button 
+              onClick={handleChangePassword}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Updating...' : 'Update Password'}
             </Button>
           </DialogFooter>
         </DialogContent>

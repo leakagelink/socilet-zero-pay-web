@@ -1,6 +1,8 @@
+
 import { useState, useEffect, createContext, useContext } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
+import { secureSignIn, secureSignUp, secureSignOut, cleanupAuthState } from '@/lib/auth';
 
 interface AuthContextType {
   session: Session | null;
@@ -69,44 +71,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('Auth state changed:', { event, session: !!session });
+        
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          await checkUserRole(session.user.id);
+          // Defer role checking to prevent deadlocks
+          setTimeout(() => {
+            checkUserRole(session.user.id);
+          }, 0);
         } else {
           setIsAdmin(false);
           setIsAffiliate(false);
         }
+        
         setLoading(false);
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await checkUserRole(session.user.id);
+    // THEN check for existing session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          cleanupAuthState();
+        }
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          setTimeout(() => {
+            checkUserRole(session.user.id);
+          }, 0);
+        } else {
+          setIsAdmin(false);
+          setIsAffiliate(false);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        cleanupAuthState();
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+      await secureSignIn(email, password);
       return {};
     } catch (error: any) {
       return { error: error.message };
@@ -115,20 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName,
-          }
-        }
-      });
-
-      if (error) throw error;
+      await secureSignUp(email, password, fullName);
       return {};
     } catch (error: any) {
       return { error: error.message };
@@ -137,11 +148,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      await secureSignOut();
       setIsAdmin(false);
       setIsAffiliate(false);
     } catch (error) {
       console.error('Error signing out:', error);
+      // Force cleanup even if signout fails
+      cleanupAuthState();
+      window.location.href = '/auth';
     }
   };
 
