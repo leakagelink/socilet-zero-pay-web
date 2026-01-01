@@ -20,35 +20,26 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
   
-  // Check if user is admin with detailed logging
+  // Check if user is admin using the secure has_role function
   const checkAdminStatus = async (userId: string) => {
     try {
-      console.log('Checking admin status for user:', userId);
-      
       const { data, error } = await supabase
-        .from('admin_users')
+        .from('user_roles')
         .select('role')
         .eq('user_id', userId)
-        .single();
-      
-      console.log('Admin check result:', { data, error });
+        .eq('role', 'admin')
+        .maybeSingle();
       
       if (error) {
         console.error('Error checking admin status:', error);
-        if (error.code === 'PGRST116') {
-          console.log('User not found in admin_users table');
-          return false;
-        }
-        throw error;
+        return false;
       }
       
       if (data) {
-        console.log('User is admin with role:', data.role);
         setIsAdmin(true);
         return true;
       }
       
-      console.log('User exists but no admin role found');
       return false;
     } catch (error) {
       console.error('Error in checkAdminStatus:', error);
