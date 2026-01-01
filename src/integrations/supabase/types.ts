@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          pending_earnings: number | null
+          phone: string | null
+          referral_code: string
+          total_earnings: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          pending_earnings?: number | null
+          phone?: string | null
+          referral_code: string
+          total_earnings?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          pending_earnings?: number | null
+          phone?: string | null
+          referral_code?: string
+          total_earnings?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          affiliate_id: string
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          commission_amount: number | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          project_type: string
+          project_value: number | null
+          status: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          commission_amount?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          project_type: string
+          project_value?: number | null
+          status?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          commission_amount?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          project_type?: string
+          project_value?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string

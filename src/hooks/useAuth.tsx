@@ -34,12 +34,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkUserRole = async (userId: string) => {
     try {
-      // Check if admin
+      // Check if admin using user_roles table
       const { data: adminData } = await supabase
-        .from('admin_users')
+        .from('user_roles')
         .select('role')
         .eq('user_id', userId)
-        .single();
+        .eq('role', 'admin')
+        .maybeSingle();
 
       if (adminData) {
         setIsAdmin(true);
@@ -50,9 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Check if affiliate
       const { data: affiliateData } = await supabase
         .from('affiliate_users')
-        .select('status')
+        .select('id')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (affiliateData) {
         setIsAdmin(false);
