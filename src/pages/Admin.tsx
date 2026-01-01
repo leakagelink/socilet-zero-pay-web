@@ -134,43 +134,47 @@ const Admin = () => {
     try {
       console.log('Attempting login for:', email);
       setAuthError(null);
-      setLoading(true);
       
-      // Use supabase.functions.invoke for proper CORS handling
-      const { data: edgeResult, error: edgeError } = await supabase.functions.invoke('admin-login', {
-        body: { email, password }
+      // Direct Supabase auth - most reliable method
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
-      
-      if (edgeError) {
-        console.error('Edge function error:', edgeError);
-        throw new Error(edgeError.message || 'Login failed');
+
+      if (error) {
+        console.error('Login error:', error);
+        throw error;
       }
-      
-      if (edgeResult?.success && edgeResult?.session) {
-        // Set the session from edge function response
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: edgeResult.session.access_token,
-          refresh_token: edgeResult.session.refresh_token
-        });
+
+      console.log('Login successful:', !!data.user);
+
+      if (data.user) {
+        // Check if user is admin
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
         
-        if (sessionError) {
-          throw sessionError;
+        if (roleError) {
+          console.error('Role check error:', roleError);
+          await supabase.auth.signOut();
+          throw new Error('Failed to verify admin status');
+        }
+        
+        if (!roleData) {
+          console.log('User logged in but not admin, signing out...');
+          await supabase.auth.signOut();
+          toast.error('Access denied. Admin privileges required.');
+          return;
         }
         
         setIsAdmin(true);
-        setLoading(false);
         toast.success('Login successful!');
-        return;
       }
-      
-      if (edgeResult?.error) {
-        throw new Error(edgeResult.error);
-      }
-      
-      throw new Error('Unexpected response from server');
     } catch (error: any) {
       console.error('Login failed:', error);
-      setLoading(false);
       const errorMessage = error.message || 'Login failed';
       toast.error(errorMessage);
       setAuthError(errorMessage);
