@@ -110,6 +110,9 @@ const Affiliate = () => {
           .from('affiliate_users')
           .insert({
             user_id: user.id,
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
             referral_code: referralCode,
           });
 
