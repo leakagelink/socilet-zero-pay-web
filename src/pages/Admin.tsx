@@ -135,27 +135,57 @@ const Admin = () => {
       console.log('Attempting login for:', email);
       setAuthError(null);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        console.error('Login error:', error);
-        throw error;
-      }
-
-      console.log('Login successful:', !!data.user);
-
-      if (data.user) {
-        const adminStatus = await checkAdminStatus(data.user.id);
-        if (!adminStatus) {
-          console.log('User logged in but not admin, signing out...');
-          await supabase.auth.signOut();
-          toast.error('Access denied. Admin privileges required.');
+      // Try edge function login first (bypasses preview network issues)
+      try {
+        const response = await fetch(
+          `https://knputxpnhffskshlakiq.supabase.co/functions/v1/admin-login`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          }
+        );
+        
+        const result = await response.json();
+        
+        if (result.success && result.session) {
+          // Set the session manually
+          await supabase.auth.setSession({
+            access_token: result.session.access_token,
+            refresh_token: result.session.refresh_token
+          });
+          setIsAdmin(true);
+          toast.success('Login successful');
           return;
+        } else if (result.error) {
+          throw new Error(result.error);
         }
-        toast.success('Login successful');
+      } catch (edgeFnError: any) {
+        console.log('Edge function login failed, trying direct auth:', edgeFnError.message);
+        
+        // Fallback to direct Supabase auth
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          console.error('Login error:', error);
+          throw error;
+        }
+
+        console.log('Login successful:', !!data.user);
+
+        if (data.user) {
+          const adminStatus = await checkAdminStatus(data.user.id);
+          if (!adminStatus) {
+            console.log('User logged in but not admin, signing out...');
+            await supabase.auth.signOut();
+            toast.error('Access denied. Admin privileges required.');
+            return;
+          }
+          toast.success('Login successful');
+        }
       }
     } catch (error: any) {
       console.error('Login failed:', error);
