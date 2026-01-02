@@ -8,4 +8,5 @@ export type PortfolioItem = {
   url?: string;
   isReactProject?: boolean;
   isWordPressProject?: boolean;
+  isUnderDevelopment?: boolean;
 };
