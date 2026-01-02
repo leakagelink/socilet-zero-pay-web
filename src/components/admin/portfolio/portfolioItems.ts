@@ -3,15 +3,6 @@ import { PortfolioItem } from './types';
 
 export const defaultPortfolioItems: PortfolioItem[] = [
   {
-    id: 1,
-    title: 'Bharat Startup Solution',
-    category: 'websites',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&h=600',
-    description: 'Complete startup solution platform with modern design and comprehensive business tools.',
-    url: 'https://bharatstartup.online',
-    isReactProject: true
-  },
-  {
     id: 16,
     title: 'VaultIQ',
     category: 'websites',
@@ -43,18 +34,20 @@ export const defaultPortfolioItems: PortfolioItem[] = [
     title: 'Gayatri Kashyap',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1487412947147-5cebf96a60c5?auto=format&fit=crop&w=800&h=600',
-    description: 'Professional makeup artist portfolio & business website showcasing beauty transformations. (Under Development)',
+    description: 'Professional makeup artist portfolio & business website showcasing beauty transformations.',
     url: 'https://gayatrikashyap.in/',
-    isReactProject: true
+    isReactProject: true,
+    isUnderDevelopment: true
   },
   {
     id: 20,
     title: 'ZepTM',
     category: 'websites',
     image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&h=600',
-    description: 'Classified marketplace platform for buying and selling products. (Under Development)',
+    description: 'Classified marketplace platform for buying and selling products.',
     url: 'https://zeptm.com',
-    isReactProject: true
+    isReactProject: true,
+    isUnderDevelopment: true
   },
   {
     id: 2,
