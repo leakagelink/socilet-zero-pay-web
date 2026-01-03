@@ -181,6 +181,53 @@ const Admin = () => {
     }
   };
 
+  const handleSignUp = async (email: string, password: string) => {
+    try {
+      console.log('Attempting signup for:', email);
+      setAuthError(null);
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/admin`
+        }
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        throw error;
+      }
+
+      console.log('Signup successful:', !!data.user);
+
+      if (data.user) {
+        // Add admin role for the new user
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: data.user.id,
+            role: 'admin'
+          });
+        
+        if (roleError) {
+          console.error('Role assignment error:', roleError);
+          // User created but role assignment failed - they can still login
+          toast.warning('Account created! Please contact existing admin for role assignment.');
+          return;
+        }
+        
+        setIsAdmin(true);
+        toast.success('Account created successfully! You are now logged in as admin.');
+      }
+    } catch (error: any) {
+      console.error('Signup failed:', error);
+      const errorMessage = error.message || 'Signup failed';
+      toast.error(errorMessage);
+      setAuthError(errorMessage);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       console.log('Logging out...');
@@ -216,7 +263,7 @@ const Admin = () => {
   if (!session || !user || !isAdmin) {
     return (
       <div>
-        <AdminLogin onLogin={handleLogin} />
+        <AdminLogin onLogin={handleLogin} onSignUp={handleSignUp} />
         {authError && (
           <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {authError}
