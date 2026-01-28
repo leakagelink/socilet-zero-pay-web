@@ -53,6 +53,69 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          advance_amount: number | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string | null
+          deadline: string | null
+          end_date: string | null
+          id: string
+          payment_method: string | null
+          project_description: string | null
+          project_file_url: string | null
+          project_name: string
+          project_status: string
+          remaining_amount: number | null
+          start_date: string | null
+          total_amount: number | null
+          updated_at: string
+        }
+        Insert: {
+          advance_amount?: number | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          end_date?: string | null
+          id?: string
+          payment_method?: string | null
+          project_description?: string | null
+          project_file_url?: string | null
+          project_name: string
+          project_status?: string
+          remaining_amount?: number | null
+          start_date?: string | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Update: {
+          advance_amount?: number | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          end_date?: string | null
+          id?: string
+          payment_method?: string | null
+          project_description?: string | null
+          project_file_url?: string | null
+          project_name?: string
+          project_status?: string
+          remaining_amount?: number | null
+          start_date?: string | null
+          total_amount?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           affiliate_id: string
