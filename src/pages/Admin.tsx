@@ -136,41 +136,39 @@ const Admin = () => {
       console.log('Attempting login for:', email);
       setAuthError(null);
       
-      // Direct Supabase auth - most reliable method
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // Use edge function for login - works across all domains
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const response = await fetch(`${supabaseUrl}/functions/v1/admin-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) {
-        console.error('Login error:', error);
-        throw error;
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Login error:', result.error);
+        throw new Error(result.error || 'Login failed');
       }
 
-      console.log('Login successful:', !!data.user);
+      console.log('Edge function login successful');
 
-      if (data.user) {
-        // Check if user is admin
-        const { data: roleData, error: roleError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', data.user.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-        
-        if (roleError) {
-          console.error('Role check error:', roleError);
-          await supabase.auth.signOut();
-          throw new Error('Failed to verify admin status');
+      if (result.session) {
+        // Set the session in Supabase client
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: result.session.access_token,
+          refresh_token: result.session.refresh_token,
+        });
+
+        if (sessionError) {
+          console.error('Session set error:', sessionError);
+          throw new Error('Failed to establish session');
         }
-        
-        if (!roleData) {
-          console.log('User logged in but not admin, signing out...');
-          await supabase.auth.signOut();
-          toast.error('Access denied. Admin privileges required.');
-          return;
-        }
-        
+
+        setSession(result.session);
+        setUser(result.user);
         setIsAdmin(true);
         toast.success('Login successful!');
       }
