@@ -66,30 +66,35 @@ const Admin = () => {
     setError(null);
 
     try {
-      console.log('Attempting login via edge function...');
+      console.log('Attempting login via supabase.functions.invoke...');
       
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(`${supabaseUrl}/functions/v1/admin-login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      // Use supabase.functions.invoke instead of fetch - this handles CORS properly
+      const { data, error: invokeError } = await supabase.functions.invoke('admin-login', {
+        body: { email, password },
       });
 
-      const result = await response.json();
-      console.log('Edge function response status:', response.status);
+      console.log('Edge function response:', data, invokeError);
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Login failed');
+      if (invokeError) {
+        console.error('Invoke error:', invokeError);
+        throw new Error(invokeError.message || 'Login failed');
       }
 
-      if (result.success && result.session) {
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      if (data?.success && data?.session) {
         // Set session in Supabase client
-        await supabase.auth.setSession({
-          access_token: result.session.access_token,
-          refresh_token: result.session.refresh_token,
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
         });
+
+        if (sessionError) {
+          console.error('Session set error:', sessionError);
+          throw new Error('Failed to establish session');
+        }
 
         setIsLoggedIn(true);
         setUserEmail(email);
