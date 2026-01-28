@@ -1,51 +1,41 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lock } from 'lucide-react';
-import { toast } from 'sonner';
+import { Lock, Loader2 } from 'lucide-react';
 
 interface AdminLoginProps {
-  onLogin: (email: string, password: string) => void;
-  onSignUp?: (email: string, password: string) => void;
+  onLogin: (email: string, password: string) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
 }
 
-const AdminLogin = ({ onLogin }: AdminLoginProps) => {
+const AdminLogin = ({ onLogin, isLoading, error }: AdminLoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (email.trim() === '' || password.trim() === '') {
-      toast.error('Please enter both email and password');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
+    if (email.trim() && password.trim()) {
       await onLogin(email, password);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
+      <div className="max-w-md w-full mx-4 p-8 bg-white rounded-2xl shadow-xl border">
         <div className="text-center mb-8">
-          <Lock className="mx-auto h-12 w-12 text-primary-600" />
-          <h1 className="mt-4 text-3xl font-bold text-primary-800">
-            Admin Login
-          </h1>
-          <p className="mt-2 text-gray-600">
+          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <Lock className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Admin Login</h1>
+          <p className="mt-2 text-muted-foreground text-sm">
             Enter your credentials to access the admin panel
           </p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
               Email
             </label>
             <Input
@@ -55,13 +45,13 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full"
-              placeholder="Enter admin email"
+              placeholder="admin@example.com"
               disabled={isLoading}
             />
           </div>
           
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
               Password
             </label>
             <Input
@@ -71,29 +61,28 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full"
-              placeholder="Enter password"
+              placeholder="••••••••"
               disabled={isLoading}
             />
           </div>
+
+          {error && (
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+          )}
           
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Logging in...' : 'Login'}
+          <Button type="submit" className="w-full h-11" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              'Login'
+            )}
           </Button>
         </form>
-
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <p className="text-sm text-amber-800">
-            <strong>Note:</strong> If login fails in preview, please use the published URL: 
-            <a 
-              href="https://socilet-zero-pay-web.lovable.app/admin" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block mt-1 text-primary-600 hover:underline font-medium"
-            >
-              socilet-zero-pay-web.lovable.app/admin
-            </a>
-          </p>
-        </div>
       </div>
     </div>
   );

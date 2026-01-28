@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,131 +11,63 @@ import ProjectManager from '../components/admin/ProjectManager';
 import AdminLogin from '../components/admin/AdminLogin';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
 
 const Admin = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState<string | null>(null);
-  
-  // Check if user is admin using the secure has_role function
-  const checkAdminStatus = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error checking admin status:', error);
-        return false;
-      }
-      
-      if (data) {
-        setIsAdmin(true);
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Error in checkAdminStatus:', error);
-      setAuthError('Failed to check admin status');
-      return false;
-    }
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>('');
 
-  // Initialize authentication
+  // Check existing session on mount
   useEffect(() => {
-    console.log('Admin component mounted, initializing auth...');
-    
-    let timeoutId: NodeJS.Timeout;
-    
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', { event, session: !!session });
-        
-        // Clear any existing timeout
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          console.log('User found in session, checking admin status...');
-          const adminStatus = await checkAdminStatus(session.user.id);
-          setIsAdmin(adminStatus);
-        } else {
-          console.log('No user in session');
-          setIsAdmin(false);
-        }
-        
-        // Set a timeout to ensure loading state doesn't persist indefinitely
-        timeoutId = setTimeout(() => {
-          console.log('Setting loading to false after timeout');
-          setLoading(false);
-        }, 100);
-      }
-    );
-
-    // Check for existing session
     const checkSession = async () => {
       try {
-        console.log('Checking for existing session...');
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-          setAuthError('Failed to get session');
-          setLoading(false);
-          return;
-        }
-        
-        console.log('Existing session check:', { session: !!session });
-        
-        setSession(session);
-        setUser(session?.user ?? null);
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
-          console.log('Existing session found, checking admin status...');
-          const adminStatus = await checkAdminStatus(session.user.id);
-          setIsAdmin(adminStatus);
-        } else {
-          console.log('No existing session found');
-          setIsAdmin(false);
+          // Verify admin role
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .eq('role', 'admin')
+            .maybeSingle();
+          
+          if (roleData) {
+            setIsLoggedIn(true);
+            setUserEmail(session.user.email || '');
+          }
         }
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Unexpected error in session check:', error);
-        setAuthError('Unexpected authentication error');
-        setLoading(false);
+      } catch (err) {
+        console.error('Session check error:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     checkSession();
 
-    return () => {
-      console.log('Admin component unmounting...');
-      subscription.unsubscribe();
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_OUT') {
+          setIsLoggedIn(false);
+          setUserEmail('');
+        }
       }
-    };
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
+    setLoginLoading(true);
+    setError(null);
+
     try {
-      console.log('Attempting login for:', email);
-      setAuthError(null);
+      console.log('Attempting login via edge function...');
       
-      // Use edge function for login - works across all domains
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const response = await fetch(`${supabaseUrl}/functions/v1/admin-login`, {
         method: 'POST',
@@ -147,133 +78,67 @@ const Admin = () => {
       });
 
       const result = await response.json();
+      console.log('Edge function response status:', response.status);
 
       if (!response.ok) {
-        console.error('Login error:', result.error);
         throw new Error(result.error || 'Login failed');
       }
 
-      console.log('Edge function login successful');
-
-      if (result.session) {
-        // Set the session in Supabase client
-        const { error: sessionError } = await supabase.auth.setSession({
+      if (result.success && result.session) {
+        // Set session in Supabase client
+        await supabase.auth.setSession({
           access_token: result.session.access_token,
           refresh_token: result.session.refresh_token,
         });
 
-        if (sessionError) {
-          console.error('Session set error:', sessionError);
-          throw new Error('Failed to establish session');
-        }
-
-        setSession(result.session);
-        setUser(result.user);
-        setIsAdmin(true);
+        setIsLoggedIn(true);
+        setUserEmail(email);
         toast.success('Login successful!');
+      } else {
+        throw new Error('Invalid response from server');
       }
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      const errorMessage = error.message || 'Login failed';
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const errorMessage = err.message || 'Login failed. Please try again.';
+      setError(errorMessage);
       toast.error(errorMessage);
-      setAuthError(errorMessage);
-    }
-  };
-
-  const handleSignUp = async (email: string, password: string) => {
-    try {
-      console.log('Attempting signup for:', email);
-      setAuthError(null);
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/admin`
-        }
-      });
-
-      if (error) {
-        console.error('Signup error:', error);
-        throw error;
-      }
-
-      console.log('Signup successful:', !!data.user);
-
-      if (data.user) {
-        // Add admin role for the new user
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: data.user.id,
-            role: 'admin'
-          });
-        
-        if (roleError) {
-          console.error('Role assignment error:', roleError);
-          // User created but role assignment failed - they can still login
-          toast.warning('Account created! Please contact existing admin for role assignment.');
-          return;
-        }
-        
-        setIsAdmin(true);
-        toast.success('Account created successfully! You are now logged in as admin.');
-      }
-    } catch (error: any) {
-      console.error('Signup failed:', error);
-      const errorMessage = error.message || 'Signup failed';
-      toast.error(errorMessage);
-      setAuthError(errorMessage);
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   const handleLogout = async () => {
     try {
-      console.log('Logging out...');
       await supabase.auth.signOut();
-      setIsAdmin(false);
-      setAuthError(null);
+      setIsLoggedIn(false);
+      setUserEmail('');
       toast.success('Logged out successfully');
-    } catch (error: any) {
-      console.error('Logout error:', error);
-      toast.error(error.message || 'Logout failed');
+    } catch (err) {
+      console.error('Logout error:', err);
+      toast.error('Logout failed');
     }
   };
 
-  // Loading state with more information
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin panel...</p>
-          {authError && (
-            <p className="text-red-600 mt-2 text-sm">{authError}</p>
-          )}
-          <p className="text-xs text-gray-400 mt-2">
-            Debug: session={!!session}, user={!!user}, isAdmin={isAdmin}
-          </p>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // Show login if not authenticated or not admin
-  if (!session || !user || !isAdmin) {
-    return (
-      <div>
-      <AdminLogin onLogin={handleLogin} />
-        {authError && (
-          <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {authError}
-          </div>
-        )}
-      </div>
-    );
+  // Show login if not authenticated
+  if (!isLoggedIn) {
+    return <AdminLogin onLogin={handleLogin} isLoading={loginLoading} error={error} />;
   }
 
+  // Admin dashboard
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Admin Panel - Socilet</title>
       </Helmet>
@@ -281,7 +146,10 @@ const Admin = () => {
       <AdminHeader onLogout={handleLogout} />
       
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8 text-primary-800">Admin Dashboard</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Welcome, {userEmail}</p>
+        </div>
         
         <Tabs defaultValue="projects" className="w-full">
           <TabsList className="mb-8 w-full justify-start overflow-x-auto">
@@ -293,27 +161,27 @@ const Admin = () => {
             <TabsTrigger value="webmaster">Webmaster Tools</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="projects" className="border rounded-lg p-6 bg-white">
+          <TabsContent value="projects" className="border rounded-lg p-6 bg-card">
             <ProjectManager />
           </TabsContent>
           
-          <TabsContent value="portfolio" className="border rounded-lg p-6 bg-white">
+          <TabsContent value="portfolio" className="border rounded-lg p-6 bg-card">
             <PortfolioManager />
           </TabsContent>
           
-          <TabsContent value="blog" className="border rounded-lg p-6 bg-white">
+          <TabsContent value="blog" className="border rounded-lg p-6 bg-card">
             <BlogManager />
           </TabsContent>
           
-          <TabsContent value="testimonials" className="border rounded-lg p-6 bg-white">
+          <TabsContent value="testimonials" className="border rounded-lg p-6 bg-card">
             <TestimonialManager />
           </TabsContent>
           
-          <TabsContent value="photos" className="border rounded-lg p-6 bg-white">
+          <TabsContent value="photos" className="border rounded-lg p-6 bg-card">
             <WebsitePhotosManager />
           </TabsContent>
           
-          <TabsContent value="webmaster" className="border rounded-lg p-6 bg-white">
+          <TabsContent value="webmaster" className="border rounded-lg p-6 bg-card">
             <WebmasterManager />
           </TabsContent>
         </Tabs>
