@@ -8,6 +8,7 @@ import BlogManager from '../components/admin/BlogManager';
 import TestimonialManager from '../components/admin/TestimonialManager';
 import WebsitePhotosManager from '../components/admin/WebsitePhotosManager';
 import WebmasterManager from '../components/admin/WebmasterManager';
+import ProjectManager from '../components/admin/ProjectManager';
 import AdminLogin from '../components/admin/AdminLogin';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -284,14 +285,19 @@ const Admin = () => {
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-primary-800">Admin Dashboard</h1>
         
-        <Tabs defaultValue="portfolio" className="w-full">
+        <Tabs defaultValue="projects" className="w-full">
           <TabsList className="mb-8 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="projects">Client Projects</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio Items</TabsTrigger>
             <TabsTrigger value="blog">Blog Posts</TabsTrigger>
             <TabsTrigger value="testimonials">Video Testimonials</TabsTrigger>
             <TabsTrigger value="photos">Website Photos</TabsTrigger>
             <TabsTrigger value="webmaster">Webmaster Tools</TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="projects" className="border rounded-lg p-6 bg-white">
+            <ProjectManager />
+          </TabsContent>
           
           <TabsContent value="portfolio" className="border rounded-lg p-6 bg-white">
             <PortfolioManager />
