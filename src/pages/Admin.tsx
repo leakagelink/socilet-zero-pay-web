@@ -66,42 +66,52 @@ const Admin = () => {
     setError(null);
 
     try {
-      console.log('Attempting login via supabase.functions.invoke...');
+      console.log('Starting direct Supabase auth login...');
       
-      // Use supabase.functions.invoke instead of fetch - this handles CORS properly
-      const { data, error: invokeError } = await supabase.functions.invoke('admin-login', {
-        body: { email, password },
+      // Use direct Supabase auth - this is more reliable
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password
       });
 
-      console.log('Edge function response:', data, invokeError);
-
-      if (invokeError) {
-        console.error('Invoke error:', invokeError);
-        throw new Error(invokeError.message || 'Login failed');
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw new Error(authError.message || 'Invalid email or password');
       }
 
-      if (data?.error) {
-        throw new Error(data.error);
+      if (!authData.user) {
+        throw new Error('Authentication failed');
       }
 
-      if (data?.success && data?.session) {
-        // Set session in Supabase client
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
-        });
+      console.log('Auth successful, checking admin role...');
 
-        if (sessionError) {
-          console.error('Session set error:', sessionError);
-          throw new Error('Failed to establish session');
-        }
+      // Check if user has admin role
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', authData.user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
 
-        setIsLoggedIn(true);
-        setUserEmail(email);
-        toast.success('Login successful!');
-      } else {
-        throw new Error('Invalid response from server');
+      if (roleError) {
+        console.error('Role check error:', roleError);
+        // Sign out since they're not admin
+        await supabase.auth.signOut();
+        throw new Error('Failed to verify admin status');
       }
+
+      if (!roleData) {
+        console.log('User is not admin');
+        // Sign out since they're not admin
+        await supabase.auth.signOut();
+        throw new Error('Access denied. Admin privileges required.');
+      }
+
+      console.log('Login successful for admin:', email);
+      setIsLoggedIn(true);
+      setUserEmail(email);
+      toast.success('Login successful!');
+
     } catch (err: any) {
       console.error('Login error:', err);
       const errorMessage = err.message || 'Login failed. Please try again.';
