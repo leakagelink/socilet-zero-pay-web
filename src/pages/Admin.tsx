@@ -264,7 +264,7 @@ const Admin = () => {
   if (!session || !user || !isAdmin) {
     return (
       <div>
-        <AdminLogin onLogin={handleLogin} onSignUp={handleSignUp} />
+      <AdminLogin onLogin={handleLogin} />
         {authError && (
           <div className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {authError}
