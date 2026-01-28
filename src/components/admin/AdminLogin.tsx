@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lock, UserPlus } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface AdminLoginProps {
@@ -10,13 +9,12 @@ interface AdminLoginProps {
   onSignUp?: (email: string, password: string) => void;
 }
 
-const AdminLogin = ({ onLogin, onSignUp }: AdminLoginProps) => {
+const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (email.trim() === '' || password.trim() === '') {
@@ -24,18 +22,11 @@ const AdminLogin = ({ onLogin, onSignUp }: AdminLoginProps) => {
       return;
     }
 
-    if (isSignUp) {
-      if (password !== confirmPassword) {
-        toast.error('Passwords do not match');
-        return;
-      }
-      if (password.length < 6) {
-        toast.error('Password must be at least 6 characters');
-        return;
-      }
-      onSignUp?.(email, password);
-    } else {
-      onLogin(email, password);
+    setIsLoading(true);
+    try {
+      await onLogin(email, password);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,16 +34,12 @@ const AdminLogin = ({ onLogin, onSignUp }: AdminLoginProps) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
         <div className="text-center mb-8">
-          {isSignUp ? (
-            <UserPlus className="mx-auto h-12 w-12 text-primary-600" />
-          ) : (
-            <Lock className="mx-auto h-12 w-12 text-primary-600" />
-          )}
+          <Lock className="mx-auto h-12 w-12 text-primary-600" />
           <h1 className="mt-4 text-3xl font-bold text-primary-800">
-            {isSignUp ? 'Admin Sign Up' : 'Admin Login'}
+            Admin Login
           </h1>
           <p className="mt-2 text-gray-600">
-            {isSignUp ? 'Create a new admin account' : 'Enter your credentials to access the admin panel'}
+            Enter your credentials to access the admin panel
           </p>
         </div>
         
@@ -69,6 +56,7 @@ const AdminLogin = ({ onLogin, onSignUp }: AdminLoginProps) => {
               required
               className="w-full"
               placeholder="Enter admin email"
+              disabled={isLoading}
             />
           </div>
           
@@ -84,42 +72,27 @@ const AdminLogin = ({ onLogin, onSignUp }: AdminLoginProps) => {
               required
               className="w-full"
               placeholder="Enter password"
+              disabled={isLoading}
             />
           </div>
-
-          {isSignUp && (
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full"
-                placeholder="Confirm password"
-              />
-            </div>
-          )}
           
-          <Button type="submit" className="w-full">
-            {isSignUp ? 'Sign Up' : 'Login'}
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Logging in...' : 'Login'}
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
-          <button
-            type="button"
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              setConfirmPassword('');
-            }}
-            className="text-sm text-primary-600 hover:text-primary-800 hover:underline"
-          >
-            {isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up'}
-          </button>
+        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <p className="text-sm text-amber-800">
+            <strong>Note:</strong> If login fails in preview, please use the published URL: 
+            <a 
+              href="https://socilet-zero-pay-web.lovable.app/admin" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block mt-1 text-primary-600 hover:underline font-medium"
+            >
+              socilet-zero-pay-web.lovable.app/admin
+            </a>
+          </p>
         </div>
       </div>
     </div>
