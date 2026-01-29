@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, Users, FileText, Settings } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, Users, FolderKanban } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ProjectManager from '@/components/admin/ProjectManager';
 
 const AdminPanel = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -210,51 +211,28 @@ const AdminPanel = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground">Welcome, Admin!</h2>
-          <p className="text-muted-foreground">Manage your website from here.</p>
-        </div>
+        <Tabs defaultValue="projects" className="space-y-6">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="projects" className="flex items-center gap-2">
+              <FolderKanban className="h-4 w-4" />
+              Projects
+            </TabsTrigger>
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Projects
-              </CardTitle>
-              <CardDescription>Manage client projects</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">Coming Soon</p>
-            </CardContent>
-          </Card>
+          <TabsContent value="projects">
+            <ProjectManager />
+          </TabsContent>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                Blog Posts
-              </CardTitle>
-              <CardDescription>Create and edit blog content</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">Coming Soon</p>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" />
-                Settings
-              </CardTitle>
-              <CardDescription>Website configuration</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">Coming Soon</p>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="overview">
+            <div className="text-center py-12 text-muted-foreground">
+              <p>Overview dashboard coming soon...</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
