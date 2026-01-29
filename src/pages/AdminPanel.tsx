@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, Users, FolderKanban } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProjectManager from '@/components/admin/ProjectManager';
+import DigitalProductManager from '@/components/admin/DigitalProductManager';
+
+interface RevenueStats {
+  projectsRevenue: number;
+  projectsPending: number;
+  digitalRevenue: number;
+  digitalProfit: number;
+  totalRevenue: number;
+}
 
 const AdminPanel = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,6 +25,44 @@ const AdminPanel = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [revenueStats, setRevenueStats] = useState<RevenueStats>({
+    projectsRevenue: 0,
+    projectsPending: 0,
+    digitalRevenue: 0,
+    digitalProfit: 0,
+    totalRevenue: 0,
+  });
+
+  // Fetch revenue stats
+  const fetchRevenueStats = async () => {
+    try {
+      // Fetch projects data
+      const { data: projects } = await supabase
+        .from('projects')
+        .select('total_amount, remaining_amount, advance_amount');
+
+      // Fetch digital products data
+      const { data: digitalProducts } = await supabase
+        .from('digital_products')
+        .select('resell_price, profit');
+
+      const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
+      const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
+      const projectsReceived = projects?.reduce((sum, p) => sum + (p.advance_amount || 0), 0) || 0;
+      const digitalRevenue = digitalProducts?.reduce((sum, p) => sum + (p.resell_price || 0), 0) || 0;
+      const digitalProfit = digitalProducts?.reduce((sum, p) => sum + (p.profit || 0), 0) || 0;
+
+      setRevenueStats({
+        projectsRevenue,
+        projectsPending,
+        digitalRevenue,
+        digitalProfit,
+        totalRevenue: projectsReceived + digitalRevenue,
+      });
+    } catch (err) {
+      console.error('Error fetching revenue stats:', err);
+    }
+  };
 
   // Check session on mount
   useEffect(() => {
@@ -34,6 +82,7 @@ const AdminPanel = () => {
           if (roleData) {
             setIsLoggedIn(true);
             setUserEmail(session.user.email ?? null);
+            fetchRevenueStats();
           }
         }
       } catch (err) {
@@ -96,6 +145,7 @@ const AdminPanel = () => {
 
       setIsLoggedIn(true);
       setUserEmail(authData.user.email ?? null);
+      fetchRevenueStats();
       toast.success('Welcome to Admin Panel!');
     } catch (err: any) {
       console.error('Login error:', err);
@@ -110,6 +160,15 @@ const AdminPanel = () => {
     setIsLoggedIn(false);
     setUserEmail(null);
     toast.success('Logged out successfully');
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', { 
+      style: 'currency', 
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
   // Loading state
@@ -211,15 +270,87 @@ const AdminPanel = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="projects" className="space-y-6">
+        {/* Revenue Dashboard */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            Revenue Dashboard
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-200 dark:border-emerald-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <IndianRupee className="h-4 w-4" />
+                  Total Revenue
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  {formatCurrency(revenueStats.totalRevenue)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Received amount</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Projects Total</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {formatCurrency(revenueStats.projectsRevenue)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">All projects value</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Pending Payments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                  {formatCurrency(revenueStats.projectsPending)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Yet to receive</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Digital Sales</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {formatCurrency(revenueStats.digitalRevenue)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Products sold</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Digital Profit</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-2xl font-bold ${revenueStats.digitalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {formatCurrency(revenueStats.digitalProfit)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Net profit</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <Tabs defaultValue="projects" className="space-y-6" onValueChange={() => fetchRevenueStats()}>
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="projects" className="flex items-center gap-2">
               <FolderKanban className="h-4 w-4" />
               Projects
             </TabsTrigger>
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Overview
+            <TabsTrigger value="digital" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Digital Products
             </TabsTrigger>
           </TabsList>
 
@@ -227,10 +358,8 @@ const AdminPanel = () => {
             <ProjectManager />
           </TabsContent>
 
-          <TabsContent value="overview">
-            <div className="text-center py-12 text-muted-foreground">
-              <p>Overview dashboard coming soon...</p>
-            </div>
+          <TabsContent value="digital">
+            <DigitalProductManager />
           </TabsContent>
         </Tabs>
       </main>
