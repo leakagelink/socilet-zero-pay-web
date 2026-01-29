@@ -16,13 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export interface Project {
   id: string;
@@ -373,19 +366,16 @@ const ProjectManager = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="project_status">Status</Label>
-                  <Select
+                  <select
+                    id="project_status"
                     value={formData.project_status}
-                    onValueChange={(value) => handleChange('project_status', value)}
+                    onChange={(e) => handleChange('project_status', e.target.value)}
+                    className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   >
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border shadow-lg z-[100]">
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="running">Running</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="pending">Pending</option>
+                    <option value="running">Running</option>
+                    <option value="completed">Completed</option>
+                  </select>
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="project_description">Project Description</Label>
