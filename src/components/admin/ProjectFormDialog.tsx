@@ -105,6 +105,7 @@ const ProjectFormDialog: React.FC<ProjectFormDialogProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Validate required fields
     if (!formData.client_name.trim()) {
@@ -165,7 +166,7 @@ const ProjectFormDialog: React.FC<ProjectFormDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(value) => !isSubmitting && onOpenChange(value)} modal={true}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{project ? 'Edit Project' : 'Add New Project'}</DialogTitle>
