@@ -53,6 +53,57 @@ export type Database = {
         }
         Relationships: []
       }
+      digital_products: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          id: string
+          notes: string | null
+          original_price: number
+          payment_method: string | null
+          profit: number | null
+          resell_price: number
+          sale_date: string
+          service_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          original_price?: number
+          payment_method?: string | null
+          profit?: number | null
+          resell_price?: number
+          sale_date?: string
+          service_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          original_price?: number
+          payment_method?: string | null
+          profit?: number | null
+          resell_price?: number
+          sale_date?: string
+          service_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           advance_amount: number | null
