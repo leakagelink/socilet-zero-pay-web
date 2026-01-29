@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Loader2, Search, Calendar, IndianRupee } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Search, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,27 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import ProjectFormDialog from './ProjectFormDialog';
-
-export interface Project {
-  id: string;
-  client_name: string;
-  client_email: string | null;
-  client_phone: string | null;
-  project_name: string;
-  project_description: string | null;
-  project_status: string;
-  advance_amount: number | null;
-  total_amount: number | null;
-  remaining_amount: number | null;
-  payment_method: string | null;
-  project_file_url: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  deadline: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import ProjectFormSheet, { Project } from './ProjectFormSheet';
 
 const ProjectManager = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -76,6 +56,20 @@ const ProjectManager = () => {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Open add form
+  const openAddForm = () => {
+    console.log('Opening add form...');
+    setEditingProject(null);
+    setIsFormOpen(true);
+  };
+
+  // Open edit form
+  const openEditForm = (project: Project) => {
+    console.log('Opening edit form for:', project.project_name);
+    setEditingProject(project);
+    setIsFormOpen(true);
+  };
 
   // Delete project
   const handleDelete = async () => {
@@ -109,12 +103,12 @@ const ProjectManager = () => {
     (project.client_phone?.includes(searchQuery))
   );
 
-  // Status badge color - using semantic tokens
+  // Status badge color
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800';
-      case 'running': return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800';
+      case 'completed': return 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400';
+      case 'running': return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400';
+      case 'pending': return 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400';
       default: return 'bg-muted text-muted-foreground border-border';
     }
   };
@@ -160,15 +154,7 @@ const ProjectManager = () => {
             className="pl-10"
           />
         </div>
-        <Button 
-          type="button"
-          onClick={(e) => { 
-            e.preventDefault();
-            e.stopPropagation();
-            setEditingProject(null); 
-            setIsFormOpen(true); 
-          }}
-        >
+        <Button onClick={openAddForm}>
           <Plus className="h-4 w-4 mr-2" />
           Add Project
         </Button>
@@ -199,7 +185,7 @@ const ProjectManager = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Running</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-primary">
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {projects.filter(p => p.project_status === 'running').length}
             </p>
           </CardContent>
@@ -285,7 +271,7 @@ const ProjectManager = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => { setEditingProject(project); setIsFormOpen(true); }}
+                            onClick={() => openEditForm(project)}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -308,8 +294,8 @@ const ProjectManager = () => {
         </CardContent>
       </Card>
 
-      {/* Add/Edit Dialog */}
-      <ProjectFormDialog
+      {/* Add/Edit Sheet */}
+      <ProjectFormSheet
         open={isFormOpen}
         onOpenChange={setIsFormOpen}
         project={editingProject}
@@ -322,7 +308,7 @@ const ProjectManager = () => {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteProject} onOpenChange={() => setDeleteProject(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-background">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Project?</AlertDialogTitle>
             <AlertDialogDescription>
