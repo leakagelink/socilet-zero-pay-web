@@ -16,7 +16,7 @@ import WebsiteDevelopment from "./pages/WebsiteDevelopment";
 import AppDevelopment from "./pages/AppDevelopment";
 import AiSpokesperson from "./pages/AiSpokesperson";
 import BusinessProfile from "./pages/BusinessProfile";
-import Admin from "./pages/Admin";
+import AdminPanel from "./pages/AdminPanel";
 import FaqPage from "./pages/FaqPage";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -88,7 +88,7 @@ const App = () => {
                 <Route path="/app-development" element={<AppDevelopment />} />
                 <Route path="/ai-spokesperson" element={<AiSpokesperson />} />
                 <Route path="/business-profile" element={<BusinessProfile />} />
-                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin-panel" element={<AdminPanel />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
