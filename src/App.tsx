@@ -35,37 +35,15 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
-  // Add security-focused meta tags
+  // Add AdSense meta tag
   useEffect(() => {
-    // Add Content Security Policy meta tag
-    const cspMetaTag = document.createElement('meta');
-    cspMetaTag.httpEquiv = 'Content-Security-Policy';
-    cspMetaTag.content = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://bblutfbzkfgpihedjknu.supabase.co;";
-    document.head.appendChild(cspMetaTag);
-    
-    // Add AdSense-related meta tag (keeping existing functionality)
     const adsenseMetaTag = document.createElement('meta');
     adsenseMetaTag.name = 'google-adsense-account';
     adsenseMetaTag.content = 'ca-pub-4580754396684091';
     document.head.appendChild(adsenseMetaTag);
     
-    // Add security headers via meta tags
-    const xFrameOptionsTag = document.createElement('meta');
-    xFrameOptionsTag.httpEquiv = 'X-Frame-Options';
-    xFrameOptionsTag.content = 'DENY';
-    document.head.appendChild(xFrameOptionsTag);
-    
-    const xContentTypeOptionsTag = document.createElement('meta');
-    xContentTypeOptionsTag.httpEquiv = 'X-Content-Type-Options';
-    xContentTypeOptionsTag.content = 'nosniff';
-    document.head.appendChild(xContentTypeOptionsTag);
-    
     return () => {
-      // Cleanup meta tags on unmount
-      document.head.removeChild(cspMetaTag);
       document.head.removeChild(adsenseMetaTag);
-      document.head.removeChild(xFrameOptionsTag);
-      document.head.removeChild(xContentTypeOptionsTag);
     };
   }, []);
 
