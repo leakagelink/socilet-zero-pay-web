@@ -109,13 +109,13 @@ const ProjectManager = () => {
     (project.client_phone?.includes(searchQuery))
   );
 
-  // Status badge color
+  // Status badge color - using semantic tokens
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'running': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'completed': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800';
+      case 'running': return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -160,7 +160,15 @@ const ProjectManager = () => {
             className="pl-10"
           />
         </div>
-        <Button onClick={() => { setEditingProject(null); setIsFormOpen(true); }}>
+        <Button 
+          type="button"
+          onClick={(e) => { 
+            e.preventDefault();
+            e.stopPropagation();
+            setEditingProject(null); 
+            setIsFormOpen(true); 
+          }}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add Project
         </Button>
@@ -181,7 +189,7 @@ const ProjectManager = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-yellow-600">
+            <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
               {projects.filter(p => p.project_status === 'pending').length}
             </p>
           </CardContent>
@@ -191,7 +199,7 @@ const ProjectManager = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Running</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-primary">
               {projects.filter(p => p.project_status === 'running').length}
             </p>
           </CardContent>
@@ -201,7 +209,7 @@ const ProjectManager = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
               {projects.filter(p => p.project_status === 'completed').length}
             </p>
           </CardContent>
