@@ -23,16 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 
 export interface Project {
   id: string;
@@ -62,7 +52,8 @@ const ProjectManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [deleteProject, setDeleteProject] = useState<Project | null>(null);
+  const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null);
+  const [deleteProjectName, setDeleteProjectName] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -126,6 +117,7 @@ const ProjectManager = () => {
 
   // Open add form
   const openAddForm = () => {
+    console.log('Opening add form');
     resetForm();
     setEditingProject(null);
     setViewMode('form');
@@ -231,14 +223,14 @@ const ProjectManager = () => {
 
   // Delete project
   const handleDelete = async () => {
-    if (!deleteProject) return;
+    if (!deleteProjectId) return;
     
     setIsDeleting(true);
     try {
       const { error } = await supabase
         .from('projects')
         .delete()
-        .eq('id', deleteProject.id);
+        .eq('id', deleteProjectId);
 
       if (error) throw error;
       
@@ -249,8 +241,19 @@ const ProjectManager = () => {
       toast.error('Failed to delete project');
     } finally {
       setIsDeleting(false);
-      setDeleteProject(null);
+      setDeleteProjectId(null);
+      setDeleteProjectName('');
     }
+  };
+
+  const confirmDelete = (project: Project) => {
+    setDeleteProjectId(project.id);
+    setDeleteProjectName(project.project_name);
+  };
+
+  const cancelDelete = () => {
+    setDeleteProjectId(null);
+    setDeleteProjectName('');
   };
 
   // Filter projects
@@ -377,7 +380,7 @@ const ProjectManager = () => {
                     <SelectTrigger className="bg-background">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
-                    <SelectContent className="bg-background border shadow-lg">
+                    <SelectContent className="bg-background border shadow-lg z-[100]">
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="running">Running</SelectItem>
                       <SelectItem value="completed">Completed</SelectItem>
@@ -518,6 +521,40 @@ const ProjectManager = () => {
   // LIST VIEW
   return (
     <div className="space-y-6">
+      {/* Delete Confirmation Inline */}
+      {deleteProjectId && (
+        <Card className="border-destructive bg-destructive/5">
+          <CardContent className="py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="font-medium">Delete "{deleteProjectName}"?</p>
+                <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={cancelDelete} disabled={isDeleting}>
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={handleDelete} 
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="relative flex-1 max-w-md">
@@ -654,7 +691,7 @@ const ProjectManager = () => {
                             variant="ghost"
                             size="sm"
                             className="text-destructive hover:text-destructive"
-                            onClick={() => setDeleteProject(project)}
+                            onClick={() => confirmDelete(project)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -668,35 +705,6 @@ const ProjectManager = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteProject} onOpenChange={() => setDeleteProject(null)}>
-        <AlertDialogContent className="bg-background">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Project?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deleteProject?.project_name}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
