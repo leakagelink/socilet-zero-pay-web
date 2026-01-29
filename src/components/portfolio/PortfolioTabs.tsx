@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { motion } from 'framer-motion';
 import PortfolioGrid from './PortfolioGrid';
-import { PortfolioItem } from '@/components/admin/portfolio/types';
+import { PortfolioItem } from '@/types/portfolio';
 
 interface PortfolioTabsProps {
   items: PortfolioItem[];
