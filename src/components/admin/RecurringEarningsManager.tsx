@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Edit2, Trash2, CalendarDays, RefreshCw, IndianRupee, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, CalendarDays, RefreshCw, CheckCircle, XCircle, ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -30,28 +29,29 @@ interface RecurringEarning {
   created_at: string;
 }
 
-const emptyForm = {
-  client_name: '',
-  client_email: null,
-  client_phone: null,
-  project_name: '',
-  amount: 0,
-  frequency: 'monthly',
-  billing_date: 1,
-  start_date: new Date().toISOString().split('T')[0],
-  next_billing_date: null,
-  is_active: true,
-  notes: null,
-  payment_method: null,
-};
+type ViewMode = 'list' | 'form';
 
 const RecurringEarningsManager = () => {
   const [earnings, setEarnings] = useState<RecurringEarning[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentId, setCurrentId] = useState<string | null>(null);
-  const [formData, setFormData] = useState(emptyForm);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [editingEarning, setEditingEarning] = useState<RecurringEarning | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    client_name: '',
+    client_email: '',
+    client_phone: '',
+    project_name: '',
+    amount: '',
+    frequency: 'monthly',
+    billing_date: '1',
+    start_date: new Date().toISOString().split('T')[0],
+    is_active: true,
+    notes: '',
+    payment_method: '',
+  });
 
   useEffect(() => {
     fetchEarnings();
@@ -91,64 +91,102 @@ const RecurringEarningsManager = () => {
     return nextDate.toISOString().split('T')[0];
   };
 
+  const resetForm = () => {
+    setFormData({
+      client_name: '',
+      client_email: '',
+      client_phone: '',
+      project_name: '',
+      amount: '',
+      frequency: 'monthly',
+      billing_date: '1',
+      start_date: new Date().toISOString().split('T')[0],
+      is_active: true,
+      notes: '',
+      payment_method: '',
+    });
+    setEditingEarning(null);
+  };
+
+  const handleAddNew = () => {
+    resetForm();
+    setViewMode('form');
+  };
+
+  const handleEdit = (earning: RecurringEarning) => {
+    setEditingEarning(earning);
+    setFormData({
+      client_name: earning.client_name,
+      client_email: earning.client_email || '',
+      client_phone: earning.client_phone || '',
+      project_name: earning.project_name,
+      amount: earning.amount.toString(),
+      frequency: earning.frequency,
+      billing_date: earning.billing_date.toString(),
+      start_date: earning.start_date,
+      is_active: earning.is_active ?? true,
+      notes: earning.notes || '',
+      payment_method: earning.payment_method || '',
+    });
+    setViewMode('form');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setIsSubmitting(true);
+
     try {
-      const nextBilling = calculateNextBillingDate(formData.start_date, formData.billing_date, formData.frequency);
+      const nextBilling = calculateNextBillingDate(
+        formData.start_date,
+        parseInt(formData.billing_date) || 1,
+        formData.frequency
+      );
+
       const dataToSave = {
-        ...formData,
+        client_name: formData.client_name,
+        client_email: formData.client_email || null,
+        client_phone: formData.client_phone || null,
+        project_name: formData.project_name,
+        amount: parseFloat(formData.amount) || 0,
+        frequency: formData.frequency,
+        billing_date: parseInt(formData.billing_date) || 1,
+        start_date: formData.start_date,
         next_billing_date: nextBilling,
+        is_active: formData.is_active,
+        notes: formData.notes || null,
+        payment_method: formData.payment_method || null,
       };
 
-      if (isEditing && currentId) {
+      if (editingEarning) {
         const { error } = await supabase
           .from('recurring_earnings')
           .update(dataToSave)
-          .eq('id', currentId);
+          .eq('id', editingEarning.id);
 
         if (error) throw error;
-        toast.success('Recurring earning updated successfully');
+        toast.success('Subscription updated successfully');
       } else {
         const { error } = await supabase
           .from('recurring_earnings')
           .insert([dataToSave]);
 
         if (error) throw error;
-        toast.success('Recurring earning added successfully');
+        toast.success('Subscription added successfully');
       }
 
-      setIsDialogOpen(false);
       resetForm();
+      setViewMode('list');
       fetchEarnings();
     } catch (err: any) {
       toast.error(err.message || 'Operation failed');
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleEdit = (earning: RecurringEarning) => {
-    setFormData({
-      client_name: earning.client_name,
-      client_email: earning.client_email,
-      client_phone: earning.client_phone,
-      project_name: earning.project_name,
-      amount: earning.amount,
-      frequency: earning.frequency,
-      billing_date: earning.billing_date,
-      start_date: earning.start_date,
-      next_billing_date: earning.next_billing_date,
-      is_active: earning.is_active,
-      notes: earning.notes,
-      payment_method: earning.payment_method,
-    });
-    setCurrentId(earning.id);
-    setIsEditing(true);
-    setIsDialogOpen(true);
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this recurring earning?')) return;
+    if (!confirm('Are you sure you want to delete this subscription?')) return;
 
     try {
       const { error } = await supabase
@@ -157,7 +195,7 @@ const RecurringEarningsManager = () => {
         .eq('id', id);
 
       if (error) throw error;
-      toast.success('Recurring earning deleted successfully');
+      toast.success('Subscription deleted successfully');
       fetchEarnings();
     } catch (err: any) {
       toast.error('Failed to delete');
@@ -165,7 +203,7 @@ const RecurringEarningsManager = () => {
     }
   };
 
-  const toggleActive = async (id: string, currentStatus: boolean) => {
+  const toggleActive = async (id: string, currentStatus: boolean | null) => {
     try {
       const { error } = await supabase
         .from('recurring_earnings')
@@ -180,15 +218,9 @@ const RecurringEarningsManager = () => {
     }
   };
 
-  const resetForm = () => {
-    setFormData(emptyForm);
-    setCurrentId(null);
-    setIsEditing(false);
-  };
-
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
       currency: 'INR',
       maximumFractionDigits: 0
     }).format(amount);
@@ -203,6 +235,12 @@ const RecurringEarningsManager = () => {
     });
   };
 
+  const getOrdinalSuffix = (n: number): string => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return s[(v - 20) % 10] || s[v] || s[0];
+  };
+
   // Calculate totals
   const activeEarnings = earnings.filter(e => e.is_active);
   const monthlyTotal = activeEarnings
@@ -213,6 +251,182 @@ const RecurringEarningsManager = () => {
     .reduce((sum, e) => sum + e.amount, 0);
   const estimatedMonthly = monthlyTotal + (yearlyTotal / 12);
 
+  // Form View
+  if (viewMode === 'form') {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => { resetForm(); setViewMode('list'); }}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <CardTitle>{editingEarning ? 'Edit Subscription' : 'Add New Subscription'}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <Label htmlFor="project_name">Project Name *</Label>
+                <Input
+                  id="project_name"
+                  value={formData.project_name}
+                  onChange={(e) => setFormData({ ...formData, project_name: e.target.value })}
+                  required
+                  placeholder="e.g., Website Maintenance"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="client_name">Client Name *</Label>
+                <Input
+                  id="client_name"
+                  value={formData.client_name}
+                  onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
+                  required
+                  placeholder="Client name"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="client_phone">Client Phone</Label>
+                <Input
+                  id="client_phone"
+                  value={formData.client_phone}
+                  onChange={(e) => setFormData({ ...formData, client_phone: e.target.value })}
+                  placeholder="+91 98765 43210"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="client_email">Client Email</Label>
+                <Input
+                  id="client_email"
+                  type="email"
+                  value={formData.client_email}
+                  onChange={(e) => setFormData({ ...formData, client_email: e.target.value })}
+                  placeholder="client@email.com"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="amount">Amount (₹) *</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  required
+                  min="0"
+                  placeholder="5000"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="frequency">Frequency *</Label>
+                <Select
+                  value={formData.frequency}
+                  onValueChange={(value) => setFormData({ ...formData, frequency: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="billing_date">Billing Day (1-31) *</Label>
+                <Input
+                  id="billing_date"
+                  type="number"
+                  value={formData.billing_date}
+                  onChange={(e) => setFormData({ ...formData, billing_date: e.target.value })}
+                  required
+                  min="1"
+                  max="31"
+                  placeholder="1"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="start_date">Start Date</Label>
+                <Input
+                  id="start_date"
+                  type="date"
+                  value={formData.start_date}
+                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="payment_method">Payment Method</Label>
+                <Select
+                  value={formData.payment_method}
+                  onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="upi">UPI</SelectItem>
+                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="cheque">Cheque</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="is_active"
+                  checked={formData.is_active}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
+                />
+                <Label htmlFor="is_active">Active Subscription</Label>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Additional notes..."
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <Button type="button" variant="outline" onClick={() => { resetForm(); setViewMode('list'); }}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    {editingEarning ? 'Update' : 'Save'} Subscription
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // List View
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
@@ -230,7 +444,7 @@ const RecurringEarningsManager = () => {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -247,7 +461,7 @@ const RecurringEarningsManager = () => {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -264,7 +478,7 @@ const RecurringEarningsManager = () => {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Subscriptions</CardTitle>
@@ -281,7 +495,7 @@ const RecurringEarningsManager = () => {
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Recurring Earnings</h2>
-        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+        <Button onClick={handleAddNew}>
           <Plus className="h-4 w-4 mr-2" />
           Add Subscription
         </Button>
@@ -308,7 +522,7 @@ const RecurringEarningsManager = () => {
                 {isLoading ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      Loading...
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                     </TableCell>
                   </TableRow>
                 ) : earnings.length === 0 ? (
@@ -350,7 +564,7 @@ const RecurringEarningsManager = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {earning.frequency === 'monthly' 
+                        {earning.frequency === 'monthly'
                           ? `${earning.billing_date}${getOrdinalSuffix(earning.billing_date)} of month`
                           : `${earning.billing_date}${getOrdinalSuffix(earning.billing_date)} of year`
                         }
@@ -383,171 +597,8 @@ const RecurringEarningsManager = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Add/Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{isEditing ? 'Edit Subscription' : 'Add New Subscription'}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <Label htmlFor="project_name">Project Name *</Label>
-                <Input
-                  id="project_name"
-                  value={formData.project_name}
-                  onChange={(e) => setFormData({ ...formData, project_name: e.target.value })}
-                  required
-                  placeholder="e.g., Website Maintenance"
-                />
-              </div>
-              
-              <div className="col-span-2">
-                <Label htmlFor="client_name">Client Name *</Label>
-                <Input
-                  id="client_name"
-                  value={formData.client_name}
-                  onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
-                  required
-                  placeholder="Client name"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="client_phone">Client Phone</Label>
-                <Input
-                  id="client_phone"
-                  value={formData.client_phone || ''}
-                  onChange={(e) => setFormData({ ...formData, client_phone: e.target.value })}
-                  placeholder="+91 98765 43210"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="client_email">Client Email</Label>
-                <Input
-                  id="client_email"
-                  type="email"
-                  value={formData.client_email || ''}
-                  onChange={(e) => setFormData({ ...formData, client_email: e.target.value })}
-                  placeholder="client@email.com"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="amount">Amount (₹) *</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
-                  required
-                  min="0"
-                  placeholder="5000"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="frequency">Frequency *</Label>
-                <Select
-                  value={formData.frequency}
-                  onValueChange={(value: 'monthly' | 'yearly') => setFormData({ ...formData, frequency: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select frequency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="billing_date">Billing Day *</Label>
-                <Input
-                  id="billing_date"
-                  type="number"
-                  value={formData.billing_date}
-                  onChange={(e) => setFormData({ ...formData, billing_date: parseInt(e.target.value) || 1 })}
-                  required
-                  min="1"
-                  max="31"
-                  placeholder="1-31"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="start_date">Start Date</Label>
-                <Input
-                  id="start_date"
-                  type="date"
-                  value={formData.start_date}
-                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="payment_method">Payment Method</Label>
-                <Select
-                  value={formData.payment_method || ''}
-                  onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="upi">UPI</SelectItem>
-                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                    <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="cheque">Cheque</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="is_active"
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                />
-                <Label htmlFor="is_active">Active Subscription</Label>
-              </div>
-              
-              <div className="col-span-2">
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  id="notes"
-                  value={formData.notes || ''}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Additional notes..."
-                  rows={2}
-                />
-              </div>
-            </div>
-            
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => { resetForm(); setIsDialogOpen(false); }}>
-                Cancel
-              </Button>
-              <Button type="submit">
-                {isEditing ? 'Update' : 'Add'} Subscription
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
-
-// Helper function for ordinal suffix
-function getOrdinalSuffix(n: number): string {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return s[(v - 20) % 10] || s[v] || s[0];
-}
 
 export default RecurringEarningsManager;
