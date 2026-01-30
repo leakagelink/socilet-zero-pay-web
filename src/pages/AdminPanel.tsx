@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,12 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProjectManager from '@/components/admin/ProjectManager';
 import DigitalProductManager from '@/components/admin/DigitalProductManager';
 import RecurringEarningsManager from '@/components/admin/RecurringEarningsManager';
+import OtherIncomeManager from '@/components/admin/OtherIncomeManager';
 
 interface RevenueStats {
   projectsRevenue: number;
   projectsPending: number;
   digitalRevenue: number;
   digitalProfit: number;
+  otherIncome: number;
   totalRevenue: number;
 }
 
@@ -31,6 +33,7 @@ const AdminPanel = () => {
     projectsPending: 0,
     digitalRevenue: 0,
     digitalProfit: 0,
+    otherIncome: 0,
     totalRevenue: 0,
   });
 
@@ -47,18 +50,25 @@ const AdminPanel = () => {
         .from('digital_products')
         .select('resell_price, profit');
 
+      // Fetch other income data
+      const { data: otherIncomes } = await supabase
+        .from('other_income')
+        .select('amount');
+
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
       const projectsReceived = projects?.reduce((sum, p) => sum + (p.advance_amount || 0), 0) || 0;
       const digitalRevenue = digitalProducts?.reduce((sum, p) => sum + (p.resell_price || 0), 0) || 0;
       const digitalProfit = digitalProducts?.reduce((sum, p) => sum + (p.profit || 0), 0) || 0;
+      const otherIncomeTotal = otherIncomes?.reduce((sum, o) => sum + (o.amount || 0), 0) || 0;
 
       setRevenueStats({
         projectsRevenue,
         projectsPending,
         digitalRevenue,
         digitalProfit,
-        totalRevenue: projectsReceived + digitalRevenue,
+        otherIncome: otherIncomeTotal,
+        totalRevenue: projectsReceived + digitalRevenue + otherIncomeTotal,
       });
     } catch (err) {
       console.error('Error fetching revenue stats:', err);
@@ -277,7 +287,7 @@ const AdminPanel = () => {
             <TrendingUp className="h-5 w-5 text-primary" />
             Revenue Dashboard
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-200 dark:border-emerald-800">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -340,11 +350,26 @@ const AdminPanel = () => {
                 <p className="text-xs text-muted-foreground mt-1">Net profit</p>
               </CardContent>
             </Card>
+
+            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-800">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  Other Income
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {formatCurrency(revenueStats.otherIncome)}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Miscellaneous</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
         <Tabs defaultValue="projects" className="space-y-6" onValueChange={() => fetchRevenueStats()}>
-          <TabsList className="grid w-full max-w-lg grid-cols-3">
+          <TabsList className="grid w-full max-w-xl grid-cols-4">
             <TabsTrigger value="projects" className="flex items-center gap-2">
               <FolderKanban className="h-4 w-4" />
               Projects
@@ -356,6 +381,10 @@ const AdminPanel = () => {
             <TabsTrigger value="recurring" className="flex items-center gap-2">
               <RefreshCw className="h-4 w-4" />
               Recurring
+            </TabsTrigger>
+            <TabsTrigger value="other" className="flex items-center gap-2">
+              <Wallet className="h-4 w-4" />
+              Other
             </TabsTrigger>
           </TabsList>
 
@@ -369,6 +398,10 @@ const AdminPanel = () => {
 
           <TabsContent value="recurring">
             <RecurringEarningsManager />
+          </TabsContent>
+
+          <TabsContent value="other">
+            <OtherIncomeManager />
           </TabsContent>
         </Tabs>
       </main>

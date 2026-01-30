@@ -279,6 +279,45 @@ export type Database = {
           },
         ]
       }
+      other_income: {
+        Row: {
+          amount: number
+          client_name: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          updated_at: string
+          work_description: string
+        }
+        Insert: {
+          amount?: number
+          client_name: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          updated_at?: string
+          work_description: string
+        }
+        Update: {
+          amount?: number
+          client_name?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          updated_at?: string
+          work_description?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           advance_amount: number | null
