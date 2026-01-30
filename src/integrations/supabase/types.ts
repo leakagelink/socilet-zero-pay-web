@@ -285,10 +285,12 @@ export type Database = {
           client_name: string
           created_at: string
           created_by: string | null
+          due_date: string | null
           id: string
           notes: string | null
           payment_date: string
           payment_method: string | null
+          status: string
           updated_at: string
           work_description: string
         }
@@ -297,10 +299,12 @@ export type Database = {
           client_name: string
           created_at?: string
           created_by?: string | null
+          due_date?: string | null
           id?: string
           notes?: string | null
           payment_date?: string
           payment_method?: string | null
+          status?: string
           updated_at?: string
           work_description: string
         }
@@ -309,10 +313,12 @@ export type Database = {
           client_name?: string
           created_at?: string
           created_by?: string | null
+          due_date?: string | null
           id?: string
           notes?: string | null
           payment_date?: string
           payment_method?: string | null
+          status?: string
           updated_at?: string
           work_description?: string
         }

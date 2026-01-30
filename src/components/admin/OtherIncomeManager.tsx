@@ -32,6 +32,8 @@ interface OtherIncome {
   payment_method: string | null;
   payment_date: string;
   notes: string | null;
+  status: string;
+  due_date: string | null;
   created_at: string;
 }
 
@@ -42,6 +44,8 @@ interface FormData {
   payment_method: string;
   payment_date: string;
   notes: string;
+  status: string;
+  due_date: string;
 }
 
 const initialFormData: FormData = {
@@ -51,6 +55,8 @@ const initialFormData: FormData = {
   payment_method: '',
   payment_date: new Date().toISOString().split('T')[0],
   notes: '',
+  status: 'paid',
+  due_date: '',
 };
 
 const OtherIncomeManager = () => {
@@ -102,6 +108,8 @@ const OtherIncomeManager = () => {
         payment_method: formData.payment_method || null,
         payment_date: formData.payment_date,
         notes: formData.notes.trim() || null,
+        status: formData.status,
+        due_date: formData.status === 'pending' && formData.due_date ? formData.due_date : null,
         created_by: user?.id || null,
       };
 
@@ -142,6 +150,8 @@ const OtherIncomeManager = () => {
       payment_method: income.payment_method || '',
       payment_date: income.payment_date,
       notes: income.notes || '',
+      status: income.status || 'paid',
+      due_date: income.due_date || '',
     });
     setEditingId(income.id);
     setShowForm(true);
@@ -180,6 +190,8 @@ const OtherIncomeManager = () => {
   };
 
   const totalIncome = incomes.reduce((sum, inc) => sum + (inc.amount || 0), 0);
+  const pendingIncome = incomes.filter(inc => inc.status === 'pending').reduce((sum, inc) => sum + (inc.amount || 0), 0);
+  const paidIncome = incomes.filter(inc => inc.status === 'paid').reduce((sum, inc) => sum + (inc.amount || 0), 0);
 
   if (isLoading) {
     return (
@@ -192,12 +204,14 @@ const OtherIncomeManager = () => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 flex-wrap">
           <Wallet className="h-5 w-5" />
           Other Income
-          <span className="ml-2 text-sm font-normal text-muted-foreground">
-            Total: {formatCurrency(totalIncome)}
-          </span>
+          <div className="flex gap-3 ml-2 text-sm font-normal">
+            <span className="text-muted-foreground">Total: {formatCurrency(totalIncome)}</span>
+            <span className="text-emerald-600 dark:text-emerald-400">Paid: {formatCurrency(paidIncome)}</span>
+            <span className="text-amber-600 dark:text-amber-400">Pending: {formatCurrency(pendingIncome)}</span>
+          </div>
         </CardTitle>
         {!showForm && (
           <Button onClick={() => setShowForm(true)} size="sm">
@@ -277,6 +291,34 @@ const OtherIncomeManager = () => {
                   onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status *</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value, due_date: value === 'paid' ? '' : formData.due_date })}
+                >
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[200] bg-popover pointer-events-auto">
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {formData.status === 'pending' && (
+                <div className="space-y-2">
+                  <Label htmlFor="due_date">Due Date (Client की दी हुई date)</Label>
+                  <Input
+                    id="due_date"
+                    type="date"
+                    value={formData.due_date}
+                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -326,8 +368,10 @@ const OtherIncomeManager = () => {
                   <TableHead>Client Name</TableHead>
                   <TableHead>Work/Service</TableHead>
                   <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Payment Method</TableHead>
                   <TableHead>Date</TableHead>
+                  <TableHead>Due Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -340,12 +384,26 @@ const OtherIncomeManager = () => {
                       {formatCurrency(income.amount)}
                     </TableCell>
                     <TableCell>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        income.status === 'paid' 
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                      }`}>
+                        {income.status === 'paid' ? 'Paid' : 'Pending'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       <span className="capitalize">
                         {income.payment_method?.replace('_', ' ') || '-'}
                       </span>
                     </TableCell>
                     <TableCell>
                       {format(new Date(income.payment_date), 'dd MMM yyyy')}
+                    </TableCell>
+                    <TableCell>
+                      {income.status === 'pending' && income.due_date 
+                        ? format(new Date(income.due_date), 'dd MMM yyyy')
+                        : '-'}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
