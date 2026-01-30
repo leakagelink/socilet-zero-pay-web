@@ -342,6 +342,63 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_earnings: {
+        Row: {
+          amount: number
+          billing_date: number
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          next_billing_date: string | null
+          notes: string | null
+          payment_method: string | null
+          project_name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          billing_date?: number
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          next_billing_date?: string | null
+          notes?: string | null
+          payment_method?: string | null
+          project_name: string
+          start_date?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          billing_date?: number
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          next_billing_date?: string | null
+          notes?: string | null
+          payment_method?: string | null
+          project_name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           affiliate_id: string
