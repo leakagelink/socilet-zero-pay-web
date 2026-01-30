@@ -23,6 +23,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
 import ReferralLanding from "./pages/ReferralLanding";
 import Meetings from "./pages/Meetings";
+import HireIndianDeveloper from "./pages/HireIndianDeveloper";
 import VersionChecker from "./components/VersionChecker";
 
 // Create a new QueryClient instance outside of the component
@@ -75,6 +76,7 @@ const App = () => {
                 <Route path="/cookie-policy" element={<CookiePolicy />} />
                 <Route path="/refer/:referrerId" element={<ReferralLanding />} />
                 <Route path="/meetings" element={<Meetings />} />
+                <Route path="/hire-indian-developer" element={<HireIndianDeveloper />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

@@ -17,8 +17,9 @@ const Index = () => {
   return (
     <div className="min-h-screen overflow-x-hidden w-full">
       <Helmet>
-        <title>Socilet - Brand Your Dream | Web & App Development Services</title>
-        <meta name="description" content="Socilet offers zero advance payment web & app development services. Get professional websites, mobile apps, and digital branding solutions." />
+        <title>Zero Advance Payment Web & App Development | India to USA/Canada | Socilet</title>
+        <meta name="description" content="No upfront payment web developer from India. 900+ projects delivered to US, Canada & India. Work first, pay later. Get professional websites, mobile apps, and AI spokesperson services." />
+        <meta name="keywords" content="no upfront payment web developer, zero advance payment website development, pay after completion developer, hire Indian developer USA, app development without advance" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
       </Helmet>
       <Toaster position="top-right" richColors />
