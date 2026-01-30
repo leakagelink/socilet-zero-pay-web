@@ -328,10 +328,10 @@ const RecurringEarningsManager = () => {
                   value={formData.frequency}
                   onValueChange={(value) => setFormData({ ...formData, frequency: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="frequency">
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100] bg-popover">
                     <SelectItem value="monthly">Monthly</SelectItem>
                     <SelectItem value="yearly">Yearly</SelectItem>
                   </SelectContent>
@@ -365,13 +365,13 @@ const RecurringEarningsManager = () => {
               <div>
                 <Label htmlFor="payment_method">Payment Method</Label>
                 <Select
-                  value={formData.payment_method}
+                  value={formData.payment_method || undefined}
                   onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="payment_method">
                     <SelectValue placeholder="Select method" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100] bg-popover">
                     <SelectItem value="upi">UPI</SelectItem>
                     <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
                     <SelectItem value="cash">Cash</SelectItem>
