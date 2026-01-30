@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ProjectManager from '@/components/admin/ProjectManager';
 import DigitalProductManager from '@/components/admin/DigitalProductManager';
+import RecurringEarningsManager from '@/components/admin/RecurringEarningsManager';
 
 interface RevenueStats {
   projectsRevenue: number;
@@ -343,14 +344,18 @@ const AdminPanel = () => {
         </div>
 
         <Tabs defaultValue="projects" className="space-y-6" onValueChange={() => fetchRevenueStats()}>
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-lg grid-cols-3">
             <TabsTrigger value="projects" className="flex items-center gap-2">
               <FolderKanban className="h-4 w-4" />
               Projects
             </TabsTrigger>
             <TabsTrigger value="digital" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
-              Digital Products
+              Digital
+            </TabsTrigger>
+            <TabsTrigger value="recurring" className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Recurring
             </TabsTrigger>
           </TabsList>
 
@@ -360,6 +365,10 @@ const AdminPanel = () => {
 
           <TabsContent value="digital">
             <DigitalProductManager />
+          </TabsContent>
+
+          <TabsContent value="recurring">
+            <RecurringEarningsManager />
           </TabsContent>
         </Tabs>
       </main>
