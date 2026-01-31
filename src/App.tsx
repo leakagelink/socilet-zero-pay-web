@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import TrackMyProject from "./pages/TrackMyProject";
 import Affiliate from "./pages/Affiliate";
 import ZeroAdvancePayment from "./pages/ZeroAdvancePayment";
@@ -61,6 +62,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/track-project" element={<TrackMyProject />} />
                 <Route path="/affiliate" element={<Affiliate />} />
                 <Route path="/zero-advance-payment" element={<ZeroAdvancePayment />} />
