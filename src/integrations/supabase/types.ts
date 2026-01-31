@@ -154,6 +154,45 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          is_replied: boolean | null
+          message: string
+          replied_at: string | null
+          sender_email: string
+          sender_name: string
+          sender_phone: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          is_replied?: boolean | null
+          message: string
+          replied_at?: string | null
+          sender_email: string
+          sender_name: string
+          sender_phone?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          is_replied?: boolean | null
+          message?: string
+          replied_at?: string | null
+          sender_email?: string
+          sender_name?: string
+          sender_phone?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
       digital_products: {
         Row: {
           created_at: string
@@ -204,6 +243,79 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      email_logs: {
+        Row: {
+          body_preview: string | null
+          created_at: string
+          days_until_due: number | null
+          email_type: string
+          error_message: string | null
+          id: string
+          recipient_email: string
+          recipient_name: string | null
+          related_other_income_id: string | null
+          related_project_id: string | null
+          related_recurring_id: string | null
+          sent_by: string | null
+          status: string
+          subject: string
+        }
+        Insert: {
+          body_preview?: string | null
+          created_at?: string
+          days_until_due?: number | null
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          recipient_name?: string | null
+          related_other_income_id?: string | null
+          related_project_id?: string | null
+          related_recurring_id?: string | null
+          sent_by?: string | null
+          status?: string
+          subject: string
+        }
+        Update: {
+          body_preview?: string | null
+          created_at?: string
+          days_until_due?: number | null
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          recipient_name?: string | null
+          related_other_income_id?: string | null
+          related_project_id?: string | null
+          related_recurring_id?: string | null
+          sent_by?: string | null
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_related_other_income_id_fkey"
+            columns: ["related_other_income_id"]
+            isOneToOne: false
+            referencedRelation: "other_income"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_logs_related_project_id_fkey"
+            columns: ["related_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_logs_related_recurring_id_fkey"
+            columns: ["related_recurring_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_earnings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       meetings: {
         Row: {
