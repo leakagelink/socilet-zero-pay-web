@@ -6,7 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const DAILY_API_URL = 'https://api.daily.co/v1';
+// Agora App ID - No API key needed for basic features
+const AGORA_APP_ID = '20a16fef851d4594822620e18dbf78b9';
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -15,12 +16,6 @@ serve(async (req) => {
   }
 
   try {
-    const DAILY_API_KEY = Deno.env.get('DAILY_API_KEY');
-    if (!DAILY_API_KEY) {
-      console.error('DAILY_API_KEY not configured');
-      throw new Error('Daily.co API key not configured');
-    }
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -29,41 +24,15 @@ serve(async (req) => {
     console.log(`Action: ${action}, Room: ${roomName}`);
 
     if (action === 'create-room') {
-      // Create a Daily.co room
-      const roomResponse = await fetch(`${DAILY_API_URL}/rooms`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${DAILY_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: roomName,
-          properties: {
-            enable_chat: true,
-            enable_screenshare: true,
-            enable_knocking: false,
-            start_video_off: false,
-            start_audio_off: false,
-            exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24), // 24 hours expiry
-          },
-        }),
-      });
-
-      if (!roomResponse.ok) {
-        const errorData = await roomResponse.text();
-        console.error('Daily.co room creation failed:', errorData);
-        throw new Error(`Failed to create Daily.co room: ${errorData}`);
-      }
-
-      const roomData = await roomResponse.json();
-      console.log('Daily.co room created:', roomData);
-
+      // Generate a unique channel name for Agora
+      const channelName = roomName || `meeting-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
       // Store meeting in database
       const { data: meetingData, error: dbError } = await supabase
         .from('meetings')
         .insert({
-          room_name: roomData.name,
-          room_url: roomData.url,
+          room_name: channelName,
+          room_url: channelName, // For Agora, we use channel name as the "URL"
           title: title || 'New Meeting',
           description: description || '',
           created_by: createdBy || 'Anonymous',
@@ -98,25 +67,14 @@ serve(async (req) => {
           success: true,
           meeting: meetingData,
           chatRoom: chatRoom,
-          roomUrl: roomData.url,
+          appId: AGORA_APP_ID,
+          channelName: channelName,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (action === 'delete-room') {
-      // Delete Daily.co room
-      const deleteResponse = await fetch(`${DAILY_API_URL}/rooms/${roomName}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${DAILY_API_KEY}`,
-        },
-      });
-
-      if (!deleteResponse.ok) {
-        console.error('Failed to delete Daily.co room');
-      }
-
       // Update meeting status in database
       const { error: dbError } = await supabase
         .from('meetings')
@@ -146,7 +104,21 @@ serve(async (req) => {
       }
 
       return new Response(
-        JSON.stringify({ success: true, meetings }),
+        JSON.stringify({ 
+          success: true, 
+          meetings,
+          appId: AGORA_APP_ID,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (action === 'get-app-id') {
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          appId: AGORA_APP_ID,
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

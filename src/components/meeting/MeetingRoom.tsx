@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Video, VideoOff, Mic, MicOff, Phone, Users, Link, Copy, MessageSquare, X } from 'lucide-react';
+import { Video, Users, Link, Copy, MessageSquare, Phone } from 'lucide-react';
 import { ChatRoom } from './ChatRoom';
+import { AgoraVideoCall } from './AgoraVideoCall';
 
 interface Meeting {
   id: string;
@@ -21,6 +22,8 @@ interface Meeting {
   created_at: string;
 }
 
+const AGORA_APP_ID = '20a16fef851d4594822620e18dbf78b9';
+
 export const MeetingRoom = () => {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(false);
@@ -33,8 +36,6 @@ export const MeetingRoom = () => {
     description: '',
     createdBy: '',
   });
-  
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
     fetchMeetings();
@@ -42,7 +43,7 @@ export const MeetingRoom = () => {
 
   const fetchMeetings = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('daily-meeting', {
+      const { data, error } = await supabase.functions.invoke('agora-meeting', {
         body: { action: 'get-rooms' },
       });
 
@@ -65,7 +66,7 @@ export const MeetingRoom = () => {
     try {
       const roomName = `meeting-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
-      const { data, error } = await supabase.functions.invoke('daily-meeting', {
+      const { data, error } = await supabase.functions.invoke('agora-meeting', {
         body: {
           action: 'create-room',
           roomName,
@@ -105,8 +106,9 @@ export const MeetingRoom = () => {
     setShowChat(false);
   };
 
-  const copyLink = (url: string) => {
-    navigator.clipboard.writeText(url);
+  const copyLink = (meeting: Meeting) => {
+    const meetingLink = `${window.location.origin}/meetings?channel=${meeting.room_name}`;
+    navigator.clipboard.writeText(meetingLink);
     toast.success('Meeting link copied!');
   };
 
@@ -120,7 +122,7 @@ export const MeetingRoom = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => copyLink(activeMeeting.room_url)}
+              onClick={() => copyLink(activeMeeting)}
             >
               <Copy className="h-4 w-4 mr-2" />
               Copy Link
@@ -143,14 +145,14 @@ export const MeetingRoom = () => {
         </div>
 
         {/* Meeting Content */}
-        <div className="flex-1 flex">
+        <div className="flex-1 flex overflow-hidden">
           {/* Video Area */}
           <div className={`flex-1 ${showChat ? 'w-2/3' : 'w-full'}`}>
-            <iframe
-              ref={iframeRef}
-              src={`${activeMeeting.room_url}?userName=${encodeURIComponent(userName)}`}
-              className="w-full h-full border-0"
-              allow="camera; microphone; fullscreen; speaker; display-capture"
+            <AgoraVideoCall
+              appId={AGORA_APP_ID}
+              channelName={activeMeeting.room_name}
+              userName={userName}
+              onLeave={leaveMeeting}
             />
           </div>
 
@@ -270,7 +272,7 @@ export const MeetingRoom = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => copyLink(meeting.room_url)}
+                        onClick={() => copyLink(meeting)}
                       >
                         <Link className="h-4 w-4" />
                       </Button>
