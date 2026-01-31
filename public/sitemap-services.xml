@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Website Development Service -->
+  <url>
+    <loc>https://socilet.in/website-development</loc>
+    <xhtml:link rel="alternate" hreflang="en-us" href="https://socilet.in/website-development"/>
+    <xhtml:link rel="alternate" hreflang="en-ca" href="https://socilet.in/website-development"/>
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://socilet.in/website-development"/>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- App Development Service -->
+  <url>
+    <loc>https://socilet.in/app-development</loc>
+    <xhtml:link rel="alternate" hreflang="en-us" href="https://socilet.in/app-development"/>
+    <xhtml:link rel="alternate" hreflang="en-ca" href="https://socilet.in/app-development"/>
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://socilet.in/app-development"/>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- AI Spokesperson Service -->
+  <url>
+    <loc>https://socilet.in/ai-spokesperson</loc>
+    <xhtml:link rel="alternate" hreflang="en-us" href="https://socilet.in/ai-spokesperson"/>
+    <xhtml:link rel="alternate" hreflang="en-ca" href="https://socilet.in/ai-spokesperson"/>
+    <xhtml:link rel="alternate" hreflang="en-in" href="https://socilet.in/ai-spokesperson"/>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Business Profile Service -->
+  <url>
+    <loc>https://socilet.in/business-profile</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Hire Indian Developer (International Landing) -->
+  <url>
+    <loc>https://socilet.in/hire-indian-developer</loc>
+    <xhtml:link rel="alternate" hreflang="en-us" href="https://socilet.in/hire-indian-developer"/>
+    <xhtml:link rel="alternate" hreflang="en-ca" href="https://socilet.in/hire-indian-developer"/>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+</urlset>

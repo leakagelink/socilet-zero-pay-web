@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Blog Main Page -->
+  <url>
+    <loc>https://socilet.in/blog</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Article 1: Zero Advance Payment Guide -->
+  <url>
+    <loc>https://socilet.in/blog/zero-advance-payment-website-development-guide</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article 2: Hire Indian Developer Guide -->
+  <url>
+    <loc>https://socilet.in/blog/hire-indian-developer-no-upfront-payment</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article 3: AI Spokesperson Guide -->
+  <url>
+    <loc>https://socilet.in/blog/ai-spokesperson-video-service-guide</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article 4: App Payment Models Guide -->
+  <url>
+    <loc>https://socilet.in/blog/app-development-payment-models-guide</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article 5: Website Cost Guide -->
+  <url>
+    <loc>https://socilet.in/blog/small-business-website-cost-guide</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article 6: Pay After Delivery -->
+  <url>
+    <loc>https://socilet.in/blog/pay-after-delivery</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Article 7: Zero Advance Payment -->
+  <url>
+    <loc>https://socilet.in/blog/zero-advance-payment</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Article 8: Website Development SEO -->
+  <url>
+    <loc>https://socilet.in/blog/website-development-seo</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+</urlset>
