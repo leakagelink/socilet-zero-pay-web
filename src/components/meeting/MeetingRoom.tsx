@@ -106,8 +106,16 @@ export const MeetingRoom = () => {
     setShowChat(false);
   };
 
+  const getMeetingLink = (meeting: Meeting) => {
+    // Use custom domain for production, fallback to current origin
+    const customDomain = 'https://socilet.in';
+    const isProduction = !window.location.hostname.includes('lovable');
+    const baseUrl = isProduction ? customDomain : window.location.origin;
+    return `${baseUrl}/meetings?channel=${meeting.room_name}`;
+  };
+
   const copyLink = (meeting: Meeting) => {
-    const meetingLink = `${window.location.origin}/meetings?channel=${meeting.room_name}`;
+    const meetingLink = getMeetingLink(meeting);
     navigator.clipboard.writeText(meetingLink);
     toast.success('Meeting link copied!');
   };

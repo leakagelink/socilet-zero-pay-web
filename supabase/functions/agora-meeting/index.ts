@@ -6,8 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Agora App ID - No API key needed for basic features
+// Agora Credentials
 const AGORA_APP_ID = '20a16fef851d4594822620e18dbf78b9';
+const AGORA_APP_SECRET = '64e4ee9bf66c4d61a4dcb7b351200a6e';
 
 serve(async (req) => {
   // Handle CORS preflight
