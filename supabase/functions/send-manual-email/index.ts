@@ -38,7 +38,7 @@ const getEmailHtml = (recipientName: string, message: string) => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 32px; text-align: center;">
-              <img src="https://knputxpnhffskshlakiq.supabase.co/storage/v1/object/public/email-assets/socilet-logo.png" alt="Socilet" style="height: 48px; margin-bottom: 16px;" onerror="this.style.display='none'">
+              <img src="https://knputxpnhffskshlakiq.supabase.co/storage/v1/object/public/email-assets/socilet-logo.png?v=1" alt="Socilet" style="height: 60px; margin-bottom: 16px;">
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Socilet</h1>
               <p style="margin: 8px 0 0 0; color: #e0e7ff; font-size: 14px;">Web & App Development Agency</p>
             </td>
