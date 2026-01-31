@@ -230,16 +230,17 @@ export const MeetingRoom = () => {
             <p className="text-muted-foreground">
               You have been invited to join a meeting. Enter your name below and click Join.
             </p>
-            <div className="flex gap-4 items-end">
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-end">
               <div className="flex-1 max-w-md">
                 <Label>Your Name *</Label>
                 <Input
                   placeholder="Enter your name"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
+                  className="mt-1"
                 />
               </div>
-              <Button onClick={joinDirectChannel} size="lg">
+              <Button onClick={joinDirectChannel} size="lg" className="w-full sm:w-auto">
                 <Video className="h-4 w-4 mr-2" />
                 Join Meeting
               </Button>
@@ -248,25 +249,29 @@ export const MeetingRoom = () => {
         </Card>
       )}
 
-      {/* User Name Input */}
-      {!pendingChannel && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Your Name
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input
-              placeholder="Enter your name to join meetings"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="max-w-md"
-            />
-          </CardContent>
-        </Card>
-      )}
+      {/* User Name Input - Always visible when no pending channel */}
+      <Card className={pendingChannel ? 'hidden' : ''}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Enter Your Name First
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-3">
+            Please enter your name before joining any meeting
+          </p>
+          <Input
+            placeholder="Enter your name to join meetings"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="max-w-md"
+          />
+          {userName.trim() && (
+            <p className="text-sm text-primary mt-2">✓ Name set: {userName}</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Create Meeting */}
       <Card>
