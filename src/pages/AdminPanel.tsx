@@ -261,17 +261,31 @@ const AdminPanel = () => {
 
   // Admin Dashboard
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 to-muted/10">
-      {/* Header */}
-      <header className="bg-card border-b sticky top-0 z-50">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl font-bold truncate">Admin Panel</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      {/* Modern Header */}
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
+        <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center shadow-lg shadow-primary/25">
+              <Shield className="h-5 w-5 text-white" />
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-lg font-bold text-foreground">Admin Panel</h1>
+              <p className="text-xs text-muted-foreground">Manage your business</p>
+            </div>
+            <h1 className="text-lg font-bold text-foreground sm:hidden">Admin</h1>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-xs sm:text-sm text-muted-foreground hidden md:block truncate max-w-[150px]">{userEmail}</span>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="h-8 sm:h-9 px-2 sm:px-3">
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span className="text-sm text-muted-foreground truncate max-w-[150px]">{userEmail}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleLogout} 
+              className="h-10 px-4 rounded-xl border-slate-200 dark:border-slate-700 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-colors"
+            >
               <LogOut className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Logout</span>
             </Button>
@@ -280,132 +294,155 @@ const AdminPanel = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Revenue Dashboard */}
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-            Revenue Dashboard
-          </h2>
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <TrendingUp className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Revenue Dashboard</h2>
+              <p className="text-sm text-muted-foreground">Track your earnings</p>
+            </div>
+          </div>
           
-          {/* Mobile: 2 columns, Tablet: 3 columns, Desktop: 6 columns */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
-            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-200 dark:border-emerald-800 col-span-2 sm:col-span-1">
-              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
-                  <IndianRupee className="h-3 w-3 sm:h-4 sm:w-4" />
+          {/* Modern Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            <Card className="col-span-2 sm:col-span-1 group relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-emerald-100 flex items-center gap-2">
+                  <IndianRupee className="h-4 w-4" />
                   Total Revenue
                 </CardTitle>
               </CardHeader>
-              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <CardContent className="px-4 pb-4 relative">
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {formatCurrency(revenueStats.totalRevenue)}
                 </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Received amount</p>
+                <p className="text-xs text-emerald-100/80 mt-1">Received amount</p>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Projects Total</CardTitle>
+            <Card className="group relative overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+              <CardHeader className="pb-1 px-4 pt-4">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Projects Total</CardTitle>
               </CardHeader>
-              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <CardContent className="px-4 pb-4">
+                <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {formatCurrency(revenueStats.projectsRevenue)}
                 </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">All projects value</p>
+                <p className="text-xs text-muted-foreground mt-1">All projects value</p>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            <Card className="group relative overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+              <CardHeader className="pb-1 px-4 pt-4">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Pending</CardTitle>
               </CardHeader>
-              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-600 dark:text-amber-400">
+              <CardContent className="px-4 pb-4">
+                <p className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
                   {formatCurrency(revenueStats.projectsPending)}
                 </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Yet to receive</p>
+                <p className="text-xs text-muted-foreground mt-1">Yet to receive</p>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Digital Sales</CardTitle>
+            <Card className="group relative overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+              <CardHeader className="pb-1 px-4 pt-4">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Digital Sales</CardTitle>
               </CardHeader>
-              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-600 dark:text-purple-400">
+              <CardContent className="px-4 pb-4">
+                <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {formatCurrency(revenueStats.digitalRevenue)}
                 </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Products sold</p>
+                <p className="text-xs text-muted-foreground mt-1">Products sold</p>
               </CardContent>
             </Card>
             
-            <Card>
-              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Digital Profit</CardTitle>
+            <Card className="group relative overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300">
+              <div className={`absolute top-0 left-0 w-full h-1 ${revenueStats.digitalProfit >= 0 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}></div>
+              <CardHeader className="pb-1 px-4 pt-4">
+                <CardTitle className="text-xs font-medium text-muted-foreground">Digital Profit</CardTitle>
               </CardHeader>
-              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <p className={`text-lg sm:text-xl lg:text-2xl font-bold ${revenueStats.digitalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+              <CardContent className="px-4 pb-4">
+                <p className={`text-xl sm:text-2xl font-bold ${revenueStats.digitalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatCurrency(revenueStats.digitalProfit)}
                 </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Net profit</p>
+                <p className="text-xs text-muted-foreground mt-1">Net profit</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-800">
-              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
-                  <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Card className="group relative overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-500"></div>
+              <CardHeader className="pb-1 px-4 pt-4">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
                   Other Income
                 </CardTitle>
               </CardHeader>
-              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600 dark:text-orange-400">
+              <CardContent className="px-4 pb-4">
+                <p className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">
                   {formatCurrency(revenueStats.otherIncome)}
                 </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Miscellaneous</p>
+                <p className="text-xs text-muted-foreground mt-1">Miscellaneous</p>
               </CardContent>
             </Card>
           </div>
         </div>
 
         <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
-          {/* Mobile-friendly scrollable tabs */}
-          <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
-            <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:max-w-xl sm:grid sm:grid-cols-4 h-auto p-1">
-              <TabsTrigger value="projects" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
-                <FolderKanban className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span>Projects</span>
+          {/* Modern pill-style tabs */}
+          <div className="bg-card rounded-2xl p-2 shadow-sm border">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-2 bg-transparent h-auto p-0">
+              <TabsTrigger 
+                value="projects" 
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <FolderKanban className="h-4 w-4" />
+                <span className="hidden xs:inline sm:inline">Projects</span>
               </TabsTrigger>
-              <TabsTrigger value="digital" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
-                <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span>Digital</span>
+              <TabsTrigger 
+                value="digital" 
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <Package className="h-4 w-4" />
+                <span className="hidden xs:inline sm:inline">Digital</span>
               </TabsTrigger>
-              <TabsTrigger value="recurring" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
-                <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span>Recurring</span>
+              <TabsTrigger 
+                value="recurring" 
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span className="hidden xs:inline sm:inline">Recurring</span>
               </TabsTrigger>
-              <TabsTrigger value="other" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
-                <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span>Other</span>
+              <TabsTrigger 
+                value="other" 
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <Wallet className="h-4 w-4" />
+                <span className="hidden xs:inline sm:inline">Other</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="projects">
+          <TabsContent value="projects" className="mt-6 animate-fade-in">
             <ProjectManager />
           </TabsContent>
 
-          <TabsContent value="digital">
+          <TabsContent value="digital" className="mt-6 animate-fade-in">
             <DigitalProductManager />
           </TabsContent>
 
-          <TabsContent value="recurring">
+          <TabsContent value="recurring" className="mt-6 animate-fade-in">
             <RecurringEarningsManager />
           </TabsContent>
 
-          <TabsContent value="other">
+          <TabsContent value="other" className="mt-6 animate-fade-in">
             <OtherIncomeManager />
           </TabsContent>
         </Tabs>
