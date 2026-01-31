@@ -10,6 +10,7 @@ import ProjectManager from '@/components/admin/ProjectManager';
 import DigitalProductManager from '@/components/admin/DigitalProductManager';
 import RecurringEarningsManager from '@/components/admin/RecurringEarningsManager';
 import OtherIncomeManager from '@/components/admin/OtherIncomeManager';
+import RevenueCharts from '@/components/admin/RevenueCharts';
 import { useCountUp } from '@/hooks/useCountUp';
 
 // Animated Currency Display Component
@@ -408,6 +409,9 @@ const AdminPanel = () => {
             </Card>
           </div>
         </div>
+
+        {/* Revenue Charts Section */}
+        <RevenueCharts />
 
         <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
           {/* Modern pill-style tabs */}
