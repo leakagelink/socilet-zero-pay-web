@@ -255,62 +255,66 @@ const RecurringEarningsManager = () => {
   if (viewMode === 'form') {
     return (
       <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => { resetForm(); setViewMode('list'); }}>
-              <ArrowLeft className="h-5 w-5" />
+        <CardHeader className="px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button variant="ghost" size="icon" onClick={() => { resetForm(); setViewMode('list'); }} className="h-8 w-8 sm:h-10 sm:w-10">
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
-            <CardTitle>{editingEarning ? 'Edit Subscription' : 'Add New Subscription'}</CardTitle>
+            <CardTitle className="text-base sm:text-lg">{editingEarning ? 'Edit Subscription' : 'Add New Subscription'}</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
-                <Label htmlFor="project_name">Project Name *</Label>
+        <CardContent className="px-3 sm:px-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="sm:col-span-2 space-y-1.5 sm:space-y-2">
+                <Label htmlFor="project_name" className="text-sm">Project Name *</Label>
                 <Input
                   id="project_name"
                   value={formData.project_name}
                   onChange={(e) => setFormData({ ...formData, project_name: e.target.value })}
                   required
                   placeholder="e.g., Website Maintenance"
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <Label htmlFor="client_name">Client Name *</Label>
+              <div className="sm:col-span-2 space-y-1.5 sm:space-y-2">
+                <Label htmlFor="client_name" className="text-sm">Client Name *</Label>
                 <Input
                   id="client_name"
                   value={formData.client_name}
                   onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
                   required
                   placeholder="Client name"
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="client_phone">Client Phone</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="client_phone" className="text-sm">Client Phone</Label>
                 <Input
                   id="client_phone"
                   value={formData.client_phone}
                   onChange={(e) => setFormData({ ...formData, client_phone: e.target.value })}
                   placeholder="+91 98765 43210"
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="client_email">Client Email</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="client_email" className="text-sm">Client Email</Label>
                 <Input
                   id="client_email"
                   type="email"
                   value={formData.client_email}
                   onChange={(e) => setFormData({ ...formData, client_email: e.target.value })}
                   placeholder="client@email.com"
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="amount">Amount (₹) *</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="amount" className="text-sm">Amount (₹) *</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -319,16 +323,17 @@ const RecurringEarningsManager = () => {
                   required
                   min="0"
                   placeholder="5000"
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="frequency">Frequency *</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="frequency" className="text-sm">Frequency *</Label>
                 <Select
                   value={formData.frequency}
                   onValueChange={(value) => setFormData({ ...formData, frequency: value })}
                 >
-                  <SelectTrigger id="frequency">
+                  <SelectTrigger id="frequency" className="h-9 sm:h-10">
                     <SelectValue placeholder="Select frequency" />
                   </SelectTrigger>
                   <SelectContent className="z-[100] bg-popover">
@@ -338,8 +343,8 @@ const RecurringEarningsManager = () => {
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="billing_date">Billing Day (1-31) *</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="billing_date" className="text-sm">Billing Day (1-31) *</Label>
                 <Input
                   id="billing_date"
                   type="number"
@@ -349,26 +354,28 @@ const RecurringEarningsManager = () => {
                   min="1"
                   max="31"
                   placeholder="1"
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="start_date">Start Date</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="start_date" className="text-sm">Start Date</Label>
                 <Input
                   id="start_date"
                   type="date"
                   value={formData.start_date}
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  className="h-9 sm:h-10"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="payment_method">Payment Method</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="payment_method" className="text-sm">Payment Method</Label>
                 <Select
                   value={formData.payment_method || undefined}
                   onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
                 >
-                  <SelectTrigger id="payment_method">
+                  <SelectTrigger id="payment_method" className="h-9 sm:h-10">
                     <SelectValue placeholder="Select method" />
                   </SelectTrigger>
                   <SelectContent className="z-[100] bg-popover">
@@ -387,26 +394,27 @@ const RecurringEarningsManager = () => {
                   checked={formData.is_active}
                   onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                 />
-                <Label htmlFor="is_active">Active Subscription</Label>
+                <Label htmlFor="is_active" className="text-sm">Active Subscription</Label>
               </div>
 
-              <div className="md:col-span-2">
-                <Label htmlFor="notes">Notes</Label>
+              <div className="sm:col-span-2 space-y-1.5 sm:space-y-2">
+                <Label htmlFor="notes" className="text-sm">Notes</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Additional notes..."
                   rows={3}
+                  className="text-sm"
                 />
               </div>
             </div>
 
-            <div className="flex gap-3 justify-end">
-              <Button type="button" variant="outline" onClick={() => { resetForm(); setViewMode('list'); }}>
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end">
+              <Button type="button" variant="outline" onClick={() => { resetForm(); setViewMode('list'); }} className="w-full sm:w-auto">
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -415,7 +423,7 @@ const RecurringEarningsManager = () => {
                 ) : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    {editingEarning ? 'Update' : 'Save'} Subscription
+                    {editingEarning ? 'Update' : 'Save'}
                   </>
                 )}
               </Button>
@@ -428,83 +436,84 @@ const RecurringEarningsManager = () => {
 
   // List View
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-primary/5 border-primary/20">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Est. Monthly Income
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+        <Card className="bg-primary/5 border-primary/20 col-span-2 sm:col-span-1">
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+              <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
+              Est. Monthly
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-primary">
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-lg sm:text-2xl font-bold text-primary">
               {formatCurrency(estimatedMonthly)}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <CalendarDays className="h-4 w-4" />
-              Monthly Subscriptions
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+              <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
+              Monthly
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-primary">
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-lg sm:text-2xl font-bold text-primary">
               {formatCurrency(monthlyTotal)}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
               {activeEarnings.filter(e => e.frequency === 'monthly').length} active
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-              <CalendarDays className="h-4 w-4" />
-              Yearly Subscriptions
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+              <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
+              Yearly
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-secondary-foreground">
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-lg sm:text-2xl font-bold text-secondary-foreground">
               {formatCurrency(yearlyTotal)}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
               {activeEarnings.filter(e => e.frequency === 'yearly').length} active
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Subscriptions</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-foreground">{earnings.length}</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {activeEarnings.length} active, {earnings.length - activeEarnings.length} inactive
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-lg sm:text-2xl font-bold text-foreground">{earnings.length}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">
+              {activeEarnings.length} active
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Header with Add Button */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Recurring Earnings</h2>
-        <Button onClick={handleAddNew}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Subscription
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-base sm:text-lg font-semibold">Recurring Earnings</h2>
+        <Button onClick={handleAddNew} className="h-9 sm:h-10">
+          <Plus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Add Subscription</span>
         </Button>
       </div>
 
-      {/* Table */}
+      {/* Table / Mobile Cards */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -594,6 +603,70 @@ const RecurringEarningsManager = () => {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+              </div>
+            ) : earnings.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground px-4">
+                No recurring earnings found.
+              </div>
+            ) : (
+              earnings.map((earning) => (
+                <div key={earning.id} className={`p-3 sm:p-4 space-y-2.5 ${!earning.is_active ? 'opacity-50' : ''}`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <button
+                        onClick={() => toggleActive(earning.id, earning.is_active)}
+                        className="focus:outline-none flex-shrink-0"
+                      >
+                        {earning.is_active ? (
+                          <CheckCircle className="h-4 w-4 text-primary" />
+                        ) : (
+                          <XCircle className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </button>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{earning.project_name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{earning.client_name}</p>
+                      </div>
+                    </div>
+                    <Badge variant={earning.frequency === 'monthly' ? 'default' : 'secondary'} className="text-[10px] px-1.5 py-0.5">
+                      {earning.frequency === 'monthly' ? 'Monthly' : 'Yearly'}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-primary">{formatCurrency(earning.amount)}</span>
+                    <span className="text-muted-foreground">Next: {formatDate(earning.next_billing_date)}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(earning)}
+                      className="flex-1 h-8 text-xs"
+                    >
+                      <Edit2 className="h-3 w-3 mr-1.5" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive hover:text-destructive h-8"
+                      onClick={() => handleDelete(earning.id)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

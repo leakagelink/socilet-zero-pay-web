@@ -264,129 +264,134 @@ const AdminPanel = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-muted/10">
       {/* Header */}
       <header className="bg-card border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Admin Panel</h1>
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+            <h1 className="text-lg sm:text-xl font-bold truncate">Admin Panel</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="text-xs sm:text-sm text-muted-foreground hidden md:block truncate max-w-[150px]">{userEmail}</span>
+            <Button variant="outline" size="sm" onClick={handleLogout} className="h-8 sm:h-9 px-2 sm:px-3">
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Revenue Dashboard */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Revenue Dashboard
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-200 dark:border-emerald-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <IndianRupee className="h-4 w-4" />
+          
+          {/* Mobile: 2 columns, Tablet: 3 columns, Desktop: 6 columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
+            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-200 dark:border-emerald-800 col-span-2 sm:col-span-1">
+              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                  <IndianRupee className="h-3 w-3 sm:h-4 sm:w-4" />
                   Total Revenue
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                   {formatCurrency(revenueStats.totalRevenue)}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Received amount</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Received amount</p>
               </CardContent>
             </Card>
             
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Projects Total</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Projects Total</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {formatCurrency(revenueStats.projectsRevenue)}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">All projects value</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">All projects value</p>
               </CardContent>
             </Card>
             
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Pending Payments</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Pending</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-600 dark:text-amber-400">
                   {formatCurrency(revenueStats.projectsPending)}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Yet to receive</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Yet to receive</p>
               </CardContent>
             </Card>
             
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Digital Sales</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Digital Sales</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {formatCurrency(revenueStats.digitalRevenue)}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Products sold</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Products sold</p>
               </CardContent>
             </Card>
             
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Digital Profit</CardTitle>
+              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Digital Profit</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className={`text-2xl font-bold ${revenueStats.digitalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <p className={`text-lg sm:text-xl lg:text-2xl font-bold ${revenueStats.digitalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatCurrency(revenueStats.digitalProfit)}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Net profit</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Net profit</p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200 dark:border-orange-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <Wallet className="h-4 w-4" />
+              <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                  <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
                   Other Income
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600 dark:text-orange-400">
                   {formatCurrency(revenueStats.otherIncome)}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">Miscellaneous</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">Miscellaneous</p>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        <Tabs defaultValue="projects" className="space-y-6" onValueChange={() => fetchRevenueStats()}>
-          <TabsList className="grid w-full max-w-xl grid-cols-4">
-            <TabsTrigger value="projects" className="flex items-center gap-2">
-              <FolderKanban className="h-4 w-4" />
-              Projects
-            </TabsTrigger>
-            <TabsTrigger value="digital" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Digital
-            </TabsTrigger>
-            <TabsTrigger value="recurring" className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Recurring
-            </TabsTrigger>
-            <TabsTrigger value="other" className="flex items-center gap-2">
-              <Wallet className="h-4 w-4" />
-              Other
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
+          {/* Mobile-friendly scrollable tabs */}
+          <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+            <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:max-w-xl sm:grid sm:grid-cols-4 h-auto p-1">
+              <TabsTrigger value="projects" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <FolderKanban className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span>Projects</span>
+              </TabsTrigger>
+              <TabsTrigger value="digital" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span>Digital</span>
+              </TabsTrigger>
+              <TabsTrigger value="recurring" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span>Recurring</span>
+              </TabsTrigger>
+              <TabsTrigger value="other" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span>Other</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="projects">
             <ProjectManager />
