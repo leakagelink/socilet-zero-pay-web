@@ -10,6 +10,20 @@ import ProjectManager from '@/components/admin/ProjectManager';
 import DigitalProductManager from '@/components/admin/DigitalProductManager';
 import RecurringEarningsManager from '@/components/admin/RecurringEarningsManager';
 import OtherIncomeManager from '@/components/admin/OtherIncomeManager';
+import { useCountUp } from '@/hooks/useCountUp';
+
+// Animated Currency Display Component
+const AnimatedCurrency = ({ value, className }: { value: number; className?: string }) => {
+  const animatedValue = useCountUp({ end: value, duration: 1500, delay: 100 });
+  
+  const formatted = new Intl.NumberFormat('en-IN', { 
+    style: 'currency', 
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(animatedValue);
+  
+  return <span className={className}>{formatted}</span>;
+};
 
 interface RevenueStats {
   projectsRevenue: number;
@@ -319,7 +333,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="px-4 pb-4 relative">
                 <p className="text-xl sm:text-2xl font-bold text-white">
-                  {formatCurrency(revenueStats.totalRevenue)}
+                  <AnimatedCurrency value={revenueStats.totalRevenue} />
                 </p>
                 <p className="text-xs text-emerald-100/80 mt-1">Received amount</p>
               </CardContent>
@@ -332,7 +346,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="px-4 pb-4">
                 <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {formatCurrency(revenueStats.projectsRevenue)}
+                  <AnimatedCurrency value={revenueStats.projectsRevenue} />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">All projects value</p>
               </CardContent>
@@ -345,7 +359,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="px-4 pb-4">
                 <p className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
-                  {formatCurrency(revenueStats.projectsPending)}
+                  <AnimatedCurrency value={revenueStats.projectsPending} />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">Yet to receive</p>
               </CardContent>
@@ -358,7 +372,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="px-4 pb-4">
                 <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {formatCurrency(revenueStats.digitalRevenue)}
+                  <AnimatedCurrency value={revenueStats.digitalRevenue} />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">Products sold</p>
               </CardContent>
@@ -371,7 +385,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="px-4 pb-4">
                 <p className={`text-xl sm:text-2xl font-bold ${revenueStats.digitalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                  {formatCurrency(revenueStats.digitalProfit)}
+                  <AnimatedCurrency value={revenueStats.digitalProfit} />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">Net profit</p>
               </CardContent>
@@ -387,7 +401,7 @@ const AdminPanel = () => {
               </CardHeader>
               <CardContent className="px-4 pb-4">
                 <p className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">
-                  {formatCurrency(revenueStats.otherIncome)}
+                  <AnimatedCurrency value={revenueStats.otherIncome} />
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">Miscellaneous</p>
               </CardContent>
