@@ -9,7 +9,8 @@ const corsHeaders = {
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const ADMIN_EMAIL = "tagdedheeraj4@gmail.com";
-const FROM_EMAIL = "Socilet <noreply@socilet.in>";
+const FROM_EMAIL = "Socilet <hello@socilet.in>";
+const LOGO_URL = "https://knputxpnhffskshlakiq.supabase.co/storage/v1/object/public/email-assets/socilet-logo.png?v=2";
 
 interface UpcomingPayment {
   id: string;
@@ -24,7 +25,8 @@ interface UpcomingPayment {
   source: 'project' | 'recurring' | 'other_income';
 }
 
-const getEmailHtml = (payments: UpcomingPayment[]) => {
+// Admin email template - summary of all payments
+const getAdminEmailHtml = (payments: UpcomingPayment[]) => {
   const paymentRows = payments.map(p => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
       <td style="padding: 16px 12px; font-size: 14px; color: #374151;">${p.client_name}</td>
@@ -52,8 +54,7 @@ const getEmailHtml = (payments: UpcomingPayment[]) => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 32px; text-align: center;">
-              <img src="https://knputxpnhffskshlakiq.supabase.co/storage/v1/object/public/email-assets/socilet-logo.png?v=1" alt="Socilet" style="height: 60px; margin-bottom: 16px;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Socilet</h1>
+              <img src="${LOGO_URL}" alt="Socilet" style="height: 70px; margin-bottom: 12px;">
               <p style="margin: 8px 0 0 0; color: #e0e7ff; font-size: 14px;">Payment Reminder Alert</p>
             </td>
           </tr>
@@ -98,6 +99,116 @@ const getEmailHtml = (payments: UpcomingPayment[]) => {
             <td style="background-color: #f9fafb; padding: 24px 32px; text-align: center; border-top: 1px solid #e5e7eb;">
               <p style="margin: 0; color: #6b7280; font-size: 12px;">
                 This is an automated reminder from <strong>Socilet</strong>
+              </p>
+              <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 11px;">
+                © ${new Date().getFullYear()} Socilet. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+};
+
+// Client email template - personalized reminder for client
+const getClientEmailHtml = (payment: UpcomingPayment) => {
+  const projectName = payment.project_name || payment.work_description || 'your project';
+  
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Reminder - Socilet</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 32px; text-align: center;">
+              <img src="${LOGO_URL}" alt="Socilet" style="height: 70px; margin-bottom: 12px;">
+              <p style="margin: 8px 0 0 0; color: #e0e7ff; font-size: 14px;">Web & App Development Agency</p>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <h2 style="margin: 0 0 16px 0; color: #111827; font-size: 22px; font-weight: 600;">
+                Hello ${payment.client_name},
+              </h2>
+              
+              <p style="color: #374151; font-size: 15px; line-height: 1.7; margin: 0 0 24px 0;">
+                This is a friendly reminder that your payment for <strong>${projectName}</strong> is due soon.
+              </p>
+              
+              <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #bfdbfe;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Project</span>
+                      <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">${projectName}</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Amount Due</span>
+                      <p style="margin: 4px 0 0 0; color: #111827; font-size: 24px; font-weight: 700;">₹${payment.amount.toLocaleString('en-IN')}</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Due Date</span>
+                      <p style="margin: 4px 0 0 0; color: #111827; font-size: 16px; font-weight: 600;">${payment.due_date}</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0;">
+                      <span style="color: #6b7280; font-size: 13px;">Days Remaining</span>
+                      <p style="margin: 4px 0 0 0; color: ${payment.days_until_due <= 1 ? '#dc2626' : '#f59e0b'}; font-size: 16px; font-weight: 600;">
+                        ${payment.days_until_due === 0 ? 'Due Today!' : payment.days_until_due === 1 ? '1 Day Left' : `${payment.days_until_due} Days Left`}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <p style="color: #374151; font-size: 15px; line-height: 1.7; margin: 0 0 16px 0;">
+                Please make the payment at your earliest convenience. If you have already made the payment, kindly ignore this reminder.
+              </p>
+              
+              <p style="color: #374151; font-size: 15px; line-height: 1.7; margin: 0 0 24px 0;">
+                If you have any questions or need assistance, feel free to reach out to us.
+              </p>
+              
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="https://socilet.in" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
+                  Contact Us
+                </a>
+              </div>
+              
+              <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                <p style="margin: 0; color: #6b7280; font-size: 14px;">
+                  Best regards,<br>
+                  <strong style="color: #111827;">Team Socilet</strong>
+                </p>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f9fafb; padding: 24px 32px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0; color: #6b7280; font-size: 12px;">
+                📧 hello@socilet.in | 🌐 www.socilet.in
               </p>
               <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 11px;">
                 © ${new Date().getFullYear()} Socilet. All rights reserved.
@@ -234,20 +345,24 @@ const handler = async (req: Request): Promise<Response> => {
     // Sort by days until due
     upcomingPayments.sort((a, b) => a.days_until_due - b.days_until_due);
 
-    console.log('Sending reminder email for', upcomingPayments.length, 'payments');
+    console.log('Processing', upcomingPayments.length, 'payments for reminders');
 
-    // Send email
-    const emailResponse = await resend.emails.send({
+    // Send admin summary email
+    console.log('Sending admin summary email');
+    const adminEmailResponse = await resend.emails.send({
       from: FROM_EMAIL,
       to: [ADMIN_EMAIL],
       subject: `💰 Payment Reminder: ${upcomingPayments.length} payment${upcomingPayments.length !== 1 ? 's' : ''} due soon - Socilet`,
-      html: getEmailHtml(upcomingPayments),
+      html: getAdminEmailHtml(upcomingPayments),
     });
+    console.log('Admin email sent:', adminEmailResponse);
 
-    console.log('Email sent:', emailResponse);
+    // Send individual client reminder emails
+    let clientEmailsSent = 0;
+    let clientEmailsFailed = 0;
 
-    // Log each payment reminder
     for (const payment of upcomingPayments) {
+      // Log admin email
       await supabaseClient.from('email_logs').insert({
         email_type: 'payment_reminder',
         recipient_email: ADMIN_EMAIL,
@@ -260,12 +375,66 @@ const handler = async (req: Request): Promise<Response> => {
         related_other_income_id: payment.source === 'other_income' ? payment.id : null,
         days_until_due: payment.days_until_due,
       });
+
+      // Send email to client if they have an email address
+      if (payment.client_email) {
+        try {
+          console.log('Sending reminder to client:', payment.client_email);
+          
+          const clientEmailResponse = await resend.emails.send({
+            from: FROM_EMAIL,
+            to: [payment.client_email],
+            subject: `Payment Reminder: ₹${payment.amount.toLocaleString('en-IN')} due ${payment.days_until_due === 0 ? 'today' : `in ${payment.days_until_due} day${payment.days_until_due !== 1 ? 's' : ''}`} - Socilet`,
+            html: getClientEmailHtml(payment),
+          });
+          
+          console.log('Client email sent:', clientEmailResponse);
+          clientEmailsSent++;
+
+          // Log client email
+          await supabaseClient.from('email_logs').insert({
+            email_type: 'client_payment_reminder',
+            recipient_email: payment.client_email,
+            recipient_name: payment.client_name,
+            subject: `Payment Reminder: ₹${payment.amount.toLocaleString('en-IN')} due ${payment.days_until_due === 0 ? 'today' : `in ${payment.days_until_due} day(s)`}`,
+            body_preview: `Reminder for ${payment.project_name || payment.work_description} - Due on ${payment.due_date}`,
+            status: 'sent',
+            related_project_id: payment.source === 'project' ? payment.id : null,
+            related_recurring_id: payment.source === 'recurring' ? payment.id : null,
+            related_other_income_id: payment.source === 'other_income' ? payment.id : null,
+            days_until_due: payment.days_until_due,
+          });
+        } catch (clientError: any) {
+          console.error('Failed to send client email to', payment.client_email, ':', clientError);
+          clientEmailsFailed++;
+
+          // Log failed email
+          await supabaseClient.from('email_logs').insert({
+            email_type: 'client_payment_reminder',
+            recipient_email: payment.client_email,
+            recipient_name: payment.client_name,
+            subject: `Payment Reminder: ₹${payment.amount.toLocaleString('en-IN')}`,
+            body_preview: `Reminder for ${payment.project_name || payment.work_description}`,
+            status: 'failed',
+            error_message: clientError.message,
+            related_project_id: payment.source === 'project' ? payment.id : null,
+            related_recurring_id: payment.source === 'recurring' ? payment.id : null,
+            related_other_income_id: payment.source === 'other_income' ? payment.id : null,
+            days_until_due: payment.days_until_due,
+          });
+        }
+      }
     }
+
+    console.log(`Summary: ${upcomingPayments.length} payments, ${clientEmailsSent} client emails sent, ${clientEmailsFailed} failed`);
 
     return new Response(
       JSON.stringify({ 
-        message: 'Reminder sent successfully', 
+        message: 'Reminders processed successfully', 
         count: upcomingPayments.length,
+        admin_email_sent: true,
+        client_emails_sent: clientEmailsSent,
+        client_emails_failed: clientEmailsFailed,
         payments: upcomingPayments 
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
