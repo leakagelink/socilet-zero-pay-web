@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,17 +26,28 @@ interface Meeting {
 const AGORA_APP_ID = '20a16fef851d4594822620e18dbf78b9';
 
 export const MeetingRoom = () => {
+  const [searchParams] = useSearchParams();
+  const channelFromUrl = searchParams.get('channel');
+  
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [activeMeeting, setActiveMeeting] = useState<Meeting | null>(null);
   const [showChat, setShowChat] = useState(false);
   const [userName, setUserName] = useState('');
+  const [pendingChannel, setPendingChannel] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     createdBy: '',
   });
+
+  // Check for channel in URL on mount
+  useEffect(() => {
+    if (channelFromUrl) {
+      setPendingChannel(channelFromUrl);
+    }
+  }, [channelFromUrl]);
 
   useEffect(() => {
     fetchMeetings();
@@ -99,6 +111,30 @@ export const MeetingRoom = () => {
       return;
     }
     setActiveMeeting(meeting);
+    setPendingChannel(null);
+  };
+
+  const joinDirectChannel = () => {
+    if (!userName.trim()) {
+      toast.error('Please enter your name first');
+      return;
+    }
+    if (!pendingChannel) return;
+    
+    // Create a temporary meeting object for direct join
+    const directMeeting: Meeting = {
+      id: 'direct-' + pendingChannel,
+      room_name: pendingChannel,
+      room_url: pendingChannel,
+      title: 'Meeting',
+      description: '',
+      created_by: 'Host',
+      is_active: true,
+      participants_count: 0,
+      created_at: new Date().toISOString(),
+    };
+    setActiveMeeting(directMeeting);
+    setPendingChannel(null);
   };
 
   const leaveMeeting = () => {
@@ -181,23 +217,56 @@ export const MeetingRoom = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Direct Join from URL */}
+      {pendingChannel && (
+        <Card className="border-primary border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Video className="h-5 w-5" />
+              Join Meeting
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              You have been invited to join a meeting. Enter your name below and click Join.
+            </p>
+            <div className="flex gap-4 items-end">
+              <div className="flex-1 max-w-md">
+                <Label>Your Name *</Label>
+                <Input
+                  placeholder="Enter your name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+              </div>
+              <Button onClick={joinDirectChannel} size="lg">
+                <Video className="h-4 w-4 mr-2" />
+                Join Meeting
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* User Name Input */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Your Name
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Input
-            placeholder="Enter your name to join meetings"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="max-w-md"
-          />
-        </CardContent>
-      </Card>
+      {!pendingChannel && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Your Name
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              placeholder="Enter your name to join meetings"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              className="max-w-md"
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Create Meeting */}
       <Card>
