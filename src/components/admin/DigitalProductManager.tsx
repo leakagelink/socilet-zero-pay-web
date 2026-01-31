@@ -269,37 +269,38 @@ const DigitalProductManager = () => {
   // FORM VIEW
   if (viewMode === 'form') {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={goBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Button variant="ghost" size="sm" onClick={goBack} className="h-8 px-2 sm:px-3">
+            <ArrowLeft className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Back</span>
           </Button>
-          <h2 className="text-xl font-semibold">
+          <h2 className="text-lg sm:text-xl font-semibold">
             {editingProduct ? 'Edit Digital Product' : 'Add Digital Product'}
           </h2>
         </div>
 
         <Card>
-          <CardContent className="pt-6 space-y-6">
+          <CardContent className="pt-4 sm:pt-6 space-y-4 sm:space-y-6 px-3 sm:px-6">
             {/* Product Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="font-semibold text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">
                 Product Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="service_name">Service/Product Name *</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                  <Label htmlFor="service_name" className="text-sm">Service/Product Name *</Label>
                   <Input
                     id="service_name"
                     value={formData.service_name}
                     onChange={(e) => handleChange('service_name', e.target.value)}
                     placeholder="e.g., Canva Pro, ChatGPT Plus, etc."
+                    className="h-9 sm:h-10"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="original_price">Original Price (₹) *</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="original_price" className="text-sm">Original Price (₹) *</Label>
                   <Input
                     id="original_price"
                     type="number"
@@ -307,10 +308,11 @@ const DigitalProductManager = () => {
                     onChange={(e) => handleChange('original_price', e.target.value)}
                     placeholder="0"
                     min="0"
+                    className="h-9 sm:h-10"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="resell_price">Resell Price (₹) *</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="resell_price" className="text-sm">Resell Price (₹) *</Label>
                   <Input
                     id="resell_price"
                     type="number"
@@ -318,92 +320,99 @@ const DigitalProductManager = () => {
                     onChange={(e) => handleChange('resell_price', e.target.value)}
                     placeholder="0"
                     min="0"
+                    className="h-9 sm:h-10"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Profit (₹)</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label className="text-sm">Profit (₹)</Label>
                   <Input
                     value={calculateProfit().toLocaleString('en-IN')}
                     disabled
-                    className={`bg-muted ${calculateProfit() >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+                    className={`bg-muted h-9 sm:h-10 ${calculateProfit() >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sale_date">Sale Date</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="sale_date" className="text-sm">Sale Date</Label>
                   <Input
                     id="sale_date"
                     type="date"
                     value={formData.sale_date}
                     onChange={(e) => handleChange('sale_date', e.target.value)}
+                    className="h-9 sm:h-10"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="payment_method">Payment Method</Label>
+                <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                  <Label htmlFor="payment_method" className="text-sm">Payment Method</Label>
                   <Input
                     id="payment_method"
                     value={formData.payment_method}
                     onChange={(e) => handleChange('payment_method', e.target.value)}
                     placeholder="e.g., UPI, Bank Transfer, Cash"
+                    className="h-9 sm:h-10"
                   />
                 </div>
               </div>
             </div>
 
             {/* Customer Information */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="font-semibold text-xs sm:text-sm text-muted-foreground uppercase tracking-wide">
                 Customer Information (Optional)
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="customer_name">Customer Name</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="customer_name" className="text-sm">Customer Name</Label>
                   <Input
                     id="customer_name"
                     value={formData.customer_name}
                     onChange={(e) => handleChange('customer_name', e.target.value)}
                     placeholder="Enter customer name"
+                    className="h-9 sm:h-10"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="customer_phone">Customer Phone</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="customer_phone" className="text-sm">Customer Phone</Label>
                   <Input
                     id="customer_phone"
                     value={formData.customer_phone}
                     onChange={(e) => handleChange('customer_phone', e.target.value)}
                     placeholder="Enter phone number"
+                    className="h-9 sm:h-10"
                   />
                 </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="customer_email">Customer Email</Label>
+                <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                  <Label htmlFor="customer_email" className="text-sm">Customer Email</Label>
                   <Input
                     id="customer_email"
                     type="email"
                     value={formData.customer_email}
                     onChange={(e) => handleChange('customer_email', e.target.value)}
                     placeholder="Enter email address"
+                    className="h-9 sm:h-10"
                   />
                 </div>
               </div>
             </div>
 
             {/* Notes */}
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="notes" className="text-sm">Notes</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => handleChange('notes', e.target.value)}
                 placeholder="Any additional notes..."
                 rows={3}
+                className="text-sm"
               />
             </div>
 
             {/* Submit Buttons */}
-            <div className="flex gap-3 pt-4 border-t">
-              <Button variant="outline" onClick={goBack} disabled={isSubmitting}>
+            <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={goBack} disabled={isSubmitting} className="w-full sm:w-auto">
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={isSubmitting}>
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full sm:w-auto">
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -425,18 +434,18 @@ const DigitalProductManager = () => {
 
   // LIST VIEW
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Delete Confirmation Inline */}
       {deleteProductId && (
         <Card className="border-destructive bg-destructive/5">
-          <CardContent className="py-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <CardContent className="py-3 sm:py-4 px-3 sm:px-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <div>
-                <p className="font-medium">Delete "{deleteProductName}"?</p>
-                <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+                <p className="font-medium text-sm sm:text-base">Delete "{deleteProductName}"?</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">This action cannot be undone.</p>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={cancelDelete} disabled={isDeleting}>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" size="sm" onClick={cancelDelete} disabled={isDeleting} className="flex-1 sm:flex-none h-8">
                   Cancel
                 </Button>
                 <Button 
@@ -444,6 +453,7 @@ const DigitalProductManager = () => {
                   size="sm" 
                   onClick={handleDelete} 
                   disabled={isDeleting}
+                  className="flex-1 sm:flex-none h-8"
                 >
                   {isDeleting ? (
                     <>
@@ -461,68 +471,69 @@ const DigitalProductManager = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-between">
+        <div className="relative flex-1 sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by product or customer..."
+            placeholder="Search product or customer..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-9 sm:h-10"
           />
         </div>
-        <Button onClick={openAddForm}>
+        <Button onClick={openAddForm} className="h-9 sm:h-10 w-full sm:w-auto">
           <Plus className="h-4 w-4 mr-2" />
           Add Product
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Sales</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Sales</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{products.length}</p>
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-xl sm:text-2xl font-bold">{products.length}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
               {formatCurrency(totalRevenue)}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Cost</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Cost</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
               {formatCurrency(totalCost)}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Profit</CardTitle>
+          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Profit</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+          <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+            <p className={`text-xl sm:text-2xl font-bold ${totalProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
               {formatCurrency(totalProfit)}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Products Table */}
+      {/* Products - Mobile Cards / Desktop Table */}
       <Card>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -598,6 +609,58 @@ const DigitalProductManager = () => {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y">
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground px-4">
+                <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                {searchQuery ? 'No products found.' : 'No digital products yet.'}
+              </div>
+            ) : (
+              filteredProducts.map((product) => (
+                <div key={product.id} className="p-3 sm:p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm truncate">{product.service_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{product.customer_name || 'No customer'}</p>
+                    </div>
+                    <span className={`text-sm font-bold ${product.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                      {formatCurrency(product.profit)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      <span className="text-muted-foreground">Cost: {formatCurrency(product.original_price)}</span>
+                      <span className="font-medium">Sell: {formatCurrency(product.resell_price)}</span>
+                    </div>
+                    <span className="text-muted-foreground">{formatDate(product.sale_date)}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openEditForm(product)}
+                      className="flex-1 h-8 text-xs"
+                    >
+                      <Pencil className="h-3 w-3 mr-1.5" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive hover:text-destructive h-8"
+                      onClick={() => confirmDelete(product)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
