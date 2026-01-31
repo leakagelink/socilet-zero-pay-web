@@ -272,7 +272,6 @@ export const MeetingRoom = () => {
                         size="sm"
                         className="flex-1"
                         onClick={() => joinMeeting(meeting)}
-                        disabled={!userName.trim()}
                       >
                         <Video className="h-4 w-4 mr-1" />
                         Join
