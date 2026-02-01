@@ -7,7 +7,7 @@ import AgoraRTC, {
   ILocalVideoTrack
 } from 'agora-rtc-sdk-ng';
 import { Button } from '@/components/ui/button';
-import { Video, VideoOff, Mic, MicOff, Phone, Users, Monitor, MonitorOff, SwitchCamera } from 'lucide-react';
+import { Video, VideoOff, Mic, MicOff, Phone, Users, Monitor, MonitorOff } from 'lucide-react';
 
 import { supabase } from '@/integrations/supabase/client';
 
@@ -159,98 +159,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     }
   };
 
-  const isMobileDevice = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  };
-
-  const isScreenShareSupported = () => {
-    // Check if getDisplayMedia is available
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
-  };
-
-  // State for camera facing mode (mobile)
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
-
-  // Switch camera for mobile devices
-  const switchCamera = async () => {
-    if (!localVideoTrack) return;
-    
-    try {
-      const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
-      
-      // Close current track
-      localVideoTrack.close();
-      
-      // Create new track with opposite facing mode
-      const newVideoTrack = await AgoraRTC.createCameraVideoTrack({
-        facingMode: newFacingMode,
-        encoderConfig: {
-          width: { max: 1280 },
-          height: { max: 720 },
-          frameRate: 30,
-        },
-      });
-      
-      // Unpublish old, publish new
-      await client.unpublish(localVideoTrack);
-      await client.publish(newVideoTrack);
-      
-      setLocalVideoTrack(newVideoTrack);
-      setFacingMode(newFacingMode);
-      
-      // Play in local video element
-      if (localVideoRef.current) {
-        newVideoTrack.play(localVideoRef.current);
-      }
-    } catch (err) {
-      console.error('Failed to switch camera:', err);
-      alert('कैमरा स्विच करने में समस्या हुई। Please try again.');
-    }
-  };
-
   const toggleScreenShare = async () => {
-    // For mobile devices, show info about limitation and suggest camera flip
-    if (isMobileDevice()) {
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      const isAndroid = /Android/i.test(navigator.userAgent);
-      
-      if (isIOS) {
-        // iOS doesn't support screen sharing at all
-        const useRearCamera = confirm(
-          '📱 iPhone/iPad पर Screen Sharing उपलब्ध नहीं है।\n\n' +
-          'Alternative: क्या आप Rear Camera से अपनी स्क्रीन दिखाना चाहते हैं?\n\n' +
-          '(OK = Rear Camera, Cancel = रद्द करें)'
-        );
-        if (useRearCamera) {
-          await switchCamera();
-        }
-        return;
-      }
-      
-      if (isAndroid) {
-        // Android Chrome might support it, but often fails
-        // First try native screen share, if it fails offer camera flip
-        if (!isScreenShareSupported()) {
-          const useRearCamera = confirm(
-            '📱 इस Browser में Screen Sharing Support नहीं है।\n\n' +
-            'Alternative: क्या आप Rear Camera से अपनी स्क्रीन दिखाना चाहते हैं?\n\n' +
-            '(OK = Rear Camera, Cancel = रद्द करें)'
-          );
-          if (useRearCamera) {
-            await switchCamera();
-          }
-          return;
-        }
-        // Continue with screen share attempt for Android Chrome
-      }
-    }
-
-    // Check browser support for desktop
-    if (!isScreenShareSupported()) {
-      alert('Screen sharing is not supported in your browser.\n\nPlease use Chrome, Edge, or Firefox on desktop.');
-      return;
-    }
-
     if (isScreenSharing) {
       // Stop screen sharing
       if (screenTrack) {
@@ -267,25 +176,8 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     } else {
       // Start screen sharing
       try {
-        // Configure based on device
-        const encoderConfig = isMobileDevice() 
-          ? {
-              width: { max: 1280 },
-              height: { max: 720 },
-              frameRate: { max: 15 },
-              bitrateMax: 1500,
-            }
-          : {
-              width: { max: 1920 },
-              height: { max: 1080 },
-              frameRate: { max: 30 },
-              bitrateMax: 3000,
-            };
-
-        // Use Agora's screen sharing
         const screenVideoTrack = await AgoraRTC.createScreenVideoTrack({
-          encoderConfig,
-          optimizationMode: 'detail',
+          encoderConfig: '1080p_1',
         }, 'disable');
         
         // Handle if user cancels screen share picker
@@ -324,48 +216,10 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         }
       } catch (err: any) {
         console.error('Screen share error:', err);
-        
-        // Handle different error types
+        // User cancelled or error occurred
         if (err.message?.includes('Permission denied') || err.name === 'NotAllowedError') {
           // User cancelled - do nothing
           return;
-        }
-        
-        if (err.name === 'NotSupportedError' || err.message?.includes('not supported')) {
-          if (isMobileDevice()) {
-            const useRearCamera = confirm(
-              '📱 Screen sharing इस device पर काम नहीं कर रही।\n\n' +
-              'Alternative: क्या आप Rear Camera से अपनी स्क्रीन दिखाना चाहते हैं?\n\n' +
-              '(OK = Rear Camera, Cancel = रद्द करें)'
-            );
-            if (useRearCamera) {
-              await switchCamera();
-            }
-          } else {
-            alert('Screen sharing is not supported in your browser.\n\nPlease try Chrome, Edge, or Firefox.');
-          }
-          return;
-        }
-        
-        // AbortError usually means user cancelled
-        if (err.name === 'AbortError') {
-          return;
-        }
-        
-        // Other errors - show appropriate message
-        if (isMobileDevice()) {
-          const useRearCamera = confirm(
-            '📱 Screen sharing start नहीं हो पाई।\n\n' +
-            'Mobile browsers में Screen Sharing limited है।\n\n' +
-            'Alternative: क्या आप Rear Camera से अपनी स्क्रीन दिखाना चाहते हैं?\n\n' +
-            '(OK = Rear Camera, Cancel = रद्द करें)'
-          );
-          if (useRearCamera) {
-            await switchCamera();
-          }
-          alert('📱 Screen sharing is not available on this device.\n\nMobile screen sharing support is limited.\n\nPlease use a desktop/laptop for this feature.');
-        } else {
-          alert('Failed to start screen sharing.\n\nPlease check your browser permissions and try again.');
         }
       }
     }
@@ -462,26 +316,11 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             {isVideoEnabled ? <Video className="h-5 w-5 sm:h-6 sm:w-6" /> : <VideoOff className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
 
-          {/* Camera Flip Button - Mobile Only */}
-          {isMobileDevice() && (
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={switchCamera}
-              className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0"
-              title="Switch Camera"
-              disabled={!isVideoEnabled || isScreenSharing}
-            >
-              <SwitchCamera className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
-          )}
-
           <Button
             variant={isScreenSharing ? "default" : "outline"}
             size="lg"
             onClick={toggleScreenShare}
-            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0"
-            title="Share Screen"
+            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0 hidden sm:flex"
           >
             {isScreenSharing ? <MonitorOff className="h-5 w-5 sm:h-6 sm:w-6" /> : <Monitor className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
