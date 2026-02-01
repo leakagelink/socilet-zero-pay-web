@@ -32,6 +32,12 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   useEffect(() => {
     const init = async () => {
       try {
+        console.log('Initializing Agora with appId:', appId, 'channel:', channelName);
+        
+        if (!appId || appId.trim() === '') {
+          throw new Error('Agora App ID is missing or empty');
+        }
+
         // Set up event handlers
         client.on('user-published', async (user, mediaType) => {
           await client.subscribe(user, mediaType);
@@ -63,11 +69,14 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         });
 
         // Create local tracks
+        console.log('Creating local tracks...');
         const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
         setLocalAudioTrack(audioTrack);
         setLocalVideoTrack(videoTrack);
+        console.log('Local tracks created successfully');
 
         // Join the channel
+        console.log('Joining channel with appId:', appId);
         const uid = await client.join(appId, channelName, null, null);
         console.log('Joined channel with UID:', uid);
 
@@ -78,6 +87,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         setIsJoined(true);
       } catch (err: any) {
         console.error('Error initializing Agora:', err);
+        console.error('Agora error details - appId used:', appId, 'channel:', channelName);
         setError(err.message || 'Failed to join meeting');
       }
     };
