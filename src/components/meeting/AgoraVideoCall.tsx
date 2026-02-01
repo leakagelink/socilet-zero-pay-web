@@ -238,26 +238,26 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-screen w-full max-w-full overflow-hidden bg-background">
       {/* Video Grid */}
-      <div className="flex-1 p-4 overflow-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+      <div className="flex-1 p-2 sm:p-4 overflow-y-auto overflow-x-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 auto-rows-fr max-w-full">
           {/* Screen Share Display */}
           {isScreenSharing && (
-            <div className="relative bg-muted rounded-lg overflow-hidden aspect-video md:col-span-2 lg:col-span-2">
+            <div className="relative bg-muted rounded-lg overflow-hidden aspect-video sm:col-span-2 lg:col-span-2">
               <div 
                 ref={screenShareRef} 
                 className="w-full h-full"
               />
-              <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1">
-                <Monitor className="h-4 w-4" />
+              <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs sm:text-sm flex items-center gap-1">
+                <Monitor className="h-3 w-3 sm:h-4 sm:w-4" />
                 Screen Sharing
               </div>
             </div>
           )}
 
           {/* Local Video */}
-          <div className={`relative bg-muted rounded-lg overflow-hidden aspect-video ${isScreenSharing ? 'md:col-span-1' : ''}`}>
+          <div className={`relative bg-muted rounded-lg overflow-hidden aspect-video ${isScreenSharing ? 'sm:col-span-1' : ''}`}>
             <div 
               ref={localVideoRef} 
               className="w-full h-full"
@@ -265,14 +265,14 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             />
             {(!isVideoEnabled || isScreenSharing) && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-primary">
+                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-xl sm:text-2xl font-bold text-primary">
                     {userName.charAt(0).toUpperCase()}
                   </span>
                 </div>
               </div>
             )}
-            <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-sm">
+            <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs sm:text-sm">
               {userName} (You)
             </div>
           </div>
@@ -284,54 +284,54 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         </div>
 
         {remoteUsers.length === 0 && isJoined && !isScreenSharing && (
-          <div className="flex items-center justify-center mt-8">
-            <div className="text-center text-muted-foreground">
-              <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>Waiting for others to join...</p>
-              <p className="text-sm mt-1">Share the meeting link to invite participants</p>
+          <div className="flex items-center justify-center mt-4 sm:mt-8">
+            <div className="text-center text-muted-foreground px-4">
+              <Users className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 opacity-50" />
+              <p className="text-sm sm:text-base">Waiting for others to join...</p>
+              <p className="text-xs sm:text-sm mt-1">Share the meeting link to invite participants</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Controls */}
-      <div className="p-4 border-t bg-card">
-        <div className="flex items-center justify-center gap-3 flex-wrap">
+      {/* Controls - Fixed at bottom */}
+      <div className="flex-shrink-0 p-3 sm:p-4 border-t bg-card safe-area-bottom">
+        <div className="flex items-center justify-center gap-2 sm:gap-3">
           <Button
             variant={isAudioEnabled ? "outline" : "destructive"}
             size="lg"
             onClick={toggleAudio}
-            className="rounded-full w-14 h-14"
+            className="rounded-full w-12 h-12 sm:w-14 sm:h-14"
           >
-            {isAudioEnabled ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
+            {isAudioEnabled ? <Mic className="h-5 w-5 sm:h-6 sm:w-6" /> : <MicOff className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
           
           <Button
             variant={isVideoEnabled ? "outline" : "destructive"}
             size="lg"
             onClick={toggleVideo}
-            className="rounded-full w-14 h-14"
+            className="rounded-full w-12 h-12 sm:w-14 sm:h-14"
             disabled={isScreenSharing}
           >
-            {isVideoEnabled ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
+            {isVideoEnabled ? <Video className="h-5 w-5 sm:h-6 sm:w-6" /> : <VideoOff className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
 
           <Button
             variant={isScreenSharing ? "default" : "outline"}
             size="lg"
             onClick={toggleScreenShare}
-            className="rounded-full w-14 h-14"
+            className="rounded-full w-12 h-12 sm:w-14 sm:h-14 hidden sm:flex"
           >
-            {isScreenSharing ? <MonitorOff className="h-6 w-6" /> : <Monitor className="h-6 w-6" />}
+            {isScreenSharing ? <MonitorOff className="h-5 w-5 sm:h-6 sm:w-6" /> : <Monitor className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
           
           <Button
             variant="destructive"
             size="lg"
             onClick={leaveChannel}
-            className="rounded-full w-14 h-14"
+            className="rounded-full w-12 h-12 sm:w-14 sm:h-14"
           >
-            <Phone className="h-6 w-6 rotate-[135deg]" />
+            <Phone className="h-5 w-5 sm:h-6 sm:w-6 rotate-[135deg]" />
           </Button>
         </div>
       </div>
@@ -360,14 +360,14 @@ const RemoteVideoPlayer = ({ user }: { user: IAgoraRTCRemoteUser }) => {
       <div ref={videoRef} className="w-full h-full" />
       {!user.videoTrack && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary">
+          <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
+            <span className="text-xl sm:text-2xl font-bold text-primary">
               {String(user.uid).charAt(0).toUpperCase()}
             </span>
           </div>
         </div>
       )}
-      <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-sm">
+      <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs sm:text-sm">
         User {user.uid}
       </div>
     </div>
