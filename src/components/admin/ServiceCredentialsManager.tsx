@@ -425,19 +425,21 @@ const ServiceCredentialsManager = () => {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">
-                Password {editingId ? '(leave empty to keep current)' : '*'}
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="••••••••"
-                required={!editingId}
-              />
-            </div>
+            {!formData.is_auto_login && (
+              <div className="space-y-2">
+                <Label htmlFor="password">
+                  Password {editingId ? '(leave empty to keep current)' : '*'}
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="••••••••"
+                  required={!editingId && !formData.is_auto_login}
+                />
+              </div>
+            )}
             <div className="flex items-center space-x-2">
               <Switch
                 id="is_auto_login"
