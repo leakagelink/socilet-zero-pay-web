@@ -527,41 +527,52 @@ const AIProjectAnalyzer = () => {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-280px)] min-h-[500px] lg:min-h-[600px] gap-4">
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-200px)] sm:h-[calc(100vh-220px)] lg:h-[calc(100vh-280px)] min-h-[400px] sm:min-h-[450px] lg:min-h-[600px] gap-2 lg:gap-4">
       {/* Desktop Sidebar */}
       <Card className="hidden lg:flex w-72 xl:w-80 flex-col">
         <SessionsList />
       </Card>
 
       {/* Mobile Header with Menu */}
-      <div className="lg:hidden flex items-center gap-2 mb-2">
+      <div className="lg:hidden flex items-center gap-2 px-1">
         <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-1.5 h-8 px-2.5">
               <Menu className="h-4 w-4" />
-              Sessions
+              <span className="text-xs">Sessions</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 p-0">
+          <SheetContent side="left" className="w-[85vw] max-w-80 p-0">
             <SessionsList onClose={() => setIsMobileSidebarOpen(false)} />
           </SheetContent>
         </Sheet>
         
         {activeSession && (
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">{activeSession.session_name}</p>
-            {activeSession.client_name && (
-              <p className="text-xs text-muted-foreground truncate">{activeSession.client_name}</p>
-            )}
+          <div className="flex-1 min-w-0 flex items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-xs sm:text-sm truncate">{activeSession.session_name}</p>
+              {activeSession.client_name && (
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{activeSession.client_name}</p>
+              )}
+            </div>
+            {/* Mobile Quick Export */}
+            <div className="flex gap-1 flex-shrink-0">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => exportDocument('md')} title="Export MD">
+                <FileDown className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => exportDocument('txt')} title="Export TXT">
+                <Download className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
         )}
       </div>
 
       {/* Chat Area */}
-      <Card className="flex-1 flex flex-col overflow-hidden">
+      <Card className="flex-1 flex flex-col overflow-hidden min-h-0">
         {activeSession ? (
           <>
-            {/* Chat Header - Desktop */}
+            {/* Chat Header - Desktop Only */}
             <CardHeader className="hidden lg:block pb-3 border-b">
               <div className="flex items-center justify-between">
                 <div>
@@ -583,53 +594,41 @@ const AIProjectAnalyzer = () => {
               </div>
             </CardHeader>
 
-            {/* Mobile Export Buttons */}
-            <div className="lg:hidden flex gap-2 p-3 border-b">
-              <Button variant="outline" size="sm" onClick={() => exportDocument('md')} className="gap-1 flex-1">
-                <FileDown className="h-4 w-4" />
-                MD
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => exportDocument('txt')} className="gap-1 flex-1">
-                <Download className="h-4 w-4" />
-                TXT
-              </Button>
-            </div>
-
             {/* Messages */}
-            <ScrollArea className="flex-1 p-3 lg:p-4">
+            <ScrollArea className="flex-1 p-2 sm:p-3 lg:p-4 min-h-0">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                  <Bot className="h-12 w-12 lg:h-16 lg:w-16 text-primary/30 mb-4" />
-                  <h3 className="text-base lg:text-lg font-medium mb-2">Start Your Analysis</h3>
-                  <p className="text-muted-foreground text-xs lg:text-sm max-w-md mb-4 lg:mb-6">
+                <div className="h-full flex flex-col items-center justify-center text-center px-2 sm:px-4">
+                  <Bot className="h-10 w-10 sm:h-12 sm:w-12 lg:h-16 lg:w-16 text-primary/30 mb-3 lg:mb-4" />
+                  <h3 className="text-sm sm:text-base lg:text-lg font-medium mb-1.5 lg:mb-2">Start Your Analysis</h3>
+                  <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-md mb-3 lg:mb-6">
                     Describe your project requirements. I'll help analyze and create detailed proposals.
                   </p>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs" onClick={() => setInputMessage('E-commerce website with payment, products & auth')}>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-[10px] sm:text-xs px-2 py-1" onClick={() => setInputMessage('E-commerce website with payment, products & auth')}>
                       E-commerce
                     </Badge>
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs" onClick={() => setInputMessage('CRM system with leads, tasks & reports')}>
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-[10px] sm:text-xs px-2 py-1" onClick={() => setInputMessage('CRM system with leads, tasks & reports')}>
                       CRM
                     </Badge>
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs" onClick={() => setInputMessage('Portfolio website with blog & admin panel')}>
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-[10px] sm:text-xs px-2 py-1" onClick={() => setInputMessage('Portfolio website with blog & admin panel')}>
                       Portfolio
                     </Badge>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3 lg:space-y-4">
+                <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`flex gap-2 lg:gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex gap-1.5 sm:gap-2 lg:gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       {msg.role === 'assistant' && (
-                        <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Bot className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-primary" />
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Bot className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-primary" />
                         </div>
                       )}
                       <div
-                        className={`max-w-[85%] lg:max-w-[80%] rounded-2xl px-3 py-2 lg:px-4 lg:py-3 ${
+                        className={`max-w-[88%] sm:max-w-[85%] lg:max-w-[80%] rounded-xl sm:rounded-2xl px-2.5 py-1.5 sm:px-3 sm:py-2 lg:px-4 lg:py-3 ${
                           msg.role === 'user'
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted prose prose-sm max-w-none dark:prose-invert'
@@ -638,29 +637,30 @@ const AIProjectAnalyzer = () => {
                         {msg.role === 'assistant' ? (
                           <ReactMarkdown
                             components={{
-                              h1: ({ children }) => <h1 className="text-base lg:text-lg font-bold mt-4 mb-2">{children}</h1>,
-                              h2: ({ children }) => <h2 className="text-sm lg:text-base font-semibold mt-3 mb-2">{children}</h2>,
-                              h3: ({ children }) => <h3 className="text-xs lg:text-sm font-medium mt-2 mb-1">{children}</h3>,
-                              p: ({ children }) => <p className="mb-2 text-xs lg:text-sm">{children}</p>,
-                              ul: ({ children }) => <ul className="list-disc ml-4 mb-2 text-xs lg:text-sm">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal ml-4 mb-2 text-xs lg:text-sm">{children}</ol>,
-                              li: ({ children }) => <li className="mb-1">{children}</li>,
-                              table: ({ children }) => <div className="overflow-x-auto"><table className="w-full border-collapse my-2 text-xs lg:text-sm">{children}</table></div>,
-                              th: ({ children }) => <th className="border px-2 py-1 bg-muted font-medium text-left">{children}</th>,
-                              td: ({ children }) => <td className="border px-2 py-1">{children}</td>,
+                              h1: ({ children }) => <h1 className="text-sm sm:text-base lg:text-lg font-bold mt-3 sm:mt-4 mb-1.5 sm:mb-2">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-xs sm:text-sm lg:text-base font-semibold mt-2 sm:mt-3 mb-1.5 sm:mb-2">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-[11px] sm:text-xs lg:text-sm font-medium mt-1.5 sm:mt-2 mb-1">{children}</h3>,
+                              p: ({ children }) => <p className="mb-1.5 sm:mb-2 text-[11px] sm:text-xs lg:text-sm leading-relaxed">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc ml-3 sm:ml-4 mb-1.5 sm:mb-2 text-[11px] sm:text-xs lg:text-sm">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal ml-3 sm:ml-4 mb-1.5 sm:mb-2 text-[11px] sm:text-xs lg:text-sm">{children}</ol>,
+                              li: ({ children }) => <li className="mb-0.5 sm:mb-1">{children}</li>,
+                              table: ({ children }) => <div className="overflow-x-auto -mx-1 sm:mx-0"><table className="w-full border-collapse my-1.5 sm:my-2 text-[10px] sm:text-xs lg:text-sm min-w-[300px]">{children}</table></div>,
+                              th: ({ children }) => <th className="border px-1.5 sm:px-2 py-0.5 sm:py-1 bg-muted font-medium text-left whitespace-nowrap">{children}</th>,
+                              td: ({ children }) => <td className="border px-1.5 sm:px-2 py-0.5 sm:py-1">{children}</td>,
                               strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                              code: ({ children }) => <code className="bg-muted-foreground/10 px-1 rounded text-xs">{children}</code>,
+                              code: ({ children }) => <code className="bg-muted-foreground/10 px-1 rounded text-[10px] sm:text-xs">{children}</code>,
+                              pre: ({ children }) => <pre className="overflow-x-auto bg-muted-foreground/5 rounded p-2 my-2 text-[10px] sm:text-xs">{children}</pre>,
                             }}
                           >
                             {msg.content || '...'}
                           </ReactMarkdown>
                         ) : (
-                          <p className="whitespace-pre-wrap text-xs lg:text-sm">{msg.content}</p>
+                          <p className="whitespace-pre-wrap text-[11px] sm:text-xs lg:text-sm">{msg.content}</p>
                         )}
                       </div>
                       {msg.role === 'user' && (
-                        <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                          <User className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-primary-foreground" />
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-primary-foreground" />
                         </div>
                       )}
                     </div>
@@ -671,17 +671,17 @@ const AIProjectAnalyzer = () => {
             </ScrollArea>
 
             {/* Input Area */}
-            <div className="p-3 lg:p-4 border-t">
+            <div className="p-2 sm:p-3 lg:p-4 border-t bg-background">
               {uploadedFile && (
-                <div className="flex items-center gap-2 mb-2 p-2 bg-muted rounded-lg">
-                  <FileText className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span className="text-xs lg:text-sm flex-1 truncate">{uploadedFile.name}</span>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setUploadedFile(null)}>
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-2 p-1.5 sm:p-2 bg-muted rounded-lg">
+                  <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                  <span className="text-[11px] sm:text-xs lg:text-sm flex-1 truncate">{uploadedFile.name}</span>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-6 sm:w-6" onClick={() => setUploadedFile(null)}>
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2">
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -692,17 +692,17 @@ const AIProjectAnalyzer = () => {
                 <Button 
                   variant="outline" 
                   size="icon" 
-                  className="flex-shrink-0"
+                  className="flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isSending}
                 >
-                  <Upload className="h-4 w-4" />
+                  <Upload className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
                 <Textarea
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder="Project requirements..."
-                  className="min-h-[50px] lg:min-h-[60px] max-h-[100px] lg:max-h-[120px] resize-none text-sm"
+                  className="min-h-[40px] sm:min-h-[50px] lg:min-h-[60px] max-h-[80px] sm:max-h-[100px] lg:max-h-[120px] resize-none text-xs sm:text-sm"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -711,50 +711,50 @@ const AIProjectAnalyzer = () => {
                   }}
                   disabled={isSending}
                 />
-                <div className="flex flex-col gap-1 flex-shrink-0">
+                <div className="flex flex-col gap-0.5 sm:gap-1 flex-shrink-0">
                   <Button 
                     onClick={() => sendMessage('chat')} 
                     disabled={isSending || (!inputMessage.trim() && !uploadedFile)}
                     size="icon"
-                    className="h-7 lg:h-8"
+                    className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8"
                   >
-                    {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {isSending ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Send className="h-3 w-3 sm:h-4 sm:w-4" />}
                   </Button>
                   <Button 
                     onClick={() => sendMessage('analyze')} 
                     disabled={isSending}
                     size="icon"
                     variant="secondary"
-                    className="h-7 lg:h-8"
+                    className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8"
                     title="Deep Analysis"
                   >
-                    <Sparkles className="h-4 w-4" />
+                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                   <Button 
                     onClick={() => sendMessage('generate_document')} 
                     disabled={isSending || messages.length === 0}
                     size="icon"
                     variant="outline"
-                    className="h-7 lg:h-8"
+                    className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8"
                     title="Generate Document"
                   >
-                    <FileText className="h-4 w-4" />
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </div>
-              <p className="text-[10px] lg:text-xs text-muted-foreground mt-2 hidden sm:block">
+              <p className="text-[9px] sm:text-[10px] lg:text-xs text-muted-foreground mt-1.5 sm:mt-2 hidden sm:block">
                 💡 Enter = send • ✨ Analysis • 📄 Document
               </p>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 lg:p-8">
-            <Bot className="h-16 w-16 lg:h-20 lg:w-20 text-primary/20 mb-4 lg:mb-6" />
-            <h2 className="text-lg lg:text-xl font-semibold mb-2">AI Project Analyzer</h2>
-            <p className="text-muted-foreground text-sm max-w-md mb-4 lg:mb-6">
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-4 sm:p-6 lg:p-8">
+            <Bot className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 text-primary/20 mb-3 sm:mb-4 lg:mb-6" />
+            <h2 className="text-base sm:text-lg lg:text-xl font-semibold mb-1.5 sm:mb-2">AI Project Analyzer</h2>
+            <p className="text-muted-foreground text-xs sm:text-sm max-w-md mb-3 sm:mb-4 lg:mb-6">
               Create a session to analyze projects. Generate proposals with tech recommendations, timelines & costs.
             </p>
-            <Button onClick={() => setIsNewSessionDialogOpen(true)} className="gap-2">
+            <Button onClick={() => setIsNewSessionDialogOpen(true)} className="gap-2 h-9 sm:h-10">
               <Plus className="h-4 w-4" />
               New Session
             </Button>
