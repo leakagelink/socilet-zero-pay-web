@@ -40,7 +40,14 @@ interface ServiceCredential {
   updated_at: string;
 }
 
+const UNLOCK_PASSWORD = 'Pyariiccha@123';
+
 const ServiceCredentialsManager = () => {
+  // Section unlock state
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [unlockPassword, setUnlockPassword] = useState('');
+  const [unlockError, setUnlockError] = useState('');
+
   const [credentials, setCredentials] = useState<ServiceCredential[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -69,6 +76,16 @@ const ServiceCredentialsManager = () => {
   // Delete confirmation
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (unlockPassword === UNLOCK_PASSWORD) {
+      setIsUnlocked(true);
+      setUnlockError('');
+    } else {
+      setUnlockError('Incorrect password');
+    }
+  };
 
   const fetchCredentials = async () => {
     setIsLoading(true);
@@ -253,6 +270,46 @@ const ServiceCredentialsManager = () => {
 
     return matchesSearch && matchesFilter;
   });
+
+  // Show unlock screen if not unlocked
+  if (!isUnlocked) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <Lock className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle>Protected Section</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleUnlock} className="space-y-4">
+              <p className="text-sm text-muted-foreground text-center">
+                Enter admin password to access Service Credentials Manager
+              </p>
+              <Input
+                type="password"
+                placeholder="Enter password..."
+                value={unlockPassword}
+                onChange={(e) => {
+                  setUnlockPassword(e.target.value);
+                  setUnlockError('');
+                }}
+                className={unlockError ? 'border-destructive' : ''}
+              />
+              {unlockError && (
+                <p className="text-sm text-destructive text-center">{unlockError}</p>
+              )}
+              <Button type="submit" className="w-full">
+                <Key className="h-4 w-4 mr-2" />
+                Unlock
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
