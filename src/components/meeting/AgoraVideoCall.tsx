@@ -8,6 +8,8 @@ import AgoraRTC, {
 import { Button } from '@/components/ui/button';
 import { Video, VideoOff, Mic, MicOff, Phone, Users } from 'lucide-react';
 
+import { supabase } from '@/integrations/supabase/client';
+
 interface AgoraVideoCallProps {
   appId: string;
   channelName: string;
@@ -37,6 +39,28 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         if (!appId || appId.trim() === '') {
           throw new Error('Agora App ID is missing or empty');
         }
+
+        // Generate token from backend
+        console.log('Requesting token from backend...');
+        const { data: tokenData, error: tokenError } = await supabase.functions.invoke('agora-meeting', {
+          body: { 
+            action: 'generate-token',
+            channelName: channelName,
+            uid: 0 // Use 0 for auto-generated UID
+          },
+        });
+
+        if (tokenError) {
+          console.error('Token generation error:', tokenError);
+          throw new Error('Failed to generate meeting token');
+        }
+
+        if (!tokenData.success) {
+          throw new Error(tokenData.error || 'Failed to generate token');
+        }
+
+        const token = tokenData.token;
+        console.log('Token generated successfully');
 
         // Set up event handlers
         client.on('user-published', async (user, mediaType) => {
@@ -75,9 +99,9 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         setLocalVideoTrack(videoTrack);
         console.log('Local tracks created successfully');
 
-        // Join the channel
-        console.log('Joining channel with appId:', appId);
-        const uid = await client.join(appId, channelName, null, null);
+        // Join the channel with token
+        console.log('Joining channel with token...');
+        const uid = await client.join(appId, channelName, token, null);
         console.log('Joined channel with UID:', uid);
 
         // Publish local tracks
