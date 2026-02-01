@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,6 +13,9 @@ import OtherIncomeManager from '@/components/admin/OtherIncomeManager';
 import RevenueCharts from '@/components/admin/RevenueCharts';
 import EmailManager from '@/components/admin/EmailManager';
 import ServiceCredentialsManager from '@/components/admin/ServiceCredentialsManager';
+import InvoiceManager from '@/components/admin/InvoiceManager';
+import KanbanBoard from '@/components/admin/KanbanBoard';
+import NotificationManager from '@/components/admin/NotificationManager';
 import { useCountUp } from '@/hooks/useCountUp';
 
 // Animated Currency Display Component
@@ -418,54 +421,83 @@ const AdminPanel = () => {
         <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
           {/* Modern pill-style tabs */}
           <div className="bg-card rounded-2xl p-2 shadow-sm border">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-2 bg-transparent h-auto p-0">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2 bg-transparent h-auto p-0">
               <TabsTrigger 
                 value="projects" 
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
                 <FolderKanban className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Projects</span>
+                <span className="hidden sm:inline">Projects</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="tasks" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <LayoutGrid className="h-4 w-4" />
+                <span className="hidden sm:inline">Tasks</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="invoices" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Invoices</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="digital" 
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
                 <Package className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Digital</span>
+                <span className="hidden sm:inline">Digital</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="recurring" 
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
                 <RefreshCw className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Recurring</span>
+                <span className="hidden sm:inline">Recurring</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="other" 
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
                 <Wallet className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Other</span>
+                <span className="hidden sm:inline">Other</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <Bell className="h-4 w-4" />
+                <span className="hidden sm:inline">Alerts</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="emails" 
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
                 <Mail className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Emails</span>
+                <span className="hidden sm:inline">Emails</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="credentials" 
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
                 <Key className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Services</span>
+                <span className="hidden sm:inline">Services</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="projects" className="mt-6 animate-fade-in">
             <ProjectManager />
+          </TabsContent>
+
+          <TabsContent value="tasks" className="mt-6 animate-fade-in">
+            <KanbanBoard />
+          </TabsContent>
+
+          <TabsContent value="invoices" className="mt-6 animate-fade-in">
+            <InvoiceManager />
           </TabsContent>
 
           <TabsContent value="digital" className="mt-6 animate-fade-in">
@@ -478,6 +510,10 @@ const AdminPanel = () => {
 
           <TabsContent value="other" className="mt-6 animate-fade-in">
             <OtherIncomeManager />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="mt-6 animate-fade-in">
+            <NotificationManager />
           </TabsContent>
 
           <TabsContent value="emails" className="mt-6 animate-fade-in">
