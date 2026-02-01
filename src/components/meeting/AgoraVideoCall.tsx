@@ -3,10 +3,11 @@ import AgoraRTC, {
   IAgoraRTCClient, 
   IAgoraRTCRemoteUser, 
   ICameraVideoTrack, 
-  IMicrophoneAudioTrack 
+  IMicrophoneAudioTrack,
+  ILocalVideoTrack
 } from 'agora-rtc-sdk-ng';
 import { Button } from '@/components/ui/button';
-import { Video, VideoOff, Mic, MicOff, Phone, Users } from 'lucide-react';
+import { Video, VideoOff, Mic, MicOff, Phone, Users, Monitor, MonitorOff } from 'lucide-react';
 
 import { supabase } from '@/integrations/supabase/client';
 
@@ -23,13 +24,16 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   );
   const [localVideoTrack, setLocalVideoTrack] = useState<ICameraVideoTrack | null>(null);
   const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null);
+  const [screenTrack, setScreenTrack] = useState<ILocalVideoTrack | null>(null);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const localVideoRef = useRef<HTMLDivElement>(null);
+  const screenShareRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -131,9 +135,11 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   }, [localVideoTrack]);
 
   const leaveChannel = async () => {
+    screenTrack?.close();
     localAudioTrack?.close();
     localVideoTrack?.close();
     setRemoteUsers([]);
+    setIsScreenSharing(false);
     await client.leave();
     setIsJoined(false);
     onLeave();
@@ -150,6 +156,72 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     if (localAudioTrack) {
       await localAudioTrack.setEnabled(!isAudioEnabled);
       setIsAudioEnabled(!isAudioEnabled);
+    }
+  };
+
+  const toggleScreenShare = async () => {
+    if (isScreenSharing) {
+      // Stop screen sharing
+      if (screenTrack) {
+        await client.unpublish(screenTrack);
+        screenTrack.close();
+        setScreenTrack(null);
+      }
+      setIsScreenSharing(false);
+      
+      // Re-enable camera if it was enabled
+      if (localVideoTrack && isVideoEnabled) {
+        await client.publish(localVideoTrack);
+      }
+    } else {
+      // Start screen sharing
+      try {
+        const screenVideoTrack = await AgoraRTC.createScreenVideoTrack({
+          encoderConfig: '1080p_1',
+        }, 'disable');
+        
+        // Handle if user cancels screen share picker
+        if (!screenVideoTrack) {
+          return;
+        }
+
+        // Handle screen track as single track
+        const track = Array.isArray(screenVideoTrack) ? screenVideoTrack[0] : screenVideoTrack;
+        
+        // Listen for screen share stop (when user clicks browser's stop button)
+        track.on('track-ended', async () => {
+          await client.unpublish(track);
+          track.close();
+          setScreenTrack(null);
+          setIsScreenSharing(false);
+          
+          // Re-enable camera
+          if (localVideoTrack && isVideoEnabled) {
+            await client.publish(localVideoTrack);
+          }
+        });
+
+        // Unpublish camera, publish screen
+        if (localVideoTrack) {
+          await client.unpublish(localVideoTrack);
+        }
+        await client.publish(track);
+        
+        setScreenTrack(track);
+        setIsScreenSharing(true);
+        
+        // Play screen share locally
+        if (screenShareRef.current) {
+          track.play(screenShareRef.current);
+        }
+      } catch (err: any) {
+        console.error('Screen share error:', err);
+        // User cancelled or error occurred
+        if (err.message?.includes('Permission denied') || err.name === 'NotAllowedError') {
+          // User cancelled - do nothing
+          return;
+        }
+      }
     }
   };
 
@@ -170,14 +242,28 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
       {/* Video Grid */}
       <div className="flex-1 p-4 overflow-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr">
+          {/* Screen Share Display */}
+          {isScreenSharing && (
+            <div className="relative bg-muted rounded-lg overflow-hidden aspect-video md:col-span-2 lg:col-span-2">
+              <div 
+                ref={screenShareRef} 
+                className="w-full h-full"
+              />
+              <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-sm flex items-center gap-1">
+                <Monitor className="h-4 w-4" />
+                Screen Sharing
+              </div>
+            </div>
+          )}
+
           {/* Local Video */}
-          <div className="relative bg-muted rounded-lg overflow-hidden aspect-video">
+          <div className={`relative bg-muted rounded-lg overflow-hidden aspect-video ${isScreenSharing ? 'md:col-span-1' : ''}`}>
             <div 
               ref={localVideoRef} 
               className="w-full h-full"
-              style={{ display: isVideoEnabled ? 'block' : 'none' }}
+              style={{ display: isVideoEnabled && !isScreenSharing ? 'block' : 'none' }}
             />
-            {!isVideoEnabled && (
+            {(!isVideoEnabled || isScreenSharing) && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted">
                 <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center">
                   <span className="text-2xl font-bold text-primary">
@@ -197,7 +283,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
           ))}
         </div>
 
-        {remoteUsers.length === 0 && isJoined && (
+        {remoteUsers.length === 0 && isJoined && !isScreenSharing && (
           <div className="flex items-center justify-center mt-8">
             <div className="text-center text-muted-foreground">
               <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
@@ -210,7 +296,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
 
       {/* Controls */}
       <div className="p-4 border-t bg-card">
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-3 flex-wrap">
           <Button
             variant={isAudioEnabled ? "outline" : "destructive"}
             size="lg"
@@ -225,8 +311,18 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             size="lg"
             onClick={toggleVideo}
             className="rounded-full w-14 h-14"
+            disabled={isScreenSharing}
           >
             {isVideoEnabled ? <Video className="h-6 w-6" /> : <VideoOff className="h-6 w-6" />}
+          </Button>
+
+          <Button
+            variant={isScreenSharing ? "default" : "outline"}
+            size="lg"
+            onClick={toggleScreenShare}
+            className="rounded-full w-14 h-14"
+          >
+            {isScreenSharing ? <MonitorOff className="h-6 w-6" /> : <Monitor className="h-6 w-6" />}
           </Button>
           
           <Button
@@ -242,6 +338,8 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     </div>
   );
 };
+
+
 
 // Remote video player component
 const RemoteVideoPlayer = ({ user }: { user: IAgoraRTCRemoteUser }) => {
