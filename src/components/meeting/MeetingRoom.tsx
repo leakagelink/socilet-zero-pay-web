@@ -249,30 +249,6 @@ export const MeetingRoom = () => {
         </Card>
       )}
 
-      {/* User Name Input - Always visible when no pending channel */}
-      <Card className={pendingChannel ? 'hidden' : ''}>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Enter Your Name First
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-3">
-            Please enter your name before joining any meeting
-          </p>
-          <Input
-            placeholder="Enter your name to join meetings"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="max-w-md"
-          />
-          {userName.trim() && (
-            <p className="text-sm text-primary mt-2">✓ Name set: {userName}</p>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Create Meeting */}
       <Card>
         <CardHeader>
@@ -311,6 +287,30 @@ export const MeetingRoom = () => {
           <Button onClick={createMeeting} disabled={creating}>
             {creating ? 'Creating...' : 'Create Meeting'}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* User Name Input - Above Active Meetings */}
+      <Card className={pendingChannel ? 'hidden' : ''}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Enter Your Name First
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-3">
+            Please enter your name before joining any meeting
+          </p>
+          <Input
+            placeholder="Enter your name to join meetings"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="max-w-md"
+          />
+          {userName.trim() && (
+            <p className="text-sm text-primary mt-2">✓ Name set: {userName}</p>
+          )}
         </CardContent>
       </Card>
 
