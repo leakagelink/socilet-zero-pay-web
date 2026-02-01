@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Paperclip, X, FileIcon, Image, Loader2 } from 'lucide-react';
+import { Send, Paperclip, X, FileIcon, Image, Loader2, Video } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface WorkspaceMessage {
@@ -29,6 +29,7 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -90,24 +91,47 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
     }
   };
 
-  const uploadFile = async (file: File): Promise<{ url: string; name: string } | null> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${workspaceId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+  // Upload to Cloudinary via edge function
+  const uploadToCloudinary = async (file: File): Promise<{ url: string; name: string; type: string } | null> => {
+    setUploadProgress('Uploading to cloud...');
     
-    const { data, error } = await supabase.storage
-      .from('workspace-files')
-      .upload(fileName, file);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileName', file.name);
+    formData.append('workspaceId', workspaceId);
+    formData.append('uploadType', 'auto'); // Auto-detect type
     
-    if (error) {
-      console.error('Upload error:', error);
+    try {
+      const { data, error } = await supabase.functions.invoke('cloudinary-upload', {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      if (!data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      // Determine message type
+      let messageType = 'file';
+      if (data.resourceType === 'image') {
+        messageType = 'image';
+      } else if (data.resourceType === 'video') {
+        messageType = 'video';
+      }
+
+      return { 
+        url: data.optimizedUrl || data.url, 
+        name: file.name,
+        type: messageType,
+      };
+    } catch (error: any) {
+      console.error('Cloudinary upload error:', error);
+      toast.error(`Upload failed: ${error.message}`);
       return null;
+    } finally {
+      setUploadProgress('');
     }
-    
-    const { data: urlData } = supabase.storage
-      .from('workspace-files')
-      .getPublicUrl(fileName);
-    
-    return { url: urlData.publicUrl, name: file.name };
   };
 
   const sendMessage = async () => {
@@ -119,15 +143,14 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
       let fileName: string | null = null;
       let messageType = 'text';
 
-      // Upload file if selected
+      // Upload file to Cloudinary if selected
       if (selectedFile) {
-        const result = await uploadFile(selectedFile);
+        const result = await uploadToCloudinary(selectedFile);
         if (result) {
           fileUrl = result.url;
           fileName = result.name;
-          messageType = selectedFile.type.startsWith('image/') ? 'image' : 'file';
+          messageType = result.type;
         } else {
-          toast.error('Failed to upload file');
           setUploading(false);
           return;
         }
@@ -157,8 +180,11 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 50 * 1024 * 1024) {
-        toast.error('File size must be less than 50MB');
+      // Cloudinary free tier limit: 10MB for images, 100MB for videos
+      const maxSize = file.type.startsWith('video/') ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        const limitMB = maxSize / (1024 * 1024);
+        toast.error(`File size must be less than ${limitMB}MB`);
         return;
       }
       setSelectedFile(file);
@@ -207,6 +233,17 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
     }
     groupedMessages[dateKey].push(msg);
   });
+
+  const getFileIcon = (messageType: string) => {
+    switch (messageType) {
+      case 'image':
+        return <Image className="h-4 w-4 text-primary" />;
+      case 'video':
+        return <Video className="h-4 w-4 text-primary" />;
+      default:
+        return <FileIcon className="h-4 w-4 text-primary" />;
+    }
+  };
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -259,28 +296,39 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
                             </div>
                           )}
                           <p className="text-xs sm:text-sm break-words leading-relaxed">{msg.content}</p>
-                          {/* File/Image display */}
+                          
+                          {/* File/Image/Video display */}
                           {msg.file_url && (
-                            msg.message_type === 'image' ? (
-                              <a href={msg.file_url} target="_blank" rel="noopener noreferrer" className="block mt-1">
-                                <img 
+                            <div className="mt-1">
+                              {msg.message_type === 'image' ? (
+                                <a href={msg.file_url} target="_blank" rel="noopener noreferrer" className="block">
+                                  <img 
+                                    src={msg.file_url} 
+                                    alt={msg.file_name || 'Image'} 
+                                    className="max-w-[200px] max-h-[150px] rounded object-cover"
+                                  />
+                                </a>
+                              ) : msg.message_type === 'video' ? (
+                                <video 
                                   src={msg.file_url} 
-                                  alt={msg.file_name || 'Image'} 
-                                  className="max-w-[200px] max-h-[150px] rounded object-cover"
+                                  controls 
+                                  className="max-w-[250px] max-h-[180px] rounded"
+                                  preload="metadata"
                                 />
-                              </a>
-                            ) : (
-                              <a
-                                href={msg.file_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs underline"
-                              >
-                                <FileIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                {msg.file_name || 'File'}
-                              </a>
-                            )
+                              ) : (
+                                <a
+                                  href={msg.file_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1.5 bg-background/20 px-2 py-1 rounded text-[10px] sm:text-xs hover:underline"
+                                >
+                                  <FileIcon className="h-3 w-3" />
+                                  <span className="truncate max-w-[150px]">{msg.file_name || 'File'}</span>
+                                </a>
+                              )}
+                            </div>
                           )}
+                          
                           <div className={`text-[9px] sm:text-[10px] mt-0.5 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                             {formatTime(msg.created_at)}
                           </div>
@@ -299,16 +347,27 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
       {selectedFile && (
         <div className="flex-shrink-0 px-2 sm:px-3 py-2 border-t bg-muted/50">
           <div className="flex items-center gap-2 text-xs">
-            {selectedFile.type.startsWith('image/') ? (
-              <Image className="h-4 w-4 text-primary" />
-            ) : (
-              <FileIcon className="h-4 w-4 text-primary" />
+            {getFileIcon(
+              selectedFile.type.startsWith('image/') ? 'image' 
+              : selectedFile.type.startsWith('video/') ? 'video' 
+              : 'file'
             )}
             <span className="flex-1 truncate">{selectedFile.name}</span>
+            <span className="text-muted-foreground">
+              {(selectedFile.size / (1024 * 1024)).toFixed(1)}MB
+            </span>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={removeSelectedFile}>
               <X className="h-3 w-3" />
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* Upload Progress */}
+      {uploadProgress && (
+        <div className="flex-shrink-0 px-3 py-1.5 bg-primary/10 text-primary text-xs flex items-center gap-2">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          {uploadProgress}
         </div>
       )}
 
@@ -319,7 +378,7 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
           ref={fileInputRef}
           className="hidden"
           onChange={handleFileSelect}
-          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+          accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
         />
         <div className="flex gap-1.5 sm:gap-2 items-center">
           <Button
