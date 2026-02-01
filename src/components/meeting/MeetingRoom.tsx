@@ -11,6 +11,8 @@ import { Video, Users, Link, Copy, MessageSquare, Phone, FolderOpen, Hash } from
 import { ChatRoom } from './ChatRoom';
 import { AgoraVideoCall } from './AgoraVideoCall';
 import { WorkspaceChat } from './WorkspaceChat';
+import { RecordingControls } from './RecordingControls';
+import { useMeetingRecorder } from '@/hooks/useMeetingRecorder';
 
 interface Meeting {
   id: string;
@@ -265,6 +267,21 @@ export const MeetingRoom = () => {
     toast.success('Meeting link copied!');
   };
 
+  // Recording hook
+  const recorder = useMeetingRecorder({
+    meetingTitle: activeMeeting?.title || 'Meeting',
+    workspaceId: activeWorkspace?.id,
+    onUploadComplete: (url) => {
+      toast.success('Recording saved to cloud!', {
+        description: 'You can access it from the workspace.',
+        action: activeWorkspace ? {
+          label: 'Open Workspace',
+          onClick: () => navigate(`/workspace/${activeWorkspace.project_code}`),
+        } : undefined,
+      });
+    },
+  });
+
   if (activeMeeting) {
     return (
       <div className="h-[100dvh] flex flex-col bg-background overflow-hidden">
@@ -272,7 +289,7 @@ export const MeetingRoom = () => {
         <div className="flex-shrink-0 flex items-center justify-between p-2 sm:p-3 border-b bg-card gap-1 min-h-[48px] sm:min-h-[56px]">
           {/* Left side - Title & Project ID */}
           <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
-            <h2 className="text-xs sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[200px]">{activeMeeting.title}</h2>
+            <h2 className="text-xs sm:text-base font-semibold truncate max-w-[80px] sm:max-w-[150px]">{activeMeeting.title}</h2>
             {activeWorkspace && (
               <button
                 className="flex items-center gap-0.5 bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] sm:text-xs flex-shrink-0"
@@ -285,6 +302,20 @@ export const MeetingRoom = () => {
                 <span className="font-mono">{activeWorkspace.project_code}</span>
               </button>
             )}
+          </div>
+          
+          {/* Center - Recording Controls */}
+          <div className="flex-shrink-0">
+            <RecordingControls
+              isRecording={recorder.isRecording}
+              isPaused={recorder.isPaused}
+              isUploading={recorder.isUploading}
+              formattedDuration={recorder.formattedDuration}
+              onStart={recorder.startRecording}
+              onPause={recorder.pauseRecording}
+              onStop={recorder.stopRecording}
+              onDownload={recorder.downloadLocally}
+            />
           </div>
           
           {/* Right side - Action buttons */}
