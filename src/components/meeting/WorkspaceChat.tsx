@@ -3,8 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Paperclip, X, FileIcon, Image, Loader2, Video } from 'lucide-react';
+import { Send, Paperclip, X, FileIcon, Image, Loader2, Video, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
+import { validateChatMessage } from '@/utils/chatValidation';
 
 interface WorkspaceMessage {
   id: string;
@@ -136,6 +137,16 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
 
   const sendMessage = async () => {
     if (!newMessage.trim() && !selectedFile) return;
+
+    // Validate message for contact information
+    const validation = validateChatMessage(newMessage);
+    if (!validation.isValid) {
+      toast.error(validation.reason, {
+        icon: <ShieldAlert className="h-4 w-4 text-destructive" />,
+        duration: 4000,
+      });
+      return;
+    }
 
     setUploading(true);
     try {
