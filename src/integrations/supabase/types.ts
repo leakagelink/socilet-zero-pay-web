@@ -325,6 +325,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           participants_count: number | null
+          project_workspace_id: string | null
           room_name: string
           room_url: string
           title: string
@@ -337,6 +338,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           participants_count?: number | null
+          project_workspace_id?: string | null
           room_name: string
           room_url: string
           title: string
@@ -349,12 +351,21 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           participants_count?: number | null
+          project_workspace_id?: string | null
           room_name?: string
           room_url?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "meetings_project_workspace_id_fkey"
+            columns: ["project_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "project_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       message_reactions: {
         Row: {
@@ -433,6 +444,39 @@ export type Database = {
           status?: string
           updated_at?: string
           work_description?: string
+        }
+        Relationships: []
+      }
+      project_workspaces: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          project_code: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          project_code: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          project_code?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -669,11 +713,107 @@ export type Database = {
         }
         Relationships: []
       }
+      workspace_files: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          uploaded_by: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          uploaded_by: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          uploaded_by?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_files_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "project_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_messages: {
+        Row: {
+          content: string
+          created_at: string
+          file_name: string | null
+          file_url: string | null
+          id: string
+          is_from_meeting: boolean | null
+          message_type: string | null
+          parent_message_id: string | null
+          sender_name: string
+          workspace_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          is_from_meeting?: boolean | null
+          message_type?: string | null
+          parent_message_id?: string | null
+          sender_name: string
+          workspace_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          is_from_meeting?: boolean | null
+          message_type?: string | null
+          parent_message_id?: string | null
+          sender_name?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_messages_parent_message_id_fkey"
+            columns: ["parent_message_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_messages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "project_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      generate_project_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

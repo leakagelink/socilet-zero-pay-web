@@ -22,8 +22,8 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, roomName, title, description, createdBy, channelName: reqChannelName, uid } = await req.json();
-    console.log(`Action: ${action}, Room: ${roomName || reqChannelName}`);
+    const { action, roomName, title, description, createdBy, channelName: reqChannelName, uid, projectWorkspaceId } = await req.json();
+    console.log(`Action: ${action}, Room: ${roomName || reqChannelName}, Workspace: ${projectWorkspaceId || 'none'}`);
 
     if (action === 'generate-token') {
       const channel = reqChannelName || roomName;
@@ -64,16 +64,23 @@ serve(async (req) => {
     if (action === 'create-room') {
       const channelName = roomName || `meeting-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
+      const meetingInsert: Record<string, unknown> = {
+        room_name: channelName,
+        room_url: channelName,
+        title: title || 'New Meeting',
+        description: description || '',
+        created_by: createdBy || 'Anonymous',
+        is_active: true,
+      };
+      
+      // Add workspace link if provided
+      if (projectWorkspaceId) {
+        meetingInsert.project_workspace_id = projectWorkspaceId;
+      }
+      
       const { data: meetingData, error: dbError } = await supabase
         .from('meetings')
-        .insert({
-          room_name: channelName,
-          room_url: channelName,
-          title: title || 'New Meeting',
-          description: description || '',
-          created_by: createdBy || 'Anonymous',
-          is_active: true,
-        })
+        .insert(meetingInsert)
         .select()
         .single();
 
@@ -128,7 +135,7 @@ serve(async (req) => {
     if (action === 'get-rooms') {
       const { data: meetings, error } = await supabase
         .from('meetings')
-        .select('*, chat_rooms(*)')
+        .select('*, chat_rooms(*), project_workspaces(*)')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -136,10 +143,17 @@ serve(async (req) => {
         throw new Error(`Failed to fetch meetings: ${error.message}`);
       }
 
+      // Flatten workspace info
+      const formattedMeetings = meetings?.map((m: any) => ({
+        ...m,
+        project_workspace_id: m.project_workspace_id,
+        project_code: m.project_workspaces?.project_code || null,
+      }));
+
       return new Response(
         JSON.stringify({ 
           success: true, 
-          meetings,
+          meetings: formattedMeetings,
           appId: AGORA_APP_ID,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
