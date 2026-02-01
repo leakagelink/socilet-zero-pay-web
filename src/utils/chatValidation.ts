@@ -13,8 +13,8 @@ const PHONE_PATTERNS = [
 
 const EMAIL_PATTERN = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i;
 
-// Contact-related keywords that indicate sharing contact info
-const CONTACT_KEYWORDS = [
+// Contact-related keywords that indicate sharing contact info (English)
+const CONTACT_KEYWORDS_EN = [
   /whatsapp/i,
   /telegram/i,
   /call\s*(me|us)/i,
@@ -39,6 +39,47 @@ const CONTACT_KEYWORDS = [
   /wechat/i,
   /line\s*(id|app)/i,
 ];
+
+// Contact-related keywords in Hindi (Hinglish)
+const CONTACT_KEYWORDS_HI = [
+  /mera\s*number/i,
+  /mera\s*phone/i,
+  /mera\s*mobile/i,
+  /mera\s*contact/i,
+  /mera\s*email/i,
+  /mera\s*whatsapp/i,
+  /mujhe\s*call/i,
+  /mujhe\s*phone/i,
+  /mujhe\s*contact/i,
+  /call\s*karo/i,
+  /call\s*karna/i,
+  /call\s*kar/i,
+  /phone\s*karo/i,
+  /phone\s*karna/i,
+  /contact\s*karo/i,
+  /contact\s*karna/i,
+  /message\s*karo/i,
+  /msg\s*karo/i,
+  /whatsapp\s*karo/i,
+  /wp\s*karo/i,
+  /apna\s*number/i,
+  /apna\s*phone/i,
+  /apna\s*contact/i,
+  /apna\s*email/i,
+  /number\s*de/i,
+  /number\s*do/i,
+  /number\s*dena/i,
+  /number\s*bhejo/i,
+  /email\s*bhejo/i,
+  /contact\s*bhejo/i,
+  /personal\s*chat/i,
+  /private\s*chat/i,
+  /dm\s*karo/i,
+  /inbox\s*karo/i,
+];
+
+// Combined keywords
+const CONTACT_KEYWORDS = [...CONTACT_KEYWORDS_EN, ...CONTACT_KEYWORDS_HI];
 
 export interface ValidationResult {
   isValid: boolean;
