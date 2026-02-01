@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Paperclip, X, FileIcon, Image, Loader2, Video, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
-import { validateChatMessage } from '@/utils/chatValidation';
+import { validateChatMessage, logBlockedMessage } from '@/utils/chatValidation';
 
 interface WorkspaceMessage {
   id: string;
@@ -141,6 +141,16 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
     // Validate message for contact information
     const validation = validateChatMessage(newMessage);
     if (!validation.isValid) {
+      // Log the blocked message
+      logBlockedMessage({
+        senderName: userName,
+        messageContent: newMessage,
+        blockReason: validation.reason || 'Contact info detected',
+        matchedPattern: validation.matchedPattern,
+        roomType: 'workspace',
+        workspaceId: workspaceId,
+      });
+
       toast.error(validation.reason, {
         icon: <ShieldAlert className="h-4 w-4 text-destructive" />,
         duration: 4000,

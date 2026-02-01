@@ -1,4 +1,5 @@
 // Utility to validate chat messages and block contact information sharing
+import { supabase } from '@/integrations/supabase/client';
 
 // Patterns to detect contact information
 const PHONE_PATTERNS = [
@@ -84,12 +85,13 @@ const CONTACT_KEYWORDS = [...CONTACT_KEYWORDS_EN, ...CONTACT_KEYWORDS_HI];
 export interface ValidationResult {
   isValid: boolean;
   reason?: string;
+  matchedPattern?: string;
 }
 
 /**
  * Validates a chat message to check if it contains contact information
  * @param message - The message to validate
- * @returns ValidationResult with isValid and optional reason
+ * @returns ValidationResult with isValid, optional reason, and matched pattern
  */
 export const validateChatMessage = (message: string): ValidationResult => {
   const trimmedMessage = message.trim();
@@ -103,6 +105,7 @@ export const validateChatMessage = (message: string): ValidationResult => {
     return {
       isValid: false,
       reason: 'Email addresses are not allowed in chat. Please use official communication channels.',
+      matchedPattern: 'email',
     };
   }
 
@@ -112,6 +115,7 @@ export const validateChatMessage = (message: string): ValidationResult => {
       return {
         isValid: false,
         reason: 'Phone numbers are not allowed in chat. Please use official communication channels.',
+        matchedPattern: 'phone_number',
       };
     }
   }
@@ -119,14 +123,43 @@ export const validateChatMessage = (message: string): ValidationResult => {
   // Check for contact-sharing keywords
   for (const keyword of CONTACT_KEYWORDS) {
     if (keyword.test(trimmedMessage)) {
+      const match = trimmedMessage.match(keyword);
       return {
         isValid: false,
         reason: 'Sharing contact details (WhatsApp, Telegram, etc.) is not allowed. Please use official channels.',
+        matchedPattern: match ? match[0] : 'contact_keyword',
       };
     }
   }
 
   return { isValid: true };
+};
+
+/**
+ * Logs a blocked message to the database for moderation
+ */
+export const logBlockedMessage = async (params: {
+  senderName: string;
+  messageContent: string;
+  blockReason: string;
+  matchedPattern?: string;
+  roomType: 'meeting' | 'workspace';
+  roomId?: string;
+  workspaceId?: string;
+}) => {
+  try {
+    await supabase.from('blocked_chat_logs').insert({
+      sender_name: params.senderName,
+      message_content: params.messageContent,
+      block_reason: params.blockReason,
+      matched_pattern: params.matchedPattern,
+      room_type: params.roomType,
+      room_id: params.roomId,
+      workspace_id: params.workspaceId,
+    });
+  } catch (error) {
+    console.error('Failed to log blocked message:', error);
+  }
 };
 
 /**

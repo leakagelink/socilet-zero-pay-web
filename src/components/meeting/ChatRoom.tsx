@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Send, Paperclip, Smile, Reply, X, Image, File, Video, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
-import { validateChatMessage } from '@/utils/chatValidation';
+import { validateChatMessage, logBlockedMessage } from '@/utils/chatValidation';
 
 interface ChatMessage {
   id: string;
@@ -192,6 +192,16 @@ export const ChatRoom = ({ meetingId, userName, onClose }: ChatRoomProps) => {
     // Validate message for contact information
     const validation = validateChatMessage(newMessage);
     if (!validation.isValid) {
+      // Log the blocked message
+      logBlockedMessage({
+        senderName: userName,
+        messageContent: newMessage,
+        blockReason: validation.reason || 'Contact info detected',
+        matchedPattern: validation.matchedPattern,
+        roomType: 'meeting',
+        roomId: chatRoomId,
+      });
+
       toast.error(validation.reason, {
         icon: <ShieldAlert className="h-4 w-4 text-destructive" />,
         duration: 4000,
