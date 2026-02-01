@@ -13,7 +13,7 @@ const PHONE_PATTERNS = [
 
 const EMAIL_PATTERN = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i;
 
-// Common contact-related keywords that might indicate sharing contact info
+// Contact-related keywords that indicate sharing contact info
 const CONTACT_KEYWORDS = [
   /whatsapp/i,
   /telegram/i,
@@ -29,6 +29,15 @@ const CONTACT_KEYWORDS = [
   /signal/i,
   /viber/i,
   /imo/i,
+  /snapchat/i,
+  /instagram\s*(id|handle)/i,
+  /facebook\s*(id|profile)/i,
+  /twitter\s*(id|handle)/i,
+  /linkedin/i,
+  /skype/i,
+  /discord/i,
+  /wechat/i,
+  /line\s*(id|app)/i,
 ];
 
 export interface ValidationResult {
@@ -66,16 +75,15 @@ export const validateChatMessage = (message: string): ValidationResult => {
     }
   }
 
-  // Optional: Check for contact-sharing intent with numbers
-  // This is more aggressive - uncomment if needed
-  // for (const keyword of CONTACT_KEYWORDS) {
-  //   if (keyword.test(trimmedMessage)) {
-  //     return {
-  //       isValid: false,
-  //       reason: 'Sharing contact information is not allowed in chat.',
-  //     };
-  //   }
-  // }
+  // Check for contact-sharing keywords
+  for (const keyword of CONTACT_KEYWORDS) {
+    if (keyword.test(trimmedMessage)) {
+      return {
+        isValid: false,
+        reason: 'Sharing contact details (WhatsApp, Telegram, etc.) is not allowed. Please use official channels.',
+      };
+    }
+  }
 
   return { isValid: true };
 };
