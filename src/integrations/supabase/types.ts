@@ -53,6 +53,89 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_project_sessions: {
+        Row: {
+          client_name: string | null
+          created_at: string
+          created_by: string | null
+          document_format: string | null
+          generated_document: Json | null
+          id: string
+          logo_url: string | null
+          project_type: string | null
+          session_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_format?: string | null
+          generated_document?: Json | null
+          id?: string
+          logo_url?: string | null
+          project_type?: string | null
+          session_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_format?: string | null
+          generated_document?: Json | null
+          id?: string
+          logo_url?: string | null
+          project_type?: string | null
+          session_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ai_session_messages: {
+        Row: {
+          content: string
+          created_at: string
+          file_name: string | null
+          file_type: string | null
+          file_url: string | null
+          id: string
+          role: string
+          session_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          file_name?: string | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          role: string
+          session_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          file_name?: string | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          role?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_session_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "ai_project_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           content: string
@@ -696,6 +779,78 @@ export type Database = {
         }
         Relationships: []
       }
+      quotations: {
+        Row: {
+          client_address: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string | null
+          discount_amount: number | null
+          id: string
+          items: Json
+          notes: string | null
+          project_description: string | null
+          project_title: string
+          quotation_number: string
+          status: string
+          subtotal: number
+          tax_amount: number | null
+          tax_rate: number | null
+          terms_conditions: string | null
+          total_amount: number
+          updated_at: string
+          validity_days: number | null
+        }
+        Insert: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          discount_amount?: number | null
+          id?: string
+          items?: Json
+          notes?: string | null
+          project_description?: string | null
+          project_title: string
+          quotation_number: string
+          status?: string
+          subtotal?: number
+          tax_amount?: number | null
+          tax_rate?: number | null
+          terms_conditions?: string | null
+          total_amount?: number
+          updated_at?: string
+          validity_days?: number | null
+        }
+        Update: {
+          client_address?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          discount_amount?: number | null
+          id?: string
+          items?: Json
+          notes?: string | null
+          project_description?: string | null
+          project_title?: string
+          quotation_number?: string
+          status?: string
+          subtotal?: number
+          tax_amount?: number | null
+          tax_rate?: number | null
+          terms_conditions?: string | null
+          total_amount?: number
+          updated_at?: string
+          validity_days?: number | null
+        }
+        Relationships: []
+      }
       recurring_earnings: {
         Row: {
           amount: number
@@ -1024,6 +1179,7 @@ export type Database = {
     Functions: {
       generate_invoice_number: { Args: never; Returns: string }
       generate_project_code: { Args: never; Returns: string }
+      generate_quotation_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

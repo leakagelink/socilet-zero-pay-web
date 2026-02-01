@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,6 +16,8 @@ import ServiceCredentialsManager from '@/components/admin/ServiceCredentialsMana
 import InvoiceManager from '@/components/admin/InvoiceManager';
 import KanbanBoard from '@/components/admin/KanbanBoard';
 import NotificationManager from '@/components/admin/NotificationManager';
+import QuotationGenerator from '@/components/admin/QuotationGenerator';
+import AIProjectAnalyzer from '@/components/admin/AIProjectAnalyzer';
 import { useCountUp } from '@/hooks/useCountUp';
 
 // Animated Currency Display Component
@@ -421,7 +423,7 @@ const AdminPanel = () => {
         <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
           {/* Modern pill-style tabs */}
           <div className="bg-card rounded-2xl p-2 shadow-sm border">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2 bg-transparent h-auto p-0">
+            <TabsList className="grid w-full grid-cols-4 sm:grid-cols-6 lg:grid-cols-11 gap-2 bg-transparent h-auto p-0">
               <TabsTrigger 
                 value="projects" 
                 className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
@@ -435,6 +437,20 @@ const AdminPanel = () => {
               >
                 <LayoutGrid className="h-4 w-4" />
                 <span className="hidden sm:inline">Tasks</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="quotations" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span className="hidden sm:inline">Quotations</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="ai-analyzer" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <Bot className="h-4 w-4" />
+                <span className="hidden sm:inline">AI Analyzer</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="invoices" 
@@ -494,6 +510,14 @@ const AdminPanel = () => {
 
           <TabsContent value="tasks" className="mt-6 animate-fade-in">
             <KanbanBoard />
+          </TabsContent>
+
+          <TabsContent value="quotations" className="mt-6 animate-fade-in">
+            <QuotationGenerator />
+          </TabsContent>
+
+          <TabsContent value="ai-analyzer" className="mt-6 animate-fade-in">
+            <AIProjectAnalyzer />
           </TabsContent>
 
           <TabsContent value="invoices" className="mt-6 animate-fade-in">
