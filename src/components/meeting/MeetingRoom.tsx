@@ -207,70 +207,73 @@ export const MeetingRoom = () => {
 
   if (activeMeeting) {
     return (
-      <div className="h-screen flex flex-col bg-background overflow-hidden">
-        {/* Meeting Header */}
-        <div className="flex-shrink-0 flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 sm:p-4 border-b bg-card gap-2">
-          <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-            <h2 className="text-sm sm:text-lg font-semibold truncate">{activeMeeting.title}</h2>
+      <div className="h-[100dvh] flex flex-col bg-background overflow-hidden">
+        {/* Meeting Header - Optimized for mobile */}
+        <div className="flex-shrink-0 flex items-center justify-between p-2 sm:p-3 border-b bg-card gap-1 min-h-[48px] sm:min-h-[56px]">
+          {/* Left side - Title & Project ID */}
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+            <h2 className="text-xs sm:text-base font-semibold truncate max-w-[100px] sm:max-w-[200px]">{activeMeeting.title}</h2>
             {activeWorkspace && (
-              <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded text-xs">
-                <Hash className="h-3 w-3" />
+              <button
+                className="flex items-center gap-0.5 bg-primary/10 text-primary px-1.5 py-0.5 rounded text-[10px] sm:text-xs flex-shrink-0"
+                onClick={() => {
+                  navigator.clipboard.writeText(activeWorkspace.project_code);
+                  toast.success('Project ID copied!');
+                }}
+              >
+                <Hash className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                 <span className="font-mono">{activeWorkspace.project_code}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-5 w-5 ml-1"
-                  onClick={() => {
-                    navigator.clipboard.writeText(activeWorkspace.project_code);
-                    toast.success('Project ID copied!');
-                  }}
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
-              </div>
+              </button>
             )}
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          
+          {/* Right side - Action buttons */}
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant="ghost"
-              size="sm"
-              className="text-xs sm:text-sm"
+              size="icon"
+              className="h-8 w-8 sm:h-9 sm:w-9"
               onClick={() => copyLink(activeMeeting)}
+              title="Copy Link"
             >
-              <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Copy Link</span>
+              <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
             {activeWorkspace && (
               <Button
-                variant="outline"
-                size="sm"
-                className="text-xs sm:text-sm"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 sm:h-9 sm:w-9 hidden sm:flex"
                 onClick={() => navigate(`/workspace/${activeWorkspace.project_code}`)}
+                title="Workspace"
               >
-                <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Workspace</span>
+                <FolderOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             )}
             <Button
-              variant={showChat ? "default" : "outline"}
-              size="sm"
-              className="text-xs sm:text-sm"
+              variant={showChat ? "default" : "ghost"}
+              size="icon"
+              className="h-8 w-8 sm:h-9 sm:w-9"
               onClick={() => setShowChat(!showChat)}
+              title="Chat"
             >
-              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Chat</span>
+              <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </Button>
-            <Button variant="destructive" size="sm" className="text-xs sm:text-sm" onClick={leaveMeeting}>
-              <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="h-8 px-2 sm:px-3 text-xs sm:text-sm" 
+              onClick={leaveMeeting}
+            >
+              <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Leave</span>
             </Button>
           </div>
         </div>
 
         {/* Meeting Content */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Video Area */}
-          <div className={`flex-1 ${showChat ? 'hidden sm:block sm:w-2/3' : 'w-full'}`}>
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Video Area - Always rendered but hidden on mobile when chat is open */}
+          <div className={`flex-1 ${showChat ? 'hidden sm:block sm:flex-[2]' : 'w-full'}`}>
             <AgoraVideoCall
               appId={AGORA_APP_ID}
               channelName={activeMeeting.room_name}
@@ -279,22 +282,39 @@ export const MeetingRoom = () => {
             />
           </div>
 
-          {/* Chat Sidebar */}
+          {/* Chat Sidebar - Full screen on mobile with back button */}
           {showChat && (
-            <div className="w-full sm:w-1/3 border-l bg-card h-full">
-              {activeWorkspace ? (
-                <WorkspaceChat
-                  workspaceId={activeWorkspace.id}
-                  userName={userName}
-                  isFromMeeting={true}
-                />
-              ) : (
-                <ChatRoom
-                  meetingId={activeMeeting.id}
-                  userName={userName}
-                  onClose={() => setShowChat(false)}
-                />
-              )}
+            <div className="absolute inset-0 sm:relative sm:inset-auto w-full sm:flex-1 border-l bg-card flex flex-col z-10">
+              {/* Mobile Chat Header with Back Button */}
+              <div className="flex items-center gap-2 p-2 border-b bg-muted/50 sm:hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowChat(false)}
+                  className="h-8 px-2"
+                >
+                  <Video className="h-4 w-4 mr-1" />
+                  Back to Video
+                </Button>
+                <span className="text-sm font-medium flex-1 text-center">Chat</span>
+              </div>
+              
+              {/* Chat Content */}
+              <div className="flex-1 overflow-hidden">
+                {activeWorkspace ? (
+                  <WorkspaceChat
+                    workspaceId={activeWorkspace.id}
+                    userName={userName}
+                    isFromMeeting={true}
+                  />
+                ) : (
+                  <ChatRoom
+                    meetingId={activeMeeting.id}
+                    userName={userName}
+                    onClose={() => setShowChat(false)}
+                  />
+                )}
+              </div>
             </div>
           )}
         </div>

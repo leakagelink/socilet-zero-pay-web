@@ -144,33 +144,33 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
   });
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Messages Area */}
-      <ScrollArea className="flex-1 p-3 sm:p-4" ref={scrollRef}>
+      <ScrollArea className="flex-1 p-2 sm:p-4" ref={scrollRef}>
         {loading ? (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
+          <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
             Loading messages...
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-muted-foreground text-center p-4">
+          <div className="flex items-center justify-center h-32 text-muted-foreground text-center p-4">
             <div>
               <p className="text-sm">No messages yet.</p>
               <p className="text-xs mt-1">Start the conversation!</p>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Object.entries(groupedMessages).map(([dateKey, dateMessages]) => (
               <div key={dateKey}>
                 {/* Date Divider */}
-                <div className="flex items-center justify-center my-3">
-                  <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                <div className="flex items-center justify-center my-2">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                     {formatDate(dateMessages[0].created_at)}
                   </span>
                 </div>
                 
                 {/* Messages for this date */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {dateMessages.map((msg) => {
                     const isOwn = msg.sender_name === userName;
                     return (
@@ -179,33 +179,33 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
                         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-3 py-2 ${
+                          className={`max-w-[85%] rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 ${
                             isOwn
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-muted'
                           }`}
                         >
                           {!isOwn && (
-                            <div className="text-xs font-medium mb-1 opacity-80 flex items-center gap-1">
+                            <div className="text-[10px] sm:text-xs font-medium mb-0.5 opacity-80 flex items-center gap-1">
                               {msg.sender_name}
                               {msg.is_from_meeting && (
-                                <span className="bg-primary/20 text-primary text-[10px] px-1 rounded">Meeting</span>
+                                <span className="bg-primary/20 text-primary text-[9px] sm:text-[10px] px-1 rounded">Meeting</span>
                               )}
                             </div>
                           )}
-                          <p className="text-sm break-words">{msg.content}</p>
+                          <p className="text-xs sm:text-sm break-words leading-relaxed">{msg.content}</p>
                           {msg.file_url && (
                             <a
                               href={msg.file_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-1 mt-1 text-xs underline"
+                              className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs underline"
                             >
-                              <FileIcon className="h-3 w-3" />
+                              <FileIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                               {msg.file_name || 'File'}
                             </a>
                           )}
-                          <div className={`text-[10px] mt-1 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                          <div className={`text-[9px] sm:text-[10px] mt-0.5 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                             {formatTime(msg.created_at)}
                           </div>
                         </div>
@@ -219,17 +219,22 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
         )}
       </ScrollArea>
 
-      {/* Input Area */}
-      <div className="p-3 border-t bg-background">
-        <div className="flex gap-2">
+      {/* Input Area - Optimized for mobile keyboard */}
+      <div className="flex-shrink-0 p-2 sm:p-3 border-t bg-background" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+        <div className="flex gap-2 items-center">
           <Input
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-1"
+            className="flex-1 h-9 sm:h-10 text-sm"
           />
-          <Button onClick={sendMessage} size="icon" disabled={!newMessage.trim()}>
+          <Button 
+            onClick={sendMessage} 
+            size="icon" 
+            disabled={!newMessage.trim()}
+            className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
