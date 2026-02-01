@@ -280,6 +280,12 @@ export const ChatRoom = ({ meetingId, userName, onClose }: ChatRoomProps) => {
         </Button>
       </div>
 
+      {/* Warning Banner */}
+      <div className="px-3 py-2 bg-destructive/10 border-b border-destructive/20 flex items-center gap-2 text-xs text-destructive">
+        <ShieldAlert className="h-3.5 w-3.5 flex-shrink-0" />
+        <span>Contact sharing (phone, email, WhatsApp) is not allowed in chat.</span>
+      </div>
+
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">

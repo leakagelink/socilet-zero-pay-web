@@ -268,6 +268,12 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Warning Banner */}
+      <div className="flex-shrink-0 px-3 py-2 bg-destructive/10 border-b border-destructive/20 flex items-center gap-2 text-xs text-destructive">
+        <ShieldAlert className="h-3.5 w-3.5 flex-shrink-0" />
+        <span>Contact sharing (phone, email, WhatsApp) is not allowed.</span>
+      </div>
+
       {/* Messages Area */}
       <ScrollArea className="flex-1 p-2 sm:p-4" ref={scrollRef}>
         {loading ? (
