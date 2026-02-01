@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Paperclip, X, FileIcon } from 'lucide-react';
+import { Send, Paperclip, X, FileIcon, Image, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface WorkspaceMessage {
@@ -28,7 +28,10 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
   const [messages, setMessages] = useState<WorkspaceMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchMessages();
@@ -87,23 +90,85 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
     }
   };
 
-  const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+  const uploadFile = async (file: File): Promise<{ url: string; name: string } | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${workspaceId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+    
+    const { data, error } = await supabase.storage
+      .from('workspace-files')
+      .upload(fileName, file);
+    
+    if (error) {
+      console.error('Upload error:', error);
+      return null;
+    }
+    
+    const { data: urlData } = supabase.storage
+      .from('workspace-files')
+      .getPublicUrl(fileName);
+    
+    return { url: urlData.publicUrl, name: file.name };
+  };
 
+  const sendMessage = async () => {
+    if (!newMessage.trim() && !selectedFile) return;
+
+    setUploading(true);
     try {
+      let fileUrl: string | null = null;
+      let fileName: string | null = null;
+      let messageType = 'text';
+
+      // Upload file if selected
+      if (selectedFile) {
+        const result = await uploadFile(selectedFile);
+        if (result) {
+          fileUrl = result.url;
+          fileName = result.name;
+          messageType = selectedFile.type.startsWith('image/') ? 'image' : 'file';
+        } else {
+          toast.error('Failed to upload file');
+          setUploading(false);
+          return;
+        }
+      }
+
       const { error } = await supabase.from('workspace_messages').insert({
         workspace_id: workspaceId,
         sender_name: userName,
-        content: newMessage.trim(),
-        message_type: 'text',
+        content: newMessage.trim() || (selectedFile ? `Shared: ${selectedFile.name}` : ''),
+        message_type: messageType,
+        file_url: fileUrl,
+        file_name: fileName,
         is_from_meeting: isFromMeeting,
       });
 
       if (error) throw error;
       setNewMessage('');
+      setSelectedFile(null);
     } catch (error: any) {
       console.error('Failed to send message:', error);
       toast.error('Failed to send message');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error('File size must be less than 50MB');
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -194,16 +259,27 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
                             </div>
                           )}
                           <p className="text-xs sm:text-sm break-words leading-relaxed">{msg.content}</p>
+                          {/* File/Image display */}
                           {msg.file_url && (
-                            <a
-                              href={msg.file_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs underline"
-                            >
-                              <FileIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                              {msg.file_name || 'File'}
-                            </a>
+                            msg.message_type === 'image' ? (
+                              <a href={msg.file_url} target="_blank" rel="noopener noreferrer" className="block mt-1">
+                                <img 
+                                  src={msg.file_url} 
+                                  alt={msg.file_name || 'Image'} 
+                                  className="max-w-[200px] max-h-[150px] rounded object-cover"
+                                />
+                              </a>
+                            ) : (
+                              <a
+                                href={msg.file_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs underline"
+                              >
+                                <FileIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                {msg.file_name || 'File'}
+                              </a>
+                            )
                           )}
                           <div className={`text-[9px] sm:text-[10px] mt-0.5 ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                             {formatTime(msg.created_at)}
@@ -219,23 +295,57 @@ export const WorkspaceChat = ({ workspaceId, userName, isFromMeeting = false }: 
         )}
       </ScrollArea>
 
+      {/* Selected File Preview */}
+      {selectedFile && (
+        <div className="flex-shrink-0 px-2 sm:px-3 py-2 border-t bg-muted/50">
+          <div className="flex items-center gap-2 text-xs">
+            {selectedFile.type.startsWith('image/') ? (
+              <Image className="h-4 w-4 text-primary" />
+            ) : (
+              <FileIcon className="h-4 w-4 text-primary" />
+            )}
+            <span className="flex-1 truncate">{selectedFile.name}</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={removeSelectedFile}>
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Input Area - Optimized for mobile keyboard */}
       <div className="flex-shrink-0 p-2 sm:p-3 border-t bg-background" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
-        <div className="flex gap-2 items-center">
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileSelect}
+          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar"
+        />
+        <div className="flex gap-1.5 sm:gap-2 items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            <Paperclip className="h-4 w-4" />
+          </Button>
           <Input
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             className="flex-1 h-9 sm:h-10 text-sm"
+            disabled={uploading}
           />
           <Button 
             onClick={sendMessage} 
             size="icon" 
-            disabled={!newMessage.trim()}
+            disabled={(!newMessage.trim() && !selectedFile) || uploading}
             className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0"
           >
-            <Send className="h-4 w-4" />
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </div>
