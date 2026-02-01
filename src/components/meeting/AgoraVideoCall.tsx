@@ -238,7 +238,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   }
 
   return (
-    <div className="flex flex-col h-screen w-full max-w-full overflow-hidden bg-background">
+    <div className="flex flex-col h-full w-full max-w-full overflow-hidden bg-background">
       {/* Video Grid */}
       <div className="flex-1 p-2 sm:p-4 overflow-y-auto overflow-x-hidden">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 auto-rows-fr max-w-full">
@@ -247,11 +247,11 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             <div className="relative bg-muted rounded-lg overflow-hidden aspect-video sm:col-span-2 lg:col-span-2">
               <div 
                 ref={screenShareRef} 
-                className="w-full h-full"
+                className="w-full h-full [&_video]:!object-contain"
               />
               <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs sm:text-sm flex items-center gap-1">
                 <Monitor className="h-3 w-3 sm:h-4 sm:w-4" />
-                Screen Sharing
+                Screen
               </div>
             </div>
           )}
@@ -260,19 +260,19 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
           <div className={`relative bg-muted rounded-lg overflow-hidden aspect-video ${isScreenSharing ? 'sm:col-span-1' : ''}`}>
             <div 
               ref={localVideoRef} 
-              className="w-full h-full"
+              className="w-full h-full [&_video]:!object-cover"
               style={{ display: isVideoEnabled && !isScreenSharing ? 'block' : 'none' }}
             />
             {(!isVideoEnabled || isScreenSharing) && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-xl sm:text-2xl font-bold text-primary">
+                <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-lg sm:text-2xl font-bold text-primary">
                     {userName.charAt(0).toUpperCase()}
                   </span>
                 </div>
               </div>
             )}
-            <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs sm:text-sm">
+            <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 bg-black/60 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-sm">
               {userName} (You)
             </div>
           </div>
@@ -286,22 +286,22 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         {remoteUsers.length === 0 && isJoined && !isScreenSharing && (
           <div className="flex items-center justify-center mt-4 sm:mt-8">
             <div className="text-center text-muted-foreground px-4">
-              <Users className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 opacity-50" />
-              <p className="text-sm sm:text-base">Waiting for others to join...</p>
-              <p className="text-xs sm:text-sm mt-1">Share the meeting link to invite participants</p>
+              <Users className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 opacity-50" />
+              <p className="text-sm sm:text-base">Waiting for others...</p>
+              <p className="text-xs sm:text-sm mt-1">Share the meeting link</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Controls - Fixed at bottom */}
-      <div className="flex-shrink-0 p-3 sm:p-4 border-t bg-card safe-area-bottom">
-        <div className="flex items-center justify-center gap-2 sm:gap-3">
+      {/* Controls - Fixed at bottom with safe area for mobile */}
+      <div className="flex-shrink-0 p-2 sm:p-4 border-t bg-card" style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
+        <div className="flex items-center justify-center gap-3 sm:gap-4">
           <Button
             variant={isAudioEnabled ? "outline" : "destructive"}
             size="lg"
             onClick={toggleAudio}
-            className="rounded-full w-12 h-12 sm:w-14 sm:h-14"
+            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0"
           >
             {isAudioEnabled ? <Mic className="h-5 w-5 sm:h-6 sm:w-6" /> : <MicOff className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
@@ -310,7 +310,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             variant={isVideoEnabled ? "outline" : "destructive"}
             size="lg"
             onClick={toggleVideo}
-            className="rounded-full w-12 h-12 sm:w-14 sm:h-14"
+            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0"
             disabled={isScreenSharing}
           >
             {isVideoEnabled ? <Video className="h-5 w-5 sm:h-6 sm:w-6" /> : <VideoOff className="h-5 w-5 sm:h-6 sm:w-6" />}
@@ -320,7 +320,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             variant={isScreenSharing ? "default" : "outline"}
             size="lg"
             onClick={toggleScreenShare}
-            className="rounded-full w-12 h-12 sm:w-14 sm:h-14 hidden sm:flex"
+            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0 hidden sm:flex"
           >
             {isScreenSharing ? <MonitorOff className="h-5 w-5 sm:h-6 sm:w-6" /> : <Monitor className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
@@ -329,7 +329,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             variant="destructive"
             size="lg"
             onClick={leaveChannel}
-            className="rounded-full w-12 h-12 sm:w-14 sm:h-14"
+            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0"
           >
             <Phone className="h-5 w-5 sm:h-6 sm:w-6 rotate-[135deg]" />
           </Button>
@@ -357,17 +357,17 @@ const RemoteVideoPlayer = ({ user }: { user: IAgoraRTCRemoteUser }) => {
 
   return (
     <div className="relative bg-muted rounded-lg overflow-hidden aspect-video">
-      <div ref={videoRef} className="w-full h-full" />
+      <div ref={videoRef} className="w-full h-full [&_video]:!object-cover" />
       {!user.videoTrack && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
-            <span className="text-xl sm:text-2xl font-bold text-primary">
+          <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
+            <span className="text-lg sm:text-2xl font-bold text-primary">
               {String(user.uid).charAt(0).toUpperCase()}
             </span>
           </div>
         </div>
       )}
-      <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs sm:text-sm">
+      <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 bg-black/60 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-sm">
         User {user.uid}
       </div>
     </div>
