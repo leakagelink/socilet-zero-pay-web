@@ -29,6 +29,7 @@ export const useMeetingRecorder = (options: UseRecorderOptions) => {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const startTimer = useCallback(() => {
     timerRef.current = setInterval(() => {
@@ -43,106 +44,29 @@ export const useMeetingRecorder = (options: UseRecorderOptions) => {
     }
   }, []);
 
-  const startRecording = useCallback(async () => {
-    try {
-      // Get screen + audio
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          frameRate: { ideal: 30 }
-        },
-        audio: true,
-      });
-
-      // Try to get microphone audio
-      let audioStream: MediaStream | null = null;
-      try {
-        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      } catch (e) {
-        console.log('Microphone access denied, recording without mic audio');
-      }
-
-      // Combine streams
-      const tracks = [...displayStream.getTracks()];
-      if (audioStream) {
-        tracks.push(...audioStream.getAudioTracks());
-      }
-      
-      const combinedStream = new MediaStream(tracks);
-      streamRef.current = combinedStream;
-
-      // Setup MediaRecorder
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-        ? 'video/webm;codecs=vp9'
-        : MediaRecorder.isTypeSupported('video/webm')
-        ? 'video/webm'
-        : 'video/mp4';
-
-      const recorder = new MediaRecorder(combinedStream, {
-        mimeType,
-        videoBitsPerSecond: 2500000, // 2.5 Mbps for good quality
-      });
-
-      chunksRef.current = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunksRef.current.push(e.data);
-        }
-      };
-
-      recorder.onstop = async () => {
-        stopTimer();
-        await uploadRecording();
-      };
-
-      // Handle if user stops screen share
-      displayStream.getVideoTracks()[0].onended = () => {
-        if (state.isRecording) {
-          stopRecording();
-        }
-      };
-
-      recorder.start(1000); // Collect data every second
-      mediaRecorderRef.current = recorder;
-      
-      setState(prev => ({ ...prev, isRecording: true, duration: 0 }));
-      startTimer();
-      toast.success('Recording started');
-    } catch (error: any) {
-      console.error('Failed to start recording:', error);
-      if (error.name === 'NotAllowedError') {
-        toast.error('Screen sharing permission denied');
-      } else {
-        toast.error(`Failed to start recording: ${error.message}`);
-      }
+  const formatDuration = useCallback((seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
-  }, [state.isRecording, startTimer, stopTimer]);
-
-  const pauseRecording = useCallback(() => {
-    if (mediaRecorderRef.current && state.isRecording) {
-      if (state.isPaused) {
-        mediaRecorderRef.current.resume();
-        startTimer();
-        setState(prev => ({ ...prev, isPaused: false }));
-        toast.success('Recording resumed');
-      } else {
-        mediaRecorderRef.current.pause();
-        stopTimer();
-        setState(prev => ({ ...prev, isPaused: true }));
-        toast.info('Recording paused');
-      }
-    }
-  }, [state.isRecording, state.isPaused, startTimer, stopTimer]);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      streamRef.current?.getTracks().forEach(track => track.stop());
-      setState(prev => ({ ...prev, isRecording: false, isPaused: false }));
-    }
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
+
+  const downloadLocally = useCallback(() => {
+    if (chunksRef.current.length === 0) return;
+    
+    const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${meetingTitle}-${Date.now()}.webm`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Recording downloaded locally');
+  }, [meetingTitle]);
 
   const uploadRecording = useCallback(async () => {
     if (chunksRef.current.length === 0) {
@@ -186,30 +110,174 @@ export const useMeetingRecorder = (options: UseRecorderOptions) => {
       setState(prev => ({ ...prev, isUploading: false }));
       chunksRef.current = [];
     }
-  }, [meetingTitle, workspaceId, onUploadComplete]);
+  }, [meetingTitle, workspaceId, onUploadComplete, downloadLocally]);
 
-  const downloadLocally = useCallback(() => {
-    if (chunksRef.current.length === 0) return;
-    
-    const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${meetingTitle}-${Date.now()}.webm`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Recording downloaded locally');
-  }, [meetingTitle]);
+  const startRecording = useCallback(async () => {
+    try {
+      // Get screen + system audio (tab audio)
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 }
+        },
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
+      });
 
-  const formatDuration = useCallback((seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hrs > 0) {
-      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      // Check if system audio was captured
+      const hasSystemAudio = displayStream.getAudioTracks().length > 0;
+      console.log('System audio captured:', hasSystemAudio);
+
+      // Try to get microphone audio
+      let micStream: MediaStream | null = null;
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          }
+        });
+        console.log('Microphone audio captured');
+      } catch (e) {
+        console.log('Microphone access denied, recording without mic audio');
+        toast.info('Microphone not available - recording system audio only');
+      }
+
+      // Create AudioContext to mix audio streams
+      const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
+      const destination = audioContext.createMediaStreamDestination();
+
+      // Add system audio if available
+      if (hasSystemAudio) {
+        const systemSource = audioContext.createMediaStreamSource(
+          new MediaStream(displayStream.getAudioTracks())
+        );
+        systemSource.connect(destination);
+      }
+
+      // Add microphone audio if available
+      if (micStream) {
+        const micSource = audioContext.createMediaStreamSource(micStream);
+        // Add slight gain to microphone to balance with system audio
+        const micGain = audioContext.createGain();
+        micGain.gain.value = 1.2;
+        micSource.connect(micGain);
+        micGain.connect(destination);
+      }
+
+      // Combine video track with mixed audio
+      const videoTrack = displayStream.getVideoTracks()[0];
+      const mixedAudioTrack = destination.stream.getAudioTracks()[0];
+      
+      const tracks: MediaStreamTrack[] = [videoTrack];
+      if (mixedAudioTrack) {
+        tracks.push(mixedAudioTrack);
+      }
+      
+      const combinedStream = new MediaStream(tracks);
+      streamRef.current = combinedStream;
+
+      // Store original streams for cleanup
+      const originalDisplayStream = displayStream;
+      const originalMicStream = micStream;
+
+      // Log what we're recording
+      console.log('Recording tracks:', {
+        video: combinedStream.getVideoTracks().length,
+        audio: combinedStream.getAudioTracks().length,
+      });
+
+      // Setup MediaRecorder with audio codec support
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+        ? 'video/webm;codecs=vp9,opus'
+        : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+        ? 'video/webm;codecs=vp8,opus'
+        : MediaRecorder.isTypeSupported('video/webm')
+        ? 'video/webm'
+        : 'video/mp4';
+
+      console.log('Using mimeType:', mimeType);
+
+      const recorder = new MediaRecorder(combinedStream, {
+        mimeType,
+        videoBitsPerSecond: 2500000, // 2.5 Mbps for video
+        audioBitsPerSecond: 128000, // 128 kbps for audio
+      });
+
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        stopTimer();
+        // Close audio context
+        audioContext.close();
+        // Stop all original streams
+        originalDisplayStream.getTracks().forEach(track => track.stop());
+        originalMicStream?.getTracks().forEach(track => track.stop());
+        await uploadRecording();
+      };
+
+      // Handle if user stops screen share
+      videoTrack.onended = () => {
+        if (mediaRecorderRef.current?.state === 'recording') {
+          mediaRecorderRef.current.stop();
+          streamRef.current?.getTracks().forEach(track => track.stop());
+          setState(prev => ({ ...prev, isRecording: false, isPaused: false }));
+        }
+      };
+
+      recorder.start(1000); // Collect data every second
+      mediaRecorderRef.current = recorder;
+      
+      setState(prev => ({ ...prev, isRecording: true, duration: 0 }));
+      startTimer();
+      
+      const audioStatus = hasSystemAudio || micStream ? 'with audio' : 'video only';
+      toast.success(`Recording started (${audioStatus})`);
+    } catch (error: any) {
+      console.error('Failed to start recording:', error);
+      if (error.name === 'NotAllowedError') {
+        toast.error('Screen sharing permission denied');
+      } else {
+        toast.error(`Failed to start recording: ${error.message}`);
+      }
     }
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, [startTimer, stopTimer, uploadRecording]);
+
+  const pauseRecording = useCallback(() => {
+    if (mediaRecorderRef.current && state.isRecording) {
+      if (state.isPaused) {
+        mediaRecorderRef.current.resume();
+        startTimer();
+        setState(prev => ({ ...prev, isPaused: false }));
+        toast.success('Recording resumed');
+      } else {
+        mediaRecorderRef.current.pause();
+        stopTimer();
+        setState(prev => ({ ...prev, isPaused: true }));
+        toast.info('Recording paused');
+      }
+    }
+  }, [state.isRecording, state.isPaused, startTimer, stopTimer]);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      streamRef.current?.getTracks().forEach(track => track.stop());
+      audioContextRef.current?.close();
+      setState(prev => ({ ...prev, isRecording: false, isPaused: false }));
+    }
   }, []);
 
   return {
