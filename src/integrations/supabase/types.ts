@@ -136,6 +136,45 @@ export type Database = {
           },
         ]
       }
+      blocked_chat_logs: {
+        Row: {
+          block_reason: string
+          created_at: string
+          id: string
+          matched_pattern: string | null
+          message_content: string
+          room_id: string | null
+          room_type: string
+          sender_ip: string | null
+          sender_name: string
+          workspace_id: string | null
+        }
+        Insert: {
+          block_reason: string
+          created_at?: string
+          id?: string
+          matched_pattern?: string | null
+          message_content: string
+          room_id?: string | null
+          room_type?: string
+          sender_ip?: string | null
+          sender_name: string
+          workspace_id?: string | null
+        }
+        Update: {
+          block_reason?: string
+          created_at?: string
+          id?: string
+          matched_pattern?: string | null
+          message_content?: string
+          room_id?: string | null
+          room_type?: string
+          sender_ip?: string | null
+          sender_name?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
