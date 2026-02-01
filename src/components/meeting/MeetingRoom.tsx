@@ -137,7 +137,7 @@ export const MeetingRoom = () => {
       return;
     }
     
-    // Fetch workspace info if meeting has one
+    // Fetch or create workspace for this meeting
     if (meeting.project_workspace_id) {
       const { data: wsData } = await supabase
         .from('project_workspaces')
@@ -148,32 +148,92 @@ export const MeetingRoom = () => {
       if (wsData) {
         setActiveWorkspace(wsData);
       }
+    } else {
+      // Create workspace for old meetings that don't have one
+      try {
+        const { data: newWorkspace, error } = await supabase
+          .from('project_workspaces')
+          .insert({
+            title: meeting.title,
+            description: meeting.description || '',
+            created_by: meeting.created_by,
+            project_code: '', // Auto-generated
+          })
+          .select()
+          .single();
+        
+        if (!error && newWorkspace) {
+          // Update meeting with workspace ID
+          await supabase
+            .from('meetings')
+            .update({ project_workspace_id: newWorkspace.id })
+            .eq('id', meeting.id);
+          
+          setActiveWorkspace(newWorkspace);
+          toast.success(`Project ID: ${newWorkspace.project_code}`);
+        }
+      } catch (err) {
+        console.error('Failed to create workspace:', err);
+      }
     }
     
     setActiveMeeting(meeting);
     setPendingChannel(null);
   };
 
-  const joinDirectChannel = () => {
+  const joinDirectChannel = async () => {
     if (!userName.trim()) {
       toast.error('Please enter your name first');
       return;
     }
     if (!pendingChannel) return;
     
-    // Create a temporary meeting object for direct join
-    const directMeeting: Meeting = {
-      id: 'direct-' + pendingChannel,
-      room_name: pendingChannel,
-      room_url: pendingChannel,
-      title: 'Meeting',
-      description: '',
-      created_by: 'Host',
-      is_active: true,
-      participants_count: 0,
-      created_at: new Date().toISOString(),
-    };
-    setActiveMeeting(directMeeting);
+    // Check if this channel already has a meeting with workspace
+    const { data: existingMeeting } = await supabase
+      .from('meetings')
+      .select('*, project_workspaces(*)')
+      .eq('room_name', pendingChannel)
+      .maybeSingle();
+    
+    if (existingMeeting) {
+      if (existingMeeting.project_workspaces) {
+        setActiveWorkspace(existingMeeting.project_workspaces);
+      }
+      setActiveMeeting(existingMeeting);
+    } else {
+      // Create workspace for direct join
+      const { data: newWorkspace } = await supabase
+        .from('project_workspaces')
+        .insert({
+          title: 'Direct Meeting',
+          description: '',
+          created_by: userName,
+          project_code: '',
+        })
+        .select()
+        .single();
+      
+      if (newWorkspace) {
+        setActiveWorkspace(newWorkspace);
+        toast.success(`Project ID: ${newWorkspace.project_code}`);
+      }
+      
+      // Create a temporary meeting object for direct join
+      const directMeeting: Meeting = {
+        id: 'direct-' + pendingChannel,
+        room_name: pendingChannel,
+        room_url: pendingChannel,
+        title: 'Direct Meeting',
+        description: '',
+        created_by: userName,
+        is_active: true,
+        participants_count: 0,
+        created_at: new Date().toISOString(),
+        project_workspace_id: newWorkspace?.id,
+      };
+      setActiveMeeting(directMeeting);
+    }
+    
     setPendingChannel(null);
   };
 
