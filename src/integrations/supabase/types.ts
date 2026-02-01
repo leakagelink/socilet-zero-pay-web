@@ -439,6 +439,54 @@ export type Database = {
           },
         ]
       }
+      inbound_emails: {
+        Row: {
+          attachments: Json | null
+          created_at: string
+          from_email: string
+          from_name: string | null
+          headers: Json | null
+          html_body: string | null
+          id: string
+          is_archived: boolean | null
+          is_read: boolean | null
+          received_at: string
+          subject: string | null
+          text_body: string | null
+          to_email: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string
+          from_email: string
+          from_name?: string | null
+          headers?: Json | null
+          html_body?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          received_at?: string
+          subject?: string | null
+          text_body?: string | null
+          to_email: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string
+          from_email?: string
+          from_name?: string | null
+          headers?: Json | null
+          html_body?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          received_at?: string
+          subject?: string | null
+          text_body?: string | null
+          to_email?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           client_address: string | null
