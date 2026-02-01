@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, Paperclip, Smile, Reply, X, Image, File, Video } from 'lucide-react';
+import { Send, Paperclip, Smile, Reply, X, Image, File, Video, ShieldAlert } from 'lucide-react';
 import { format } from 'date-fns';
+import { validateChatMessage } from '@/utils/chatValidation';
 
 interface ChatMessage {
   id: string;
@@ -187,6 +188,16 @@ export const ChatRoom = ({ meetingId, userName, onClose }: ChatRoomProps) => {
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !chatRoomId) return;
+
+    // Validate message for contact information
+    const validation = validateChatMessage(newMessage);
+    if (!validation.isValid) {
+      toast.error(validation.reason, {
+        icon: <ShieldAlert className="h-4 w-4 text-destructive" />,
+        duration: 4000,
+      });
+      return;
+    }
 
     try {
       const { error } = await supabase.from('chat_messages').insert({
