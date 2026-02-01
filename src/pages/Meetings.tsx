@@ -11,7 +11,6 @@ const Meetings = () => {
         <meta name="description" content="Join video meetings with Socilet. Connect with clients through audio/video calls and chat." />
       </Helmet>
       <div className="min-h-screen flex flex-col bg-background">
-        <Header />
         <main className="flex-1">
           <MeetingRoom />
         </main>
