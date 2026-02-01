@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Plus, Bell, Calendar, Clock, AlertTriangle, CheckCircle2, 
-  Trash2, Edit, Filter, Search, X, RefreshCw 
+  Trash2, Edit, Filter, Search, X, RefreshCw, Mail, Send 
 } from 'lucide-react';
 import { format, isToday, isTomorrow, isPast, addDays } from 'date-fns';
 
@@ -53,6 +53,7 @@ const ReminderManager = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sendingNotification, setSendingNotification] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -222,6 +223,29 @@ const ReminderManager = () => {
     }
   };
 
+  const handleSendNotifications = async (checkType: 'daily' | 'hourly') => {
+    setSendingNotification(true);
+    try {
+      const response = await supabase.functions.invoke('reminder-notification', {
+        body: { checkType }
+      });
+
+      if (response.error) throw response.error;
+
+      const data = response.data;
+      if (data.emailsSent > 0) {
+        toast.success(`${data.emailsSent} reminder email(s) sent successfully!`);
+      } else {
+        toast.info('No reminders found for notification');
+      }
+    } catch (error: any) {
+      console.error('Error sending notifications:', error);
+      toast.error('Failed to send notifications: ' + error.message);
+    } finally {
+      setSendingNotification(false);
+    }
+  };
+
   const getDateLabel = (dateStr: string) => {
     const date = new Date(dateStr);
     if (isToday(date)) return 'Today';
@@ -264,14 +288,24 @@ const ReminderManager = () => {
           </h2>
           <p className="text-sm text-muted-foreground">Manage your reminders and follow-ups</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Reminder
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="flex flex-wrap gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => handleSendNotifications('daily')}
+            disabled={sendingNotification}
+            className="gap-2"
+          >
+            <Mail className="h-4 w-4" />
+            {sendingNotification ? 'Sending...' : 'Check Reminders'}
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => handleOpenDialog()} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Add Reminder
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingReminder ? 'Edit Reminder' : 'New Reminder'}</DialogTitle>
             </DialogHeader>
@@ -399,6 +433,7 @@ const ReminderManager = () => {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Stats Cards */}
