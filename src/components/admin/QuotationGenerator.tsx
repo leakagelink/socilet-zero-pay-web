@@ -330,12 +330,12 @@ const QuotationGenerator = () => {
               New Quotation
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingId ? 'Edit Quotation' : 'Create New Quotation'}</DialogTitle>
               <DialogDescription>Fill in the details to generate a professional quotation</DialogDescription>
             </DialogHeader>
-            <ScrollArea className="flex-1 pr-4">
+            <div className="space-y-6 pb-4">
               <div className="space-y-6 pb-4">
                 {/* Client Details */}
                 <Card>
@@ -512,7 +512,7 @@ const QuotationGenerator = () => {
                   </CardContent>
                 </Card>
               </div>
-            </ScrollArea>
+            </div>
 
             <div className="flex justify-end gap-3 pt-4 border-t">
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
