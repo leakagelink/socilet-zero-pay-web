@@ -159,11 +159,37 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     }
   };
 
+  const isMobileDevice = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+  const isScreenShareSupported = () => {
+    // Check if getDisplayMedia is available
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+  };
+
   const toggleScreenShare = async () => {
-    // Check if screen sharing is supported
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-      // Try fallback for mobile - some mobile browsers support it
-      console.warn('getDisplayMedia not directly available, trying Agora SDK...');
+    // Check mobile device first and show friendly message
+    if (isMobileDevice()) {
+      // Check if it's Android Chrome which might support screen sharing
+      const isAndroidChrome = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent);
+      
+      if (!isAndroidChrome) {
+        alert('📱 Screen sharing is not supported on this mobile device.\n\nFor screen sharing, please:\n• Use Android with Chrome browser, or\n• Use a desktop/laptop computer');
+        return;
+      }
+      
+      // Android Chrome - might work, continue with caution
+      if (!isScreenShareSupported()) {
+        alert('📱 Screen sharing is not available on this browser.\n\nPlease update your Chrome browser or use a desktop/laptop computer.');
+        return;
+      }
+    }
+
+    // Check browser support
+    if (!isScreenShareSupported()) {
+      alert('Screen sharing is not supported in your browser.\n\nPlease use Chrome, Edge, or Firefox on desktop.');
+      return;
     }
 
     if (isScreenSharing) {
@@ -182,14 +208,24 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     } else {
       // Start screen sharing
       try {
-        // Use Agora's screen sharing which has better cross-platform support
+        // Configure based on device
+        const encoderConfig = isMobileDevice() 
+          ? {
+              width: { max: 1280 },
+              height: { max: 720 },
+              frameRate: { max: 15 },
+              bitrateMax: 1500,
+            }
+          : {
+              width: { max: 1920 },
+              height: { max: 1080 },
+              frameRate: { max: 30 },
+              bitrateMax: 3000,
+            };
+
+        // Use Agora's screen sharing
         const screenVideoTrack = await AgoraRTC.createScreenVideoTrack({
-          encoderConfig: {
-            width: { max: 1920 },
-            height: { max: 1080 },
-            frameRate: { max: 30 },
-            bitrateMax: 3000,
-          },
+          encoderConfig,
           optimizationMode: 'detail',
         }, 'disable');
         
@@ -229,19 +265,33 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         }
       } catch (err: any) {
         console.error('Screen share error:', err);
+        
         // Handle different error types
         if (err.message?.includes('Permission denied') || err.name === 'NotAllowedError') {
           // User cancelled - do nothing
           return;
         }
+        
         if (err.name === 'NotSupportedError' || err.message?.includes('not supported')) {
-          // Not supported on this device/browser
-          alert('Screen sharing is not supported on this device/browser. Try using Chrome or Edge on desktop.');
+          if (isMobileDevice()) {
+            alert('📱 Screen sharing failed on this device.\n\nMost mobile browsers don\'t support screen sharing.\n\nPlease use a desktop/laptop computer for screen sharing.');
+          } else {
+            alert('Screen sharing is not supported in your browser.\n\nPlease try Chrome, Edge, or Firefox.');
+          }
           return;
         }
-        // Other errors
-        console.error('Screen share failed:', err);
-        alert('Failed to start screen sharing. Please try again.');
+        
+        // AbortError usually means user cancelled
+        if (err.name === 'AbortError') {
+          return;
+        }
+        
+        // Other errors - show appropriate message
+        if (isMobileDevice()) {
+          alert('📱 Screen sharing is not available on this device.\n\nMobile screen sharing support is limited.\n\nPlease use a desktop/laptop for this feature.');
+        } else {
+          alert('Failed to start screen sharing.\n\nPlease check your browser permissions and try again.');
+        }
       }
     }
   };
