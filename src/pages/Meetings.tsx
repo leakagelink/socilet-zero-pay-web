@@ -1,6 +1,4 @@
 import { Helmet } from 'react-helmet';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { MeetingRoom } from '@/components/meeting/MeetingRoom';
 
 const Meetings = () => {
@@ -14,7 +12,6 @@ const Meetings = () => {
         <main className="flex-1">
           <MeetingRoom />
         </main>
-        <Footer />
       </div>
     </>
   );
