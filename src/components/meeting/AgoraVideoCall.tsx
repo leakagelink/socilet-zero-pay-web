@@ -160,6 +160,12 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   };
 
   const toggleScreenShare = async () => {
+    // Check if screen sharing is supported
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+      // Try fallback for mobile - some mobile browsers support it
+      console.warn('getDisplayMedia not directly available, trying Agora SDK...');
+    }
+
     if (isScreenSharing) {
       // Stop screen sharing
       if (screenTrack) {
@@ -176,8 +182,15 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
     } else {
       // Start screen sharing
       try {
+        // Use Agora's screen sharing which has better cross-platform support
         const screenVideoTrack = await AgoraRTC.createScreenVideoTrack({
-          encoderConfig: '1080p_1',
+          encoderConfig: {
+            width: { max: 1920 },
+            height: { max: 1080 },
+            frameRate: { max: 30 },
+            bitrateMax: 3000,
+          },
+          optimizationMode: 'detail',
         }, 'disable');
         
         // Handle if user cancels screen share picker
@@ -216,11 +229,19 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         }
       } catch (err: any) {
         console.error('Screen share error:', err);
-        // User cancelled or error occurred
+        // Handle different error types
         if (err.message?.includes('Permission denied') || err.name === 'NotAllowedError') {
           // User cancelled - do nothing
           return;
         }
+        if (err.name === 'NotSupportedError' || err.message?.includes('not supported')) {
+          // Not supported on this device/browser
+          alert('Screen sharing is not supported on this device/browser. Try using Chrome or Edge on desktop.');
+          return;
+        }
+        // Other errors
+        console.error('Screen share failed:', err);
+        alert('Failed to start screen sharing. Please try again.');
       }
     }
   };
@@ -320,7 +341,8 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
             variant={isScreenSharing ? "default" : "outline"}
             size="lg"
             onClick={toggleScreenShare}
-            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0 hidden sm:flex"
+            className="rounded-full w-11 h-11 sm:w-14 sm:h-14 p-0"
+            title="Share Screen"
           >
             {isScreenSharing ? <MonitorOff className="h-5 w-5 sm:h-6 sm:w-6" /> : <Monitor className="h-5 w-5 sm:h-6 sm:w-6" />}
           </Button>
