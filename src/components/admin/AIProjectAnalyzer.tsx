@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { 
   Plus, Trash2, Send, Loader2, Bot, User, FileText, Download, 
   MessageSquare, FolderOpen, X, Upload, Sparkles, RefreshCw,
-  FileDown, Image
+  FileDown, Image, Menu, ArrowLeft, ChevronLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -53,6 +54,7 @@ const AIProjectAnalyzer = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -64,6 +66,7 @@ const AIProjectAnalyzer = () => {
   useEffect(() => {
     if (activeSession) {
       fetchMessages(activeSession.id);
+      setIsMobileSidebarOpen(false); // Close sidebar on session select (mobile)
     }
   }, [activeSession?.id]);
 
@@ -283,7 +286,8 @@ const AIProjectAnalyzer = () => {
         if (response.status === 402) {
           throw new Error('Payment required. Please add credits.');
         }
-        throw new Error('Failed to get AI response');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to get AI response');
       }
 
       const reader = response.body?.getReader();
@@ -391,6 +395,129 @@ const AIProjectAnalyzer = () => {
     toast.success(`Exported as ${format.toUpperCase()}`);
   };
 
+  // Sessions list component for reuse
+  const SessionsList = ({ onClose }: { onClose?: () => void }) => (
+    <div className="h-full flex flex-col">
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Bot className="h-5 w-5 text-primary" />
+          <span className="font-semibold">AI Sessions</span>
+        </div>
+        <Dialog open={isNewSessionDialogOpen} onOpenChange={setIsNewSessionDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" variant="outline" className="gap-1">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">New</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md mx-4">
+            <DialogHeader>
+              <DialogTitle>New Analysis Session</DialogTitle>
+              <DialogDescription>Create a new session for project analysis</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div>
+                <Label>Session Name *</Label>
+                <Input 
+                  value={newSessionName} 
+                  onChange={(e) => setNewSessionName(e.target.value)} 
+                  placeholder="e.g., E-commerce Project"
+                />
+              </div>
+              <div>
+                <Label>Client Name</Label>
+                <Input 
+                  value={newClientName} 
+                  onChange={(e) => setNewClientName(e.target.value)} 
+                  placeholder="Optional"
+                />
+              </div>
+              <div>
+                <Label>Company Logo (Optional)</Label>
+                <div className="flex items-center gap-3 mt-2">
+                  <input
+                    type="file"
+                    ref={logoInputRef}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleLogoChange}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => logoInputRef.current?.click()}
+                    className="gap-2"
+                    size="sm"
+                  >
+                    <Image className="h-4 w-4" />
+                    Upload
+                  </Button>
+                  {logoPreview && (
+                    <img src={logoPreview} alt="Logo preview" className="h-10 w-10 object-contain rounded border" />
+                  )}
+                </div>
+              </div>
+              <Button onClick={createSession} disabled={isCreatingSession} className="w-full gap-2">
+                {isCreatingSession ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                Create Session
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <ScrollArea className="flex-1">
+        <div className="p-3 space-y-2">
+          {sessions.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <p className="text-sm">No sessions yet</p>
+              <p className="text-xs">Create one to start</p>
+            </div>
+          ) : (
+            sessions.map((session) => (
+              <div
+                key={session.id}
+                className={`p-3 rounded-lg cursor-pointer transition-all group ${
+                  activeSession?.id === session.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted/50 hover:bg-muted'
+                }`}
+                onClick={() => {
+                  setActiveSession(session);
+                  onClose?.();
+                }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate text-sm">{session.session_name}</p>
+                    {session.client_name && (
+                      <p className={`text-xs truncate ${activeSession?.id === session.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                        {session.client_name}
+                      </p>
+                    )}
+                    <p className={`text-xs mt-1 ${activeSession?.id === session.id ? 'text-primary-foreground/60' : 'text-muted-foreground/60'}`}>
+                      {new Date(session.updated_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-6 w-6 opacity-0 group-hover:opacity-100 ${
+                      activeSession?.id === session.id ? 'text-primary-foreground hover:bg-primary-foreground/20' : 'text-destructive'
+                    }`}
+                    onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -400,131 +527,42 @@ const AIProjectAnalyzer = () => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-300px)] min-h-[600px] gap-4">
-      {/* Sessions Sidebar */}
-      <Card className="w-80 flex flex-col">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Bot className="h-5 w-5 text-primary" />
-              AI Sessions
-            </CardTitle>
-            <Dialog open={isNewSessionDialogOpen} onOpenChange={setIsNewSessionDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-1">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>New Analysis Session</DialogTitle>
-                  <DialogDescription>Create a new session for project analysis</DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 pt-4">
-                  <div>
-                    <Label>Session Name *</Label>
-                    <Input 
-                      value={newSessionName} 
-                      onChange={(e) => setNewSessionName(e.target.value)} 
-                      placeholder="e.g., E-commerce Project Analysis"
-                    />
-                  </div>
-                  <div>
-                    <Label>Client Name</Label>
-                    <Input 
-                      value={newClientName} 
-                      onChange={(e) => setNewClientName(e.target.value)} 
-                      placeholder="Optional"
-                    />
-                  </div>
-                  <div>
-                    <Label>Company Logo (Optional)</Label>
-                    <div className="flex items-center gap-3 mt-2">
-                      <input
-                        type="file"
-                        ref={logoInputRef}
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleLogoChange}
-                      />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => logoInputRef.current?.click()}
-                        className="gap-2"
-                      >
-                        <Image className="h-4 w-4" />
-                        Upload Logo
-                      </Button>
-                      {logoPreview && (
-                        <img src={logoPreview} alt="Logo preview" className="h-10 w-10 object-contain rounded border" />
-                      )}
-                    </div>
-                  </div>
-                  <Button onClick={createSession} disabled={isCreatingSession} className="w-full gap-2">
-                    {isCreatingSession ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                    Create Session
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </CardHeader>
-        <ScrollArea className="flex-1">
-          <CardContent className="space-y-2 pt-0">
-            {sessions.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">No sessions yet</p>
-                <p className="text-xs">Create one to start</p>
-              </div>
-            ) : (
-              sessions.map((session) => (
-                <div
-                  key={session.id}
-                  className={`p-3 rounded-lg cursor-pointer transition-all group ${
-                    activeSession?.id === session.id
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted/50 hover:bg-muted'
-                  }`}
-                  onClick={() => setActiveSession(session)}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate text-sm">{session.session_name}</p>
-                      {session.client_name && (
-                        <p className={`text-xs truncate ${activeSession?.id === session.id ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                          {session.client_name}
-                        </p>
-                      )}
-                      <p className={`text-xs mt-1 ${activeSession?.id === session.id ? 'text-primary-foreground/60' : 'text-muted-foreground/60'}`}>
-                        {new Date(session.updated_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-6 w-6 opacity-0 group-hover:opacity-100 ${
-                        activeSession?.id === session.id ? 'text-primary-foreground hover:bg-primary-foreground/20' : 'text-destructive'
-                      }`}
-                      onClick={(e) => { e.stopPropagation(); deleteSession(session.id); }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </ScrollArea>
+    <div className="flex flex-col lg:flex-row h-[calc(100vh-280px)] min-h-[500px] lg:min-h-[600px] gap-4">
+      {/* Desktop Sidebar */}
+      <Card className="hidden lg:flex w-72 xl:w-80 flex-col">
+        <SessionsList />
       </Card>
 
+      {/* Mobile Header with Menu */}
+      <div className="lg:hidden flex items-center gap-2 mb-2">
+        <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Menu className="h-4 w-4" />
+              Sessions
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80 p-0">
+            <SessionsList onClose={() => setIsMobileSidebarOpen(false)} />
+          </SheetContent>
+        </Sheet>
+        
+        {activeSession && (
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-sm truncate">{activeSession.session_name}</p>
+            {activeSession.client_name && (
+              <p className="text-xs text-muted-foreground truncate">{activeSession.client_name}</p>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Chat Area */}
-      <Card className="flex-1 flex flex-col">
+      <Card className="flex-1 flex flex-col overflow-hidden">
         {activeSession ? (
           <>
-            {/* Chat Header */}
-            <CardHeader className="pb-3 border-b">
+            {/* Chat Header - Desktop */}
+            <CardHeader className="hidden lg:block pb-3 border-b">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-lg">{activeSession.session_name}</CardTitle>
@@ -535,52 +573,63 @@ const AIProjectAnalyzer = () => {
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => exportDocument('md')} className="gap-1">
                     <FileDown className="h-4 w-4" />
-                    Export MD
+                    <span className="hidden xl:inline">Export MD</span>
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportDocument('txt')} className="gap-1">
                     <Download className="h-4 w-4" />
-                    Export TXT
+                    <span className="hidden xl:inline">Export TXT</span>
                   </Button>
                 </div>
               </div>
             </CardHeader>
 
+            {/* Mobile Export Buttons */}
+            <div className="lg:hidden flex gap-2 p-3 border-b">
+              <Button variant="outline" size="sm" onClick={() => exportDocument('md')} className="gap-1 flex-1">
+                <FileDown className="h-4 w-4" />
+                MD
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => exportDocument('txt')} className="gap-1 flex-1">
+                <Download className="h-4 w-4" />
+                TXT
+              </Button>
+            </div>
+
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-3 lg:p-4">
               {messages.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center">
-                  <Bot className="h-16 w-16 text-primary/30 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Start Your Project Analysis</h3>
-                  <p className="text-muted-foreground text-sm max-w-md mb-6">
-                    Describe your client's project requirements, upload documents, or paste project details. 
-                    I'll help analyze and create detailed project proposals.
+                <div className="h-full flex flex-col items-center justify-center text-center px-4">
+                  <Bot className="h-12 w-12 lg:h-16 lg:w-16 text-primary/30 mb-4" />
+                  <h3 className="text-base lg:text-lg font-medium mb-2">Start Your Analysis</h3>
+                  <p className="text-muted-foreground text-xs lg:text-sm max-w-md mb-4 lg:mb-6">
+                    Describe your project requirements. I'll help analyze and create detailed proposals.
                   </p>
                   <div className="flex flex-wrap gap-2 justify-center">
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80" onClick={() => setInputMessage('मुझे एक e-commerce website बनानी है जिसमें payment gateway, product management और user authentication हो।')}>
-                      E-commerce Project
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs" onClick={() => setInputMessage('E-commerce website with payment, products & auth')}>
+                      E-commerce
                     </Badge>
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80" onClick={() => setInputMessage('I need a custom CRM system for my business with lead management, task tracking, and reporting.')}>
-                      CRM System
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs" onClick={() => setInputMessage('CRM system with leads, tasks & reports')}>
+                      CRM
                     </Badge>
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80" onClick={() => setInputMessage('Build a mobile-responsive portfolio website with blog, contact form, and admin panel.')}>
-                      Portfolio Website
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 text-xs" onClick={() => setInputMessage('Portfolio website with blog & admin panel')}>
+                      Portfolio
                     </Badge>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 lg:space-y-4">
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex gap-2 lg:gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       {msg.role === 'assistant' && (
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Bot className="h-4 w-4 text-primary" />
+                        <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Bot className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-primary" />
                         </div>
                       )}
                       <div
-                        className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                        className={`max-w-[85%] lg:max-w-[80%] rounded-2xl px-3 py-2 lg:px-4 lg:py-3 ${
                           msg.role === 'user'
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted prose prose-sm max-w-none dark:prose-invert'
@@ -589,29 +638,29 @@ const AIProjectAnalyzer = () => {
                         {msg.role === 'assistant' ? (
                           <ReactMarkdown
                             components={{
-                              h1: ({ children }) => <h1 className="text-lg font-bold mt-4 mb-2">{children}</h1>,
-                              h2: ({ children }) => <h2 className="text-base font-semibold mt-3 mb-2">{children}</h2>,
-                              h3: ({ children }) => <h3 className="text-sm font-medium mt-2 mb-1">{children}</h3>,
-                              p: ({ children }) => <p className="mb-2">{children}</p>,
-                              ul: ({ children }) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
+                              h1: ({ children }) => <h1 className="text-base lg:text-lg font-bold mt-4 mb-2">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-sm lg:text-base font-semibold mt-3 mb-2">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-xs lg:text-sm font-medium mt-2 mb-1">{children}</h3>,
+                              p: ({ children }) => <p className="mb-2 text-xs lg:text-sm">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc ml-4 mb-2 text-xs lg:text-sm">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal ml-4 mb-2 text-xs lg:text-sm">{children}</ol>,
                               li: ({ children }) => <li className="mb-1">{children}</li>,
-                              table: ({ children }) => <table className="w-full border-collapse my-2">{children}</table>,
+                              table: ({ children }) => <div className="overflow-x-auto"><table className="w-full border-collapse my-2 text-xs lg:text-sm">{children}</table></div>,
                               th: ({ children }) => <th className="border px-2 py-1 bg-muted font-medium text-left">{children}</th>,
                               td: ({ children }) => <td className="border px-2 py-1">{children}</td>,
                               strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                              code: ({ children }) => <code className="bg-muted-foreground/10 px-1 rounded text-sm">{children}</code>,
+                              code: ({ children }) => <code className="bg-muted-foreground/10 px-1 rounded text-xs">{children}</code>,
                             }}
                           >
                             {msg.content || '...'}
                           </ReactMarkdown>
                         ) : (
-                          <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
+                          <p className="whitespace-pre-wrap text-xs lg:text-sm">{msg.content}</p>
                         )}
                       </div>
                       {msg.role === 'user' && (
-                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                          <User className="h-4 w-4 text-primary-foreground" />
+                        <div className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                          <User className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-primary-foreground" />
                         </div>
                       )}
                     </div>
@@ -622,11 +671,11 @@ const AIProjectAnalyzer = () => {
             </ScrollArea>
 
             {/* Input Area */}
-            <div className="p-4 border-t">
+            <div className="p-3 lg:p-4 border-t">
               {uploadedFile && (
                 <div className="flex items-center gap-2 mb-2 p-2 bg-muted rounded-lg">
-                  <FileText className="h-4 w-4 text-primary" />
-                  <span className="text-sm flex-1 truncate">{uploadedFile.name}</span>
+                  <FileText className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span className="text-xs lg:text-sm flex-1 truncate">{uploadedFile.name}</span>
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setUploadedFile(null)}>
                     <X className="h-3 w-3" />
                   </Button>
@@ -643,6 +692,7 @@ const AIProjectAnalyzer = () => {
                 <Button 
                   variant="outline" 
                   size="icon" 
+                  className="flex-shrink-0"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isSending}
                 >
@@ -651,8 +701,8 @@ const AIProjectAnalyzer = () => {
                 <Textarea
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Describe your project requirements..."
-                  className="min-h-[60px] max-h-[120px] resize-none"
+                  placeholder="Project requirements..."
+                  className="min-h-[50px] lg:min-h-[60px] max-h-[100px] lg:max-h-[120px] resize-none text-sm"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -661,12 +711,12 @@ const AIProjectAnalyzer = () => {
                   }}
                   disabled={isSending}
                 />
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 flex-shrink-0">
                   <Button 
                     onClick={() => sendMessage('chat')} 
                     disabled={isSending || (!inputMessage.trim() && !uploadedFile)}
                     size="icon"
-                    className="h-8"
+                    className="h-7 lg:h-8"
                   >
                     {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   </Button>
@@ -675,7 +725,7 @@ const AIProjectAnalyzer = () => {
                     disabled={isSending}
                     size="icon"
                     variant="secondary"
-                    className="h-8"
+                    className="h-7 lg:h-8"
                     title="Deep Analysis"
                   >
                     <Sparkles className="h-4 w-4" />
@@ -685,30 +735,28 @@ const AIProjectAnalyzer = () => {
                     disabled={isSending || messages.length === 0}
                     size="icon"
                     variant="outline"
-                    className="h-8"
+                    className="h-7 lg:h-8"
                     title="Generate Document"
                   >
                     <FileText className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                💡 Press Enter to send, Shift+Enter for new line. Use ✨ for deep analysis, 📄 to generate document.
+              <p className="text-[10px] lg:text-xs text-muted-foreground mt-2 hidden sm:block">
+                💡 Enter = send • ✨ Analysis • 📄 Document
               </p>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-            <Bot className="h-20 w-20 text-primary/20 mb-6" />
-            <h2 className="text-xl font-semibold mb-2">AI Project Analyzer</h2>
-            <p className="text-muted-foreground max-w-md mb-6">
-              Create a new session to start analyzing client projects. Upload requirements, 
-              chat with AI, and generate detailed project proposals with technology recommendations, 
-              timelines, and cost estimates.
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-6 lg:p-8">
+            <Bot className="h-16 w-16 lg:h-20 lg:w-20 text-primary/20 mb-4 lg:mb-6" />
+            <h2 className="text-lg lg:text-xl font-semibold mb-2">AI Project Analyzer</h2>
+            <p className="text-muted-foreground text-sm max-w-md mb-4 lg:mb-6">
+              Create a session to analyze projects. Generate proposals with tech recommendations, timelines & costs.
             </p>
             <Button onClick={() => setIsNewSessionDialogOpen(true)} className="gap-2">
               <Plus className="h-4 w-4" />
-              Create New Session
+              New Session
             </Button>
           </div>
         )}
