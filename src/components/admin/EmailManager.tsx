@@ -53,9 +53,24 @@ interface ContactMessage {
   created_at: string;
 }
 
+interface InboundEmail {
+  id: string;
+  from_email: string;
+  from_name: string | null;
+  to_email: string;
+  subject: string | null;
+  text_body: string | null;
+  html_body: string | null;
+  is_read: boolean;
+  is_archived: boolean;
+  received_at: string;
+  created_at: string;
+}
+
 const EmailManager = () => {
   const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
+  const [inboundEmails, setInboundEmails] = useState<InboundEmail[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isCheckingReminders, setIsCheckingReminders] = useState(false);
@@ -100,6 +115,20 @@ const EmailManager = () => {
 
       if (messagesError) throw messagesError;
       setContactMessages(messages || []);
+
+      // Fetch inbound emails
+      const { data: inbound, error: inboundError } = await supabase
+        .from('inbound_emails')
+        .select('*')
+        .eq('is_archived', false)
+        .order('received_at', { ascending: false })
+        .limit(100);
+
+      if (inboundError) {
+        console.error('Error fetching inbound emails:', inboundError);
+      } else {
+        setInboundEmails(inbound || []);
+      }
     } catch (error: any) {
       console.error('Error fetching email data:', error);
       toast.error('Failed to load email data');
@@ -250,7 +279,51 @@ const EmailManager = () => {
     });
   };
 
-  const unreadCount = contactMessages.filter(m => !m.is_read).length;
+  const unreadContactCount = contactMessages.filter(m => !m.is_read).length;
+  const unreadInboundCount = inboundEmails.filter(e => !e.is_read).length;
+  const totalUnreadCount = unreadContactCount + unreadInboundCount;
+
+  const handleMarkInboundAsRead = async (id: string) => {
+    try {
+      await supabase
+        .from('inbound_emails')
+        .update({ is_read: true })
+        .eq('id', id);
+      fetchData();
+    } catch (error) {
+      console.error('Error marking inbound email as read:', error);
+    }
+  };
+
+  const handleArchiveInbound = async (id: string) => {
+    try {
+      await supabase
+        .from('inbound_emails')
+        .update({ is_archived: true })
+        .eq('id', id);
+      toast.success('Email archived');
+      fetchData();
+    } catch (error: any) {
+      console.error('Error archiving inbound email:', error);
+      toast.error('Failed to archive email');
+    }
+  };
+
+  const handleDeleteInbound = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this email?')) return;
+
+    try {
+      await supabase
+        .from('inbound_emails')
+        .delete()
+        .eq('id', id);
+      toast.success('Email deleted');
+      fetchData();
+    } catch (error: any) {
+      console.error('Error deleting inbound email:', error);
+      toast.error('Failed to delete email');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -302,9 +375,9 @@ const EmailManager = () => {
           <TabsTrigger value="inbox" className="rounded-lg">
             <Inbox className="h-4 w-4 mr-2" />
             Inbox
-            {unreadCount > 0 && (
+            {totalUnreadCount > 0 && (
               <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
-                {unreadCount}
+                {totalUnreadCount}
               </Badge>
             )}
           </TabsTrigger>
@@ -384,81 +457,171 @@ const EmailManager = () => {
         </TabsContent>
 
         <TabsContent value="inbox">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Inbox className="h-5 w-5" />
-                Received Messages ({contactMessages.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {contactMessages.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Inbox className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No messages received yet</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {contactMessages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`p-4 rounded-xl border transition-all hover:shadow-md ${
-                        !msg.is_read ? 'bg-primary/5 border-primary/20' : 'bg-card'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-foreground">{msg.sender_name}</span>
-                            {!msg.is_read && (
-                              <Badge variant="secondary" className="text-xs">New</Badge>
-                            )}
-                            {msg.is_replied && (
-                              <Badge variant="outline" className="text-xs text-green-600">Replied</Badge>
-                            )}
+          <div className="space-y-6">
+            {/* Inbound Emails Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Mail className="h-5 w-5" />
+                  Email Inbox ({inboundEmails.length})
+                  {unreadInboundCount > 0 && (
+                    <Badge variant="destructive" className="text-xs">{unreadInboundCount} new</Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {inboundEmails.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Mail className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No inbound emails yet</p>
+                    <p className="text-xs mt-2">Configure Resend webhook to receive emails here</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {inboundEmails.map((email) => (
+                      <div
+                        key={email.id}
+                        className={`p-4 rounded-xl border transition-all hover:shadow-md ${
+                          !email.is_read ? 'bg-primary/5 border-primary/20' : 'bg-card'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-foreground">
+                                {email.from_name || email.from_email}
+                              </span>
+                              {!email.is_read && (
+                                <Badge variant="secondary" className="text-xs">New</Badge>
+                              )}
+                              <Badge variant="outline" className="text-xs">📧 Email</Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{email.from_email}</p>
+                            <p className="text-sm text-muted-foreground">To: {email.to_email}</p>
+                            <p className="text-sm font-medium mt-2">{email.subject || '(No Subject)'}</p>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                              {email.text_body || '(No content)'}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-2">{formatDate(email.received_at)}</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">{msg.sender_email}</p>
-                          {msg.sender_phone && (
-                            <p className="text-sm text-muted-foreground">📞 {msg.sender_phone}</p>
-                          )}
-                          <p className="text-sm font-medium mt-2">{msg.subject || 'No subject'}</p>
-                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{msg.message}</p>
-                          <p className="text-xs text-muted-foreground mt-2">{formatDate(msg.created_at)}</p>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openViewDialog(msg)}
-                            title="View"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openReplyDialog(msg)}
-                            title="Reply"
-                          >
-                            <Reply className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteMessage(msg.id)}
-                            title="Delete"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex gap-1">
+                            {!email.is_read && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleMarkInboundAsRead(email.id)}
+                                title="Mark as read"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleArchiveInbound(email.id)}
+                              title="Archive"
+                            >
+                              <Clock className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteInbound(email.id)}
+                              title="Delete"
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Contact Form Messages Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Inbox className="h-5 w-5" />
+                  Contact Form Messages ({contactMessages.length})
+                  {unreadContactCount > 0 && (
+                    <Badge variant="destructive" className="text-xs">{unreadContactCount} new</Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {contactMessages.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Inbox className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No contact form messages yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {contactMessages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`p-4 rounded-xl border transition-all hover:shadow-md ${
+                          !msg.is_read ? 'bg-primary/5 border-primary/20' : 'bg-card'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-foreground">{msg.sender_name}</span>
+                              {!msg.is_read && (
+                                <Badge variant="secondary" className="text-xs">New</Badge>
+                              )}
+                              {msg.is_replied && (
+                                <Badge variant="outline" className="text-xs text-emerald-600">Replied</Badge>
+                              )}
+                              <Badge variant="outline" className="text-xs">📝 Form</Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{msg.sender_email}</p>
+                            {msg.sender_phone && (
+                              <p className="text-sm text-muted-foreground">📞 {msg.sender_phone}</p>
+                            )}
+                            <p className="text-sm font-medium mt-2">{msg.subject || 'No subject'}</p>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{msg.message}</p>
+                            <p className="text-xs text-muted-foreground mt-2">{formatDate(msg.created_at)}</p>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openViewDialog(msg)}
+                              title="View"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openReplyDialog(msg)}
+                              title="Reply"
+                            >
+                              <Reply className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteMessage(msg.id)}
+                              title="Delete"
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="sent">
