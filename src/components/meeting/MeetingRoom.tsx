@@ -23,7 +23,7 @@ interface Meeting {
   created_at: string;
 }
 
-const AGORA_APP_ID = '20a16fef851d4594822620e18dbf78b9';
+const AGORA_APP_ID = '70055c1865ad4462bd0a92cb610707be';
 
 export const MeetingRoom = () => {
   const [searchParams] = useSearchParams();
