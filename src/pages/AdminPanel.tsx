@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +12,7 @@ import RecurringEarningsManager from '@/components/admin/RecurringEarningsManage
 import OtherIncomeManager from '@/components/admin/OtherIncomeManager';
 import RevenueCharts from '@/components/admin/RevenueCharts';
 import EmailManager from '@/components/admin/EmailManager';
+import ServiceCredentialsManager from '@/components/admin/ServiceCredentialsManager';
 import { useCountUp } from '@/hooks/useCountUp';
 
 // Animated Currency Display Component
@@ -417,7 +418,7 @@ const AdminPanel = () => {
         <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
           {/* Modern pill-style tabs */}
           <div className="bg-card rounded-2xl p-2 shadow-sm border">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-2 bg-transparent h-auto p-0">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-2 bg-transparent h-auto p-0">
               <TabsTrigger 
                 value="projects" 
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
@@ -453,6 +454,13 @@ const AdminPanel = () => {
                 <Mail className="h-4 w-4" />
                 <span className="hidden xs:inline sm:inline">Emails</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="credentials" 
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <Key className="h-4 w-4" />
+                <span className="hidden xs:inline sm:inline">Services</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -474,6 +482,10 @@ const AdminPanel = () => {
 
           <TabsContent value="emails" className="mt-6 animate-fade-in">
             <EmailManager />
+          </TabsContent>
+
+          <TabsContent value="credentials" className="mt-6 animate-fade-in">
+            <ServiceCredentialsManager />
           </TabsContent>
         </Tabs>
       </main>

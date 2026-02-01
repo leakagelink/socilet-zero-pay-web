@@ -609,6 +609,45 @@ export type Database = {
           },
         ]
       }
+      service_credentials: {
+        Row: {
+          company_name: string
+          created_at: string
+          created_by: string | null
+          email: string
+          encrypted_password: string
+          id: string
+          is_auto_login: boolean | null
+          notes: string | null
+          service_name: string
+          updated_at: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          created_by?: string | null
+          email: string
+          encrypted_password: string
+          id?: string
+          is_auto_login?: boolean | null
+          notes?: string | null
+          service_name: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          encrypted_password?: string
+          id?: string
+          is_auto_login?: boolean | null
+          notes?: string | null
+          service_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
