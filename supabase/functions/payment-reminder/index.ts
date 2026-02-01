@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const ADMIN_EMAIL = "tagdedheeraj4@gmail.com";
+const ADMIN_EMAILS = ["tagdedheeraj4@gmail.com", "hello@socilet.in"];
 const FROM_EMAIL = "Socilet <hello@socilet.in>";
 const LOGO_URL = "https://knputxpnhffskshlakiq.supabase.co/storage/v1/object/public/email-assets/socilet-logo.png?v=2";
 
@@ -347,34 +347,48 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Processing', upcomingPayments.length, 'payments for reminders');
 
-    // Send admin summary email
-    console.log('Sending admin summary email');
-    const adminEmailResponse = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [ADMIN_EMAIL],
-      subject: `💰 Payment Reminder: ${upcomingPayments.length} payment${upcomingPayments.length !== 1 ? 's' : ''} due soon - Socilet`,
-      html: getAdminEmailHtml(upcomingPayments),
-    });
-    console.log('Admin email sent:', adminEmailResponse);
+    // Send admin summary email to both admin addresses
+    console.log('Sending admin summary email to both addresses');
+    
+    for (const adminEmail of ADMIN_EMAILS) {
+      try {
+        const adminEmailResponse = await resend.emails.send({
+          from: FROM_EMAIL,
+          to: [adminEmail],
+          subject: `💰 Payment Reminder: ${upcomingPayments.length} payment${upcomingPayments.length !== 1 ? 's' : ''} due soon - Socilet`,
+          html: getAdminEmailHtml(upcomingPayments),
+        });
+        console.log(`Admin email sent to ${adminEmail}:`, adminEmailResponse);
+
+        // Log admin email for this recipient
+        await supabaseClient.from('email_logs').insert({
+          email_type: 'payment_reminder',
+          recipient_email: adminEmail,
+          recipient_name: 'Admin',
+          subject: `💰 Payment Reminder: ${upcomingPayments.length} payment${upcomingPayments.length !== 1 ? 's' : ''} due soon`,
+          body_preview: `Summary of ${upcomingPayments.length} upcoming payments`,
+          status: 'sent',
+        });
+      } catch (adminError: any) {
+        console.error(`Failed to send admin email to ${adminEmail}:`, adminError);
+        
+        // Log failed admin email
+        await supabaseClient.from('email_logs').insert({
+          email_type: 'payment_reminder',
+          recipient_email: adminEmail,
+          recipient_name: 'Admin',
+          subject: `💰 Payment Reminder: ${upcomingPayments.length} payments due soon`,
+          status: 'failed',
+          error_message: adminError.message,
+        });
+      }
+    }
 
     // Send individual client reminder emails
     let clientEmailsSent = 0;
     let clientEmailsFailed = 0;
 
     for (const payment of upcomingPayments) {
-      // Log admin email
-      await supabaseClient.from('email_logs').insert({
-        email_type: 'payment_reminder',
-        recipient_email: ADMIN_EMAIL,
-        recipient_name: 'Admin',
-        subject: `Payment Reminder: ${payment.client_name} - ₹${payment.amount.toLocaleString('en-IN')}`,
-        body_preview: `${payment.project_name || payment.work_description} - Due in ${payment.days_until_due} day(s)`,
-        status: 'sent',
-        related_project_id: payment.source === 'project' ? payment.id : null,
-        related_recurring_id: payment.source === 'recurring' ? payment.id : null,
-        related_other_income_id: payment.source === 'other_income' ? payment.id : null,
-        days_until_due: payment.days_until_due,
-      });
 
       // Send email to client if they have an email address
       if (payment.client_email) {

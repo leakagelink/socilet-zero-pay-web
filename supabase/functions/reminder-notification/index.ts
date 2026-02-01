@@ -322,6 +322,17 @@ const handler = async (req: Request): Promise<Response> => {
               console.log(`Daily reminder email sent to ${adminEmail}:`, emailResponse);
               emailsSent++;
 
+              // Log email to email_logs table
+              await supabaseClient.from('email_logs').insert({
+                email_type: 'reminder_notification',
+                recipient_email: adminEmail,
+                recipient_name: 'Admin',
+                subject: `${subjectText} - Socilet`,
+                body_preview: `${reminders.length} reminder(s) for ${targetDateStr}`,
+                status: 'sent',
+                days_until_due: daysAhead,
+              });
+
               results.push({
                 type: 'daily',
                 daysAhead,
@@ -331,6 +342,18 @@ const handler = async (req: Request): Promise<Response> => {
               });
             } catch (emailError) {
               console.error(`Error sending email to ${adminEmail}:`, emailError);
+              
+              // Log failed email
+              await supabaseClient.from('email_logs').insert({
+                email_type: 'reminder_notification',
+                recipient_email: adminEmail,
+                recipient_name: 'Admin',
+                subject: `Reminder Notification`,
+                status: 'failed',
+                error_message: emailError.message,
+                days_until_due: daysAhead,
+              });
+
               results.push({
                 type: 'daily',
                 daysAhead,
@@ -391,6 +414,17 @@ const handler = async (req: Request): Promise<Response> => {
               console.log(`Urgent reminder email sent to ${adminEmail}:`, emailResponse);
               emailsSent++;
 
+              // Log urgent email
+              await supabaseClient.from('email_logs').insert({
+                email_type: 'urgent_reminder',
+                recipient_email: adminEmail,
+                recipient_name: 'Admin',
+                subject: `⚡ 1 HOUR LEFT: ${reminder.title} - Socilet`,
+                body_preview: `Urgent reminder: ${reminder.title} at ${reminder.reminder_time}`,
+                status: 'sent',
+                days_until_due: 0,
+              });
+
               results.push({
                 type: 'urgent',
                 reminderId: reminder.id,
@@ -400,6 +434,18 @@ const handler = async (req: Request): Promise<Response> => {
               });
             } catch (emailError) {
               console.error(`Error sending urgent email to ${adminEmail}:`, emailError);
+              
+              // Log failed urgent email
+              await supabaseClient.from('email_logs').insert({
+                email_type: 'urgent_reminder',
+                recipient_email: adminEmail,
+                recipient_name: 'Admin',
+                subject: `⚡ 1 HOUR LEFT: ${reminder.title}`,
+                status: 'failed',
+                error_message: emailError.message,
+                days_until_due: 0,
+              });
+
               results.push({
                 type: 'urgent',
                 reminderId: reminder.id,
