@@ -75,36 +75,47 @@ export const useMeetingRecorder = (options: UseRecorderOptions) => {
     }
 
     setState(prev => ({ ...prev, isUploading: true }));
-    toast.info('Uploading recording to cloud...');
+    toast.info('Uploading recording to Cloudinary...');
 
     try {
       const blob = new Blob(chunksRef.current, { type: 'video/webm' });
-      const file = new File([blob], `${meetingTitle}-${Date.now()}.webm`, { type: 'video/webm' });
+      const fileName = `${meetingTitle}-${Date.now()}.webm`;
+      const file = new File([blob], fileName, { type: 'video/webm' });
 
+      // Create FormData for Cloudinary upload
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('meetingTitle', meetingTitle);
-      if (workspaceId) {
-        formData.append('workspaceId', workspaceId);
-      }
+      formData.append('fileName', fileName);
+      formData.append('workspaceId', workspaceId || 'recordings');
+      formData.append('uploadType', 'video');
 
-      const { data, error } = await supabase.functions.invoke('cloudinary-upload', {
+      // Get Supabase URL and key for edge function call
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/cloudinary-upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
         body: formData,
       });
 
-      if (error) throw error;
+      const data = await response.json();
 
-      if (data.success) {
-        toast.success('Recording uploaded successfully!');
-        onUploadComplete?.(data.optimizedUrl || data.url);
-      } else {
-        throw new Error(data.error);
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Upload failed');
       }
+
+      toast.success('Recording uploaded to Cloudinary!');
+      console.log('Recording uploaded:', data.url);
+      onUploadComplete?.(data.optimizedUrl || data.url);
     } catch (error: any) {
       console.error('Upload failed:', error);
       toast.error(`Upload failed: ${error.message}`);
       
       // Offer local download as fallback
+      toast.info('Downloading recording locally as backup...');
       downloadLocally();
     } finally {
       setState(prev => ({ ...prev, isUploading: false }));
