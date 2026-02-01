@@ -570,12 +570,6 @@ export const MeetingRoom = () => {
                         {meeting.description || 'No description'}
                       </p>
                     </div>
-                    {meeting.project_code && (
-                      <div className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded text-xs w-fit">
-                        <Hash className="h-3 w-3" />
-                        <span className="font-mono">{meeting.project_code}</span>
-                      </div>
-                    )}
                     <div className="text-xs text-muted-foreground">
                       Created by: {meeting.created_by}
                     </div>
@@ -595,15 +589,6 @@ export const MeetingRoom = () => {
                       >
                         <Link className="h-4 w-4" />
                       </Button>
-                      {meeting.project_code && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => navigate(`/workspace/${meeting.project_code}`)}
-                        >
-                          <FolderOpen className="h-4 w-4" />
-                        </Button>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
