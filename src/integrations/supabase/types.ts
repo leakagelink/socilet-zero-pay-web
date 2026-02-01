@@ -1000,6 +1000,71 @@ export type Database = {
           },
         ]
       }
+      reminders: {
+        Row: {
+          category: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_recurring: boolean | null
+          notes: string | null
+          priority: string
+          recurring_frequency: string | null
+          related_client_name: string | null
+          related_project_id: string | null
+          reminder_date: string
+          reminder_time: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          notes?: string | null
+          priority?: string
+          recurring_frequency?: string | null
+          related_client_name?: string | null
+          related_project_id?: string | null
+          reminder_date: string
+          reminder_time?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          notes?: string | null
+          priority?: string
+          recurring_frequency?: string | null
+          related_client_name?: string | null
+          related_project_id?: string | null
+          reminder_date?: string
+          reminder_time?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_related_project_id_fkey"
+            columns: ["related_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_credentials: {
         Row: {
           company_name: string
