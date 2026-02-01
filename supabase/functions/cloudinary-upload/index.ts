@@ -25,7 +25,7 @@ serve(async (req) => {
     const file = formData.get('file') as File;
     const fileName = formData.get('fileName') as string || 'file';
     const workspaceId = formData.get('workspaceId') as string || 'general';
-    const uploadType = formData.get('uploadType') as string || 'auto'; // 'video', 'image', 'raw', 'auto'
+    const uploadType = formData.get('uploadType') as string || 'auto';
 
     if (!file) {
       throw new Error('No file provided');
@@ -41,13 +41,23 @@ serve(async (req) => {
       } else if (file.type.startsWith('video/') || file.type.startsWith('audio/')) {
         resourceType = 'video';
       } else {
-        resourceType = 'raw'; // For documents, PDFs, etc.
+        resourceType = 'raw';
       }
     }
 
-    // Convert file to base64
+    // Convert file to base64 using chunked approach to avoid stack overflow
     const arrayBuffer = await file.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    // Convert to base64 in chunks to avoid stack overflow for large files
+    let base64 = '';
+    const chunkSize = 32768; // 32KB chunks
+    for (let i = 0; i < uint8Array.length; i += chunkSize) {
+      const chunk = uint8Array.slice(i, i + chunkSize);
+      base64 += String.fromCharCode(...chunk);
+    }
+    base64 = btoa(base64);
+    
     const dataUri = `data:${file.type};base64,${base64}`;
 
     // Generate timestamp and signature for Cloudinary upload
@@ -57,7 +67,9 @@ serve(async (req) => {
     const publicId = `${sanitizedFileName}-${timestamp}`;
     
     // Create signature - parameters must be in alphabetical order
+    // IMPORTANT: Only include parameters that will be sent in the request
     const signatureString = `folder=${folder}&public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_API_SECRET}`;
+    
     const encoder = new TextEncoder();
     const data = encoder.encode(signatureString);
     const hashBuffer = await crypto.subtle.digest('SHA-1', data);
@@ -66,7 +78,7 @@ serve(async (req) => {
 
     console.log(`Uploading to Cloudinary - folder: ${folder}, publicId: ${publicId}, resourceType: ${resourceType}`);
 
-    // Build Cloudinary form data
+    // Build Cloudinary form data - only include signed parameters
     const cloudinaryFormData = new FormData();
     cloudinaryFormData.append('file', dataUri);
     cloudinaryFormData.append('api_key', CLOUDINARY_API_KEY);
@@ -75,18 +87,8 @@ serve(async (req) => {
     cloudinaryFormData.append('folder', folder);
     cloudinaryFormData.append('public_id', publicId);
 
-    // Set upload endpoint and options based on resource type
-    let uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
-    
-    // Add optimization for images
-    if (resourceType === 'image') {
-      cloudinaryFormData.append('transformation', 'f_auto,q_auto');
-    }
-    
-    // Add optimization for videos
-    if (resourceType === 'video') {
-      cloudinaryFormData.append('eager', 'f_auto,q_auto,c_limit,w_1280');
-    }
+    // Set upload endpoint
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
 
     const uploadResponse = await fetch(uploadUrl, {
       method: 'POST',
@@ -113,7 +115,7 @@ serve(async (req) => {
         width: uploadResult.width,
         height: uploadResult.height,
         duration: uploadResult.duration,
-        optimizedUrl: uploadResult.eager?.[0]?.secure_url || uploadResult.secure_url,
+        optimizedUrl: uploadResult.secure_url,
         originalFileName: file.name,
       }),
       {
