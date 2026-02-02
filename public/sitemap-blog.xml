@@ -4,12 +4,46 @@
   <!-- Blog Main Page -->
   <url>
     <loc>https://socilet.in/blog</loc>
-    <lastmod>2026-01-31</lastmod>
+    <lastmod>2026-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   
-  <!-- NEW SEO ARTICLES 2026 -->
+  <!-- NEW PRIORITY SEO ARTICLES 2026 -->
+  
+  <!-- Article: Zero Advance Payment Website Development Guide -->
+  <url>
+    <loc>https://socilet.in/blog/zero-advance-payment-website-development-guide</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article: Hire Indian Developer No Upfront Payment Guide -->
+  <url>
+    <loc>https://socilet.in/blog/hire-indian-developer-no-upfront-payment-guide</loc>
+    <lastmod>2026-02-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article: AI Spokesperson Video Service Guide -->
+  <url>
+    <loc>https://socilet.in/blog/ai-spokesperson-video-service-guide</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Article: Mobile App Development Cost India 2026 -->
+  <url>
+    <loc>https://socilet.in/blog/mobile-app-development-cost-india-2026</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- EXISTING SEO ARTICLES 2026 -->
   
   <!-- Article: Zero Advance Payment Guide 2026 -->
   <url>
