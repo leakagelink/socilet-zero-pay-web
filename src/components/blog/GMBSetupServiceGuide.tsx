@@ -86,15 +86,66 @@ const GMBSetupServiceGuide: React.FC<BlogContentProps> = ({ post, onBack }) => {
     "priceRange": "₹₹"
   };
 
+  // Article Schema
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.excerpt,
+    "image": post.imageUrl,
+    "datePublished": post.dateISO,
+    "dateModified": post.dateISO,
+    "author": {
+      "@type": "Person",
+      "name": "Dheeraj Tagde",
+      "url": "https://socilet.in",
+      "jobTitle": "Founder & CEO",
+      "description": "7+ years experience in local SEO and business optimization"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Socilet",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://socilet.in/lovable-uploads/082da739-5b35-4399-be06-1bbc60823d09.png"
+      }
+    },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://socilet.in/blog" },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": canonicalUrl }
+    ]
+  };
+
   return (
     <>
       <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(localBusinessSchema)}
-        </script>
+        <title>{post.title} | Socilet</title>
+        <meta name="description" content={post.excerpt} />
+        <meta name="keywords" content="Google My Business setup service India, GMB optimization India, local SEO service, Google Business Profile setup" />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:image" content={post.imageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Socilet" />
+        <meta property="article:author" content="Dheeraj Tagde" />
+        <meta property="article:published_time" content={post.dateISO} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        <meta name="twitter:image" content={post.imageUrl} />
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(localBusinessSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
 
       <article className="py-8 px-4">
