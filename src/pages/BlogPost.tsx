@@ -18,6 +18,11 @@ import HireIndianDeveloperGuideContent from '@/components/blog/HireIndianDevelop
 import AISpokespersonGuideContent from '@/components/blog/AISpokespersonGuide';
 import AppPaymentModelsGuideContent from '@/components/blog/AppPaymentModelsGuide';
 import WebsiteCostGuideContent from '@/components/blog/WebsiteCostGuide';
+// New SEO Articles 2026
+import ZeroAdvanceWebsiteGuideContent from '@/components/blog/ZeroAdvanceWebsiteGuide';
+import HireIndianDeveloperNoUpfrontGuideContent from '@/components/blog/HireIndianDeveloperNoUpfrontGuide';
+import AISpokespersonVideoGuideContent from '@/components/blog/AISpokespersonVideoGuide';
+import MobileAppDevelopmentCostGuideContent from '@/components/blog/MobileAppDevelopmentCostGuide';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -93,6 +98,15 @@ const BlogPost: React.FC = () => {
         return <AppPaymentModelsGuideContent {...contentProps} />;
       case 'website-cost-guide-2026':
         return <WebsiteCostGuideContent {...contentProps} />;
+      // New SEO Articles 2026
+      case 'zero-advance-payment-website-development-guide':
+        return <ZeroAdvanceWebsiteGuideContent {...contentProps} />;
+      case 'hire-indian-developer-no-upfront-payment-guide':
+        return <HireIndianDeveloperNoUpfrontGuideContent {...contentProps} />;
+      case 'ai-spokesperson-video-service-guide':
+        return <AISpokespersonVideoGuideContent {...contentProps} />;
+      case 'mobile-app-development-cost-india-2026':
+        return <MobileAppDevelopmentCostGuideContent {...contentProps} />;
       default:
         return <div className="text-center py-12">Content not available</div>;
     }
