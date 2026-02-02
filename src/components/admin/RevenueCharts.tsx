@@ -39,15 +39,15 @@ const RevenueCharts = () => {
         .from('projects')
         .select('advance_amount, created_at');
 
-      // Fetch digital products data
+      // Fetch digital products data - use profit instead of resell_price
       const { data: digitalProducts } = await supabase
         .from('digital_products')
-        .select('resell_price, sale_date');
+        .select('profit, sale_date');
 
-      // Fetch other income data
+      // Fetch other income data - include paid_amount for partial payments
       const { data: otherIncomes } = await supabase
         .from('other_income')
-        .select('amount, payment_date, status');
+        .select('amount, paid_amount, payment_date, status');
 
       // Process monthly data for last 6 months
       const months = getLastSixMonths();
@@ -63,12 +63,17 @@ const RevenueCharts = () => {
         const digitalTotal = digitalProducts?.filter(p => {
           const date = new Date(p.sale_date);
           return date >= monthStart && date <= monthEnd;
-        }).reduce((sum, p) => sum + (p.resell_price || 0), 0) || 0;
+        }).reduce((sum, p) => sum + (p.profit || 0), 0) || 0;
 
+        // Handle paid, partial status (lowercase) - include paid_amount for partial
         const otherTotal = otherIncomes?.filter(o => {
           const date = new Date(o.payment_date);
-          return date >= monthStart && date <= monthEnd && o.status === 'Paid';
-        }).reduce((sum, o) => sum + (o.amount || 0), 0) || 0;
+          return date >= monthStart && date <= monthEnd && (o.status === 'paid' || o.status === 'partial');
+        }).reduce((sum, o) => {
+          if (o.status === 'paid') return sum + (o.amount || 0);
+          if (o.status === 'partial') return sum + (o.paid_amount || 0);
+          return sum;
+        }, 0) || 0;
 
         return {
           month: month.label,
@@ -83,8 +88,12 @@ const RevenueCharts = () => {
 
       // Calculate category totals for pie chart
       const totalProjects = projects?.reduce((sum, p) => sum + (p.advance_amount || 0), 0) || 0;
-      const totalDigital = digitalProducts?.reduce((sum, p) => sum + (p.resell_price || 0), 0) || 0;
-      const totalOther = otherIncomes?.filter(o => o.status === 'Paid').reduce((sum, o) => sum + (o.amount || 0), 0) || 0;
+      const totalDigital = digitalProducts?.reduce((sum, p) => sum + (p.profit || 0), 0) || 0;
+      const totalOther = otherIncomes?.filter(o => o.status === 'paid' || o.status === 'partial').reduce((sum, o) => {
+        if (o.status === 'paid') return sum + (o.amount || 0);
+        if (o.status === 'partial') return sum + (o.paid_amount || 0);
+        return sum;
+      }, 0) || 0;
 
       setCategoryData([
         { name: 'Projects', value: totalProjects, color: '#3b82f6' },
