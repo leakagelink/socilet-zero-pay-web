@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,6 +20,7 @@ import QuotationGenerator from '@/components/admin/QuotationGenerator';
 import AIProjectAnalyzer from '@/components/admin/AIProjectAnalyzer';
 import { BlockedMessagesViewer } from '@/components/admin/BlockedMessagesViewer';
 import ReminderManager from '@/components/admin/ReminderManager';
+import InvestmentManager from '@/components/admin/InvestmentManager';
 import { useCountUp } from '@/hooks/useCountUp';
 
 // Animated Currency Display Component
@@ -425,7 +426,7 @@ const AdminPanel = () => {
         <Tabs defaultValue="projects" className="space-y-4 sm:space-y-6" onValueChange={() => fetchRevenueStats()}>
           {/* Modern pill-style tabs */}
           <div className="bg-card rounded-2xl p-2 shadow-sm border">
-            <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 lg:grid-cols-13 gap-2 bg-transparent h-auto p-0">
+            <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 lg:grid-cols-14 gap-2 bg-transparent h-auto p-0">
               <TabsTrigger 
                 value="projects" 
                 className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
@@ -517,6 +518,13 @@ const AdminPanel = () => {
                 <Key className="h-4 w-4" />
                 <span className="hidden sm:inline">Services</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="investments" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <PiggyBank className="h-4 w-4" />
+                <span className="hidden sm:inline">Investments</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -570,6 +578,10 @@ const AdminPanel = () => {
 
           <TabsContent value="credentials" className="mt-6 animate-fade-in">
             <ServiceCredentialsManager />
+          </TabsContent>
+
+          <TabsContent value="investments" className="mt-6 animate-fade-in">
+            <InvestmentManager />
           </TabsContent>
         </Tabs>
       </main>

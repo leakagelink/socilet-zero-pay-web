@@ -487,6 +487,57 @@ export type Database = {
         }
         Relationships: []
       }
+      investments: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          current_value: number
+          id: string
+          invested_amount: number
+          investment_date: string
+          investment_name: string
+          investment_type: string
+          notes: string | null
+          platform: string
+          profit_loss: number | null
+          profit_loss_percentage: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          current_value?: number
+          id?: string
+          invested_amount?: number
+          investment_date?: string
+          investment_name: string
+          investment_type?: string
+          notes?: string | null
+          platform: string
+          profit_loss?: number | null
+          profit_loss_percentage?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          current_value?: number
+          id?: string
+          invested_amount?: number
+          investment_date?: string
+          investment_name?: string
+          investment_type?: string
+          notes?: string | null
+          platform?: string
+          profit_loss?: number | null
+          profit_loss_percentage?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           client_address: string | null
