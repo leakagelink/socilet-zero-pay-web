@@ -26,7 +26,9 @@ const ZeroAdvancePayment: React.FC<BlogPostProps> = ({ post, onBack }) => {
           <div className="rounded-xl overflow-hidden mb-8 h-[400px]">
             <img 
               src={post.imageUrl} 
-              alt={post.title}
+              alt={`${post.title} - Zero Advance Payment blog article by Socilet`}
+              title={post.title}
+              loading="eager"
               className="w-full h-full object-cover"
             />
           </div>

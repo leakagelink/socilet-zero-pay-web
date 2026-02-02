@@ -125,7 +125,9 @@ const Testimonials = () => {
                 {thumbnails[video.videoId] ? (
                   <img 
                     src={thumbnails[video.videoId]} 
-                    alt="Video thumbnail"
+                    alt={`Client video testimonial ${video.id} - Socilet zero advance payment review`}
+                    title={`Watch client testimonial video ${video.id} about Socilet services`}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                   />
                 ) : (
@@ -195,7 +197,9 @@ const Testimonials = () => {
                       {thumbnails[video.videoId] ? (
                         <img 
                           src={thumbnails[video.videoId]} 
-                          alt="Video thumbnail"
+                          alt={`Client video testimonial ${video.id} - Socilet zero advance payment review`}
+                          title={`Watch client testimonial video ${video.id} about Socilet services`}
+                          loading="lazy"
                           className="w-full h-full object-cover" 
                         />
                       ) : (
