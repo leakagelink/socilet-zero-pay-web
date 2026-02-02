@@ -33,9 +33,7 @@ const MainContent: React.FC = () => {
       <section id="founder" aria-labelledby="founder-heading" className="w-full overflow-hidden">
         <Founder />
       </section>
-      <section id="portfolio" aria-labelledby="portfolio-heading" className="w-full overflow-hidden">
-        <Portfolio />
-      </section>
+      {/* Portfolio section hidden as per request */}
       <section id="seo-plans" aria-labelledby="seo-plans-heading" className="w-full overflow-hidden">
         <SeoPlans />
       </section>
