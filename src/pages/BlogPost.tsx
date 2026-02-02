@@ -23,6 +23,13 @@ import ZeroAdvanceWebsiteGuideContent from '@/components/blog/ZeroAdvanceWebsite
 import HireIndianDeveloperNoUpfrontGuideContent from '@/components/blog/HireIndianDeveloperNoUpfrontGuide';
 import AISpokespersonVideoGuideContent from '@/components/blog/AISpokespersonVideoGuide';
 import MobileAppDevelopmentCostGuideContent from '@/components/blog/MobileAppDevelopmentCostGuide';
+// Articles 5-10 (Feb 2026)
+import OutsourceIndiaVsPhilippinesContent from '@/components/blog/OutsourceIndiaVsPhilippines';
+import HireDeveloperWithoutScamContent from '@/components/blog/HireDeveloperWithoutScam';
+import WordPressDeveloperCostGuideContent from '@/components/blog/WordPressDeveloperCostGuide';
+import GMBSetupServiceGuideContent from '@/components/blog/GMBSetupServiceGuide';
+import AffordableWebsiteSmallBusinessContent from '@/components/blog/AffordableWebsiteSmallBusiness';
+import CrossPlatformAppDevIndiaContent from '@/components/blog/CrossPlatformAppDevIndia';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -107,6 +114,19 @@ const BlogPost: React.FC = () => {
         return <AISpokespersonVideoGuideContent {...contentProps} />;
       case 'mobile-app-development-cost-india-2026':
         return <MobileAppDevelopmentCostGuideContent {...contentProps} />;
+      // Articles 5-10
+      case 'outsource-web-development-india-vs-philippines':
+        return <OutsourceIndiaVsPhilippinesContent {...contentProps} />;
+      case 'hire-developer-without-getting-scammed':
+        return <HireDeveloperWithoutScamContent {...contentProps} />;
+      case 'wordpress-developer-india-cost-guide':
+        return <WordPressDeveloperCostGuideContent {...contentProps} />;
+      case 'google-my-business-setup-service-india':
+        return <GMBSetupServiceGuideContent {...contentProps} />;
+      case 'affordable-website-development-small-business':
+        return <AffordableWebsiteSmallBusinessContent {...contentProps} />;
+      case 'cross-platform-app-development-india':
+        return <CrossPlatformAppDevIndiaContent {...contentProps} />;
       default:
         return <div className="text-center py-12">Content not available</div>;
     }

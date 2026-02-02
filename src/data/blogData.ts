@@ -12,6 +12,79 @@ export interface BlogPostData {
 }
 
 export const blogPosts: BlogPostData[] = [
+  // NEW SEO ARTICLES (Feb 2026) - Articles 5-10
+  {
+    id: 19,
+    title: "Outsource Web Development: India vs Philippines - Complete 2026 Comparison",
+    excerpt: "Complete comparison of outsourcing web development to India vs Philippines. Cost, quality, communication, and time zone analysis for US businesses.",
+    slug: "outsource-web-development-india-vs-philippines",
+    date: "February 2, 2026",
+    dateISO: "2026-02-02",
+    category: "Outsourcing",
+    imageUrl: "https://images.unsplash.com/photo-1553484771-047a44eee27a",
+    readTime: "14 min read",
+    keywords: "outsource web development India vs Philippines, best country outsource development, offshore development comparison"
+  },
+  {
+    id: 20,
+    title: "How to Hire Developer Without Getting Scammed: 15 Expert Tips",
+    excerpt: "Protect yourself from developer scams. Learn 15 proven tips to verify, hire, and work with legitimate developers safely. Free checklist included.",
+    slug: "hire-developer-without-getting-scammed",
+    date: "February 1, 2026",
+    dateISO: "2026-02-01",
+    category: "Business Tips",
+    imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3",
+    readTime: "12 min read",
+    keywords: "how to hire developer without getting scammed, avoid developer scams, freelancer red flags"
+  },
+  {
+    id: 21,
+    title: "WordPress Developer India Cost 2026: Complete Pricing Guide",
+    excerpt: "Hire WordPress developers from India at 70% lower cost. Detailed pricing for themes, plugins, customization, and full website development.",
+    slug: "wordpress-developer-india-cost-guide",
+    date: "January 31, 2026",
+    dateISO: "2026-01-31",
+    category: "Pricing Guide",
+    imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
+    readTime: "13 min read",
+    keywords: "WordPress developer India cost, hire WordPress developer India, WordPress development pricing"
+  },
+  {
+    id: 22,
+    title: "Google My Business Setup Service India: Complete GMB Optimization Guide",
+    excerpt: "Get your Google My Business profile professionally set up and optimized. Increase local visibility, get more customers. Starting ₹2,999.",
+    slug: "google-my-business-setup-service-india",
+    date: "January 30, 2026",
+    dateISO: "2026-01-30",
+    category: "Local SEO",
+    imageUrl: "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07",
+    readTime: "11 min read",
+    keywords: "Google My Business setup service India, GMB optimization India, local SEO service"
+  },
+  {
+    id: 23,
+    title: "Affordable Website Development for Small Business: Complete 2026 Guide",
+    excerpt: "Get professional website for your small business at affordable prices. Starting from $299. Responsive design, SEO-ready. Pay only after delivery.",
+    slug: "affordable-website-development-small-business",
+    date: "January 29, 2026",
+    dateISO: "2026-01-29",
+    category: "Pricing Guide",
+    imageUrl: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d",
+    readTime: "12 min read",
+    keywords: "affordable website development small business, cheap website design, budget website development"
+  },
+  {
+    id: 24,
+    title: "Cross Platform App Development India: React Native & Flutter Guide 2026",
+    excerpt: "Build iOS & Android apps with single codebase. React Native & Flutter experts in India. 50% cost savings vs native. Zero advance payment.",
+    slug: "cross-platform-app-development-india",
+    date: "January 28, 2026",
+    dateISO: "2026-01-28",
+    category: "App Development",
+    imageUrl: "https://images.unsplash.com/photo-1551650975-87deedd944c3",
+    readTime: "13 min read",
+    keywords: "cross platform app development India, React Native development India, Flutter app development India"
+  },
   // NEW SEO ARTICLES (2026) - PRIORITY ARTICLES
   {
     id: 15,
@@ -181,5 +254,7 @@ export const categories = [
   "SEO & Web Development",
   "Outsourcing",
   "AI Technology",
-  "Pricing Guide"
+  "Pricing Guide",
+  "Business Tips",
+  "Local SEO"
 ];
