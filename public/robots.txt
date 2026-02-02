@@ -28,6 +28,7 @@ Sitemap: https://socilet.in/sitemap_index.xml
 Sitemap: https://socilet.in/sitemap-pages.xml
 Sitemap: https://socilet.in/sitemap-blog.xml
 Sitemap: https://socilet.in/sitemap-services.xml
+Sitemap: https://socilet.in/sitemap-images.xml
 
 # Host declaration
 Host: https://socilet.in
