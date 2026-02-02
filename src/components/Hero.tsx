@@ -208,7 +208,9 @@ const Hero = () => {
               <div className="overflow-hidden rounded-lg mb-6">
                 <motion.img 
                   src="/lovable-uploads/1b9d66b2-fe2e-4972-a39c-cbbc782ba6e2.png" 
-                  alt="Socilet Zero Advance Payment" 
+                  alt="Socilet Zero Advance Payment - No upfront cost web and app development services in India"
+                  title="Zero Advance Payment Digital Services - Work First, Pay Later"
+                  loading="eager"
                   className="w-full h-auto"
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.5 }}

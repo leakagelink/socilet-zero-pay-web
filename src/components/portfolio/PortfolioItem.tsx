@@ -36,7 +36,9 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
       <div className="overflow-hidden h-52 relative">
         <img 
           src={image} 
-          alt={title} 
+          alt={`${title} - ${categoryLabel} project by Socilet`}
+          title={`${title} - Zero Advance Payment ${categoryLabel}`}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
           onError={(e) => {
             // Fallback image if the original fails to load

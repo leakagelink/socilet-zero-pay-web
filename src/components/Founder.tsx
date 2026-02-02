@@ -40,7 +40,9 @@ const Founder = () => {
                 {/* Updated founder image */}
                 <img 
                   src="/lovable-uploads/2ee68a1b-0ec0-47b8-b622-98ff6c6141b3.png" 
-                  alt="Dheeraj Tagde - Founder of Socilet" 
+                  alt="Dheeraj Tagde - Founder & CEO of Socilet, 7+ years WordPress and AI development expert"
+                  title="Dheeraj Tagde - Zero Advance Payment Digital Services Founder"
+                  loading="lazy"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
