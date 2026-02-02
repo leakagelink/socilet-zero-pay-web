@@ -68,26 +68,40 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
 
         // Set up event handlers
         client.on('user-published', async (user, mediaType) => {
-          await client.subscribe(user, mediaType);
-          console.log('Subscribed to user:', user.uid, mediaType);
+          console.log('User published:', user.uid, mediaType);
           
-          if (mediaType === 'video') {
-            setRemoteUsers(prev => {
-              const exists = prev.find(u => u.uid === user.uid);
-              if (exists) return prev;
-              return [...prev, user];
-            });
+          try {
+            await client.subscribe(user, mediaType);
+            console.log('Subscribed to user:', user.uid, mediaType);
+          } catch (subscribeError) {
+            console.error('Failed to subscribe to user:', user.uid, mediaType, subscribeError);
+            return;
           }
           
-          if (mediaType === 'audio') {
-            user.audioTrack?.play();
+          // Add user to remoteUsers list if not already present (for both video and audio)
+          setRemoteUsers(prev => {
+            const exists = prev.find(u => u.uid === user.uid);
+            if (exists) {
+              // Update existing user with new track
+              return prev.map(u => u.uid === user.uid ? user : u);
+            }
+            return [...prev, user];
+          });
+          
+          // Play audio track immediately after subscribing
+          if (mediaType === 'audio' && user.audioTrack) {
+            console.log('Playing audio for user:', user.uid);
+            user.audioTrack.play();
           }
         });
 
         client.on('user-unpublished', (user, mediaType) => {
           console.log('User unpublished:', user.uid, mediaType);
+          // Only remove user from list if they unpublish video (they might still have audio)
+          // But keep them if they still have other tracks
           if (mediaType === 'video') {
-            setRemoteUsers(prev => prev.filter(u => u.uid !== user.uid));
+            // Update the user object in the list
+            setRemoteUsers(prev => prev.map(u => u.uid === user.uid ? user : u));
           }
         });
 
