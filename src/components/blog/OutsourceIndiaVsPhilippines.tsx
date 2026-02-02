@@ -71,12 +71,74 @@ const OutsourceIndiaVsPhilippines: React.FC<BlogContentProps> = ({ post, onBack 
     ]
   };
 
+  // Article Schema
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.excerpt,
+    "image": post.imageUrl,
+    "datePublished": post.dateISO,
+    "dateModified": post.dateISO,
+    "author": {
+      "@type": "Person",
+      "name": "Dheeraj Tagde",
+      "url": "https://socilet.in",
+      "jobTitle": "Founder & CEO",
+      "description": "7+ years experience in web development with expertise in global outsourcing"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Socilet",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://socilet.in/lovable-uploads/082da739-5b35-4399-be06-1bbc60823d09.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonicalUrl
+    }
+  };
+
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://socilet.in/blog" },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": canonicalUrl }
+    ]
+  };
+
   return (
     <>
       <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
-        </script>
+        <title>{post.title} | Socilet</title>
+        <meta name="description" content={post.excerpt} />
+        <meta name="keywords" content="outsource web development India, outsource Philippines, India vs Philippines developers, offshore development comparison" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:image" content={post.imageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Socilet" />
+        <meta property="article:author" content="Dheeraj Tagde" />
+        <meta property="article:published_time" content={post.dateISO} />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        <meta name="twitter:image" content={post.imageUrl} />
+
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
 
       <article className="py-8 px-4">
