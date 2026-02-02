@@ -29,6 +29,7 @@ interface OtherIncome {
   client_name: string;
   work_description: string;
   amount: number;
+  paid_amount: number | null;
   payment_method: string | null;
   payment_date: string;
   notes: string | null;
@@ -41,6 +42,7 @@ interface FormData {
   client_name: string;
   work_description: string;
   amount: string;
+  paid_amount: string;
   payment_method: string;
   payment_date: string;
   notes: string;
@@ -52,6 +54,7 @@ const initialFormData: FormData = {
   client_name: '',
   work_description: '',
   amount: '',
+  paid_amount: '',
   payment_method: '',
   payment_date: new Date().toISOString().split('T')[0],
   notes: '',
@@ -101,15 +104,29 @@ const OtherIncomeManager = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
+      const totalAmount = parseFloat(formData.amount) || 0;
+      const paidAmount = parseFloat(formData.paid_amount) || 0;
+      
+      // Auto-determine status based on paid amount
+      let status = formData.status;
+      if (paidAmount >= totalAmount && totalAmount > 0) {
+        status = 'paid';
+      } else if (paidAmount > 0 && paidAmount < totalAmount) {
+        status = 'partial';
+      } else if (paidAmount === 0) {
+        status = 'pending';
+      }
+
       const incomeData = {
         client_name: formData.client_name.trim(),
         work_description: formData.work_description.trim(),
-        amount: parseFloat(formData.amount) || 0,
+        amount: totalAmount,
+        paid_amount: paidAmount,
         payment_method: formData.payment_method || null,
         payment_date: formData.payment_date,
         notes: formData.notes.trim() || null,
-        status: formData.status,
-        due_date: formData.status === 'pending' && formData.due_date ? formData.due_date : null,
+        status: status,
+        due_date: (status === 'pending' || status === 'partial') && formData.due_date ? formData.due_date : null,
         created_by: user?.id || null,
       };
 
@@ -147,6 +164,7 @@ const OtherIncomeManager = () => {
       client_name: income.client_name,
       work_description: income.work_description,
       amount: income.amount.toString(),
+      paid_amount: (income.paid_amount || 0).toString(),
       payment_method: income.payment_method || '',
       payment_date: income.payment_date,
       notes: income.notes || '',
@@ -190,8 +208,8 @@ const OtherIncomeManager = () => {
   };
 
   const totalIncome = incomes.reduce((sum, inc) => sum + (inc.amount || 0), 0);
-  const pendingIncome = incomes.filter(inc => inc.status === 'pending').reduce((sum, inc) => sum + (inc.amount || 0), 0);
-  const paidIncome = incomes.filter(inc => inc.status === 'paid').reduce((sum, inc) => sum + (inc.amount || 0), 0);
+  const totalPaidAmount = incomes.reduce((sum, inc) => sum + (inc.paid_amount || 0), 0);
+  const totalRemainingAmount = totalIncome - totalPaidAmount;
 
   if (isLoading) {
     return (
@@ -211,8 +229,8 @@ const OtherIncomeManager = () => {
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm font-normal">
             <span className="text-muted-foreground">Total: {formatCurrency(totalIncome)}</span>
-            <span className="text-emerald-600 dark:text-emerald-400">Paid: {formatCurrency(paidIncome)}</span>
-            <span className="text-amber-600 dark:text-amber-400">Pending: {formatCurrency(pendingIncome)}</span>
+            <span className="text-emerald-600 dark:text-emerald-400">Received: {formatCurrency(totalPaidAmount)}</span>
+            <span className="text-amber-600 dark:text-amber-400">Remaining: {formatCurrency(totalRemainingAmount)}</span>
           </div>
         </CardTitle>
         {!showForm && (
@@ -266,6 +284,26 @@ const OtherIncomeManager = () => {
               </div>
 
               <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="paid_amount" className="text-sm">Paid Amount (₹)</Label>
+                <Input
+                  id="paid_amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  max={formData.amount || undefined}
+                  value={formData.paid_amount}
+                  onChange={(e) => setFormData({ ...formData, paid_amount: e.target.value })}
+                  placeholder="Amount received so far"
+                  className="h-9 sm:h-10"
+                />
+                {formData.amount && formData.paid_amount && (
+                  <p className="text-xs text-muted-foreground">
+                    Remaining: {formatCurrency((parseFloat(formData.amount) || 0) - (parseFloat(formData.paid_amount) || 0))}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-1.5 sm:space-y-2">
                 <Label htmlFor="payment_method" className="text-sm">Payment Method</Label>
                 <Select
                   value={formData.payment_method || undefined}
@@ -299,33 +337,15 @@ const OtherIncomeManager = () => {
               </div>
 
               <div className="space-y-1.5 sm:space-y-2">
-                <Label htmlFor="status" className="text-sm">Status *</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value, due_date: value === 'paid' ? '' : formData.due_date })}
-                >
-                  <SelectTrigger id="status" className="h-9 sm:h-10">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent className="z-[200] bg-popover pointer-events-auto">
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="due_date" className="text-sm">Due Date (for remaining)</Label>
+                <Input
+                  id="due_date"
+                  type="date"
+                  value={formData.due_date}
+                  onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                  className="h-9 sm:h-10"
+                />
               </div>
-
-              {formData.status === 'pending' && (
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label htmlFor="due_date" className="text-sm">Due Date</Label>
-                  <Input
-                    id="due_date"
-                    type="date"
-                    value={formData.due_date}
-                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-                    className="h-9 sm:h-10"
-                  />
-                </div>
-              )}
             </div>
 
             <div className="space-y-1.5 sm:space-y-2">
@@ -377,41 +397,48 @@ const OtherIncomeManager = () => {
                   <TableRow>
                     <TableHead>Client Name</TableHead>
                     <TableHead>Work/Service</TableHead>
-                    <TableHead>Amount</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Paid</TableHead>
+                    <TableHead>Remaining</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Payment Method</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Due Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {incomes.map((income) => (
+                  {incomes.map((income) => {
+                    const paidAmt = income.paid_amount || 0;
+                    const remainingAmt = income.amount - paidAmt;
+                    return (
                     <TableRow key={income.id}>
                       <TableCell className="font-medium">{income.client_name}</TableCell>
                       <TableCell>{income.work_description}</TableCell>
-                      <TableCell className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                      <TableCell className="font-semibold">
                         {formatCurrency(income.amount)}
+                      </TableCell>
+                      <TableCell className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        {formatCurrency(paidAmt)}
+                      </TableCell>
+                      <TableCell className="text-amber-600 dark:text-amber-400 font-semibold">
+                        {formatCurrency(remainingAmt)}
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           income.status === 'paid' 
                             ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                            : income.status === 'partial'
+                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                             : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                         }`}>
-                          {income.status === 'paid' ? 'Paid' : 'Pending'}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="capitalize">
-                          {income.payment_method?.replace('_', ' ') || '-'}
+                          {income.status === 'paid' ? 'Paid' : income.status === 'partial' ? 'Partial' : 'Pending'}
                         </span>
                       </TableCell>
                       <TableCell>
                         {format(new Date(income.payment_date), 'dd MMM yyyy')}
                       </TableCell>
                       <TableCell>
-                        {income.status === 'pending' && income.due_date 
+                        {(income.status === 'pending' || income.status === 'partial') && income.due_date 
                           ? format(new Date(income.due_date), 'dd MMM yyyy')
                           : '-'}
                       </TableCell>
@@ -435,14 +462,18 @@ const OtherIncomeManager = () => {
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  );
+                  })}
                 </TableBody>
               </Table>
             </div>
 
             {/* Mobile Card View */}
             <div className="md:hidden divide-y -mx-3 sm:-mx-0">
-              {incomes.map((income) => (
+              {incomes.map((income) => {
+                const paidAmt = income.paid_amount || 0;
+                const remainingAmt = income.amount - paidAmt;
+                return (
                 <div key={income.id} className="p-3 sm:p-4 space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
@@ -452,25 +483,30 @@ const OtherIncomeManager = () => {
                     <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
                       income.status === 'paid' 
                         ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
+                        : income.status === 'partial'
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
                         : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                     }`}>
-                      {income.status === 'paid' ? 'Paid' : 'Pending'}
+                      {income.status === 'paid' ? 'Paid' : income.status === 'partial' ? 'Partial' : 'Pending'}
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                      {formatCurrency(income.amount)}
-                    </span>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <span className="capitalize">{income.payment_method?.replace('_', ' ') || ''}</span>
-                      <span>{format(new Date(income.payment_date), 'dd MMM')}</span>
+                    <div className="flex gap-2">
+                      <span className="font-semibold">Total: {formatCurrency(income.amount)}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">Paid: {formatCurrency(paidAmt)}</span>
+                      {remainingAmt > 0 && (
+                        <span className="text-amber-600 dark:text-amber-400">Due: {formatCurrency(remainingAmt)}</span>
+                      )}
                     </div>
                   </div>
 
-                  {income.status === 'pending' && income.due_date && (
-                    <p className="text-xs text-amber-600">Due: {format(new Date(income.due_date), 'dd MMM yyyy')}</p>
-                  )}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{format(new Date(income.payment_date), 'dd MMM yyyy')}</span>
+                    {(income.status === 'pending' || income.status === 'partial') && income.due_date && (
+                      <span className="text-amber-600">Due: {format(new Date(income.due_date), 'dd MMM yyyy')}</span>
+                    )}
+                  </div>
 
                   <div className="flex items-center gap-2 pt-1">
                     <Button
@@ -492,7 +528,8 @@ const OtherIncomeManager = () => {
                     </Button>
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </>
         )}
