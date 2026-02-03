@@ -615,6 +615,33 @@ export type Database = {
           },
         ]
       }
+      meeting_participants: {
+        Row: {
+          agora_uid: string
+          id: string
+          is_active: boolean | null
+          joined_at: string
+          meeting_room_name: string
+          user_name: string
+        }
+        Insert: {
+          agora_uid: string
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string
+          meeting_room_name: string
+          user_name: string
+        }
+        Update: {
+          agora_uid?: string
+          id?: string
+          is_active?: boolean | null
+          joined_at?: string
+          meeting_room_name?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       meetings: {
         Row: {
           created_at: string
