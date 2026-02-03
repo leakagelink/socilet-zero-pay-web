@@ -18,6 +18,11 @@ interface AgoraVideoCallProps {
   onLeave: () => void;
 }
 
+interface ParticipantInfo {
+  agora_uid: string;
+  user_name: string;
+}
+
 export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraVideoCallProps) => {
   const [client] = useState<IAgoraRTCClient>(() => 
     AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
@@ -26,14 +31,74 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   const [localAudioTrack, setLocalAudioTrack] = useState<IMicrophoneAudioTrack | null>(null);
   const [screenTrack, setScreenTrack] = useState<ILocalVideoTrack | null>(null);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
+  const [participantNames, setParticipantNames] = useState<Map<string, string>>(new Map());
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [localUid, setLocalUid] = useState<string | null>(null);
   
   const localVideoRef = useRef<HTMLDivElement>(null);
   const screenShareRef = useRef<HTMLDivElement>(null);
+
+  // Subscribe to realtime participant updates
+  useEffect(() => {
+    // Fetch existing participants
+    const fetchParticipants = async () => {
+      const { data } = await supabase
+        .from('meeting_participants')
+        .select('agora_uid, user_name')
+        .eq('meeting_room_name', channelName)
+        .eq('is_active', true);
+      
+      if (data) {
+        const namesMap = new Map<string, string>();
+        data.forEach((p: ParticipantInfo) => {
+          namesMap.set(p.agora_uid, p.user_name);
+        });
+        setParticipantNames(namesMap);
+      }
+    };
+
+    fetchParticipants();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel(`participants-${channelName}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'meeting_participants',
+          filter: `meeting_room_name=eq.${channelName}`,
+        },
+        (payload) => {
+          console.log('Participant change:', payload);
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const newData = payload.new as ParticipantInfo;
+            setParticipantNames(prev => {
+              const updated = new Map(prev);
+              updated.set(newData.agora_uid, newData.user_name);
+              return updated;
+            });
+          } else if (payload.eventType === 'DELETE') {
+            const oldData = payload.old as ParticipantInfo;
+            setParticipantNames(prev => {
+              const updated = new Map(prev);
+              updated.delete(oldData.agora_uid);
+              return updated;
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [channelName]);
 
   useEffect(() => {
     const init = async () => {
@@ -121,6 +186,25 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
         console.log('Joining channel with token...');
         const uid = await client.join(appId, channelName, token, null);
         console.log('Joined channel with UID:', uid);
+        setLocalUid(String(uid));
+
+        // Register participant in database
+        try {
+          await supabase
+            .from('meeting_participants')
+            .upsert({
+              meeting_room_name: channelName,
+              agora_uid: String(uid),
+              user_name: userName,
+              is_active: true,
+              joined_at: new Date().toISOString(),
+            }, {
+              onConflict: 'meeting_room_name,agora_uid'
+            });
+          console.log('Participant registered:', userName, uid);
+        } catch (regError) {
+          console.error('Failed to register participant:', regError);
+        }
 
         // Publish local tracks
         await client.publish([audioTrack, videoTrack]);
@@ -149,6 +233,19 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
   }, [localVideoTrack]);
 
   const leaveChannel = async () => {
+    // Mark participant as inactive
+    if (localUid) {
+      try {
+        await supabase
+          .from('meeting_participants')
+          .delete()
+          .eq('meeting_room_name', channelName)
+          .eq('agora_uid', localUid);
+      } catch (err) {
+        console.error('Failed to remove participant:', err);
+      }
+    }
+    
     screenTrack?.close();
     localAudioTrack?.close();
     localVideoTrack?.close();
@@ -293,7 +390,11 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
 
           {/* Remote Videos */}
           {remoteUsers.map((user) => (
-            <RemoteVideoPlayer key={user.uid} user={user} />
+            <RemoteVideoPlayer 
+              key={user.uid} 
+              user={user} 
+              displayName={participantNames.get(String(user.uid)) || `User ${user.uid}`}
+            />
           ))}
         </div>
 
@@ -356,7 +457,7 @@ export const AgoraVideoCall = ({ appId, channelName, userName, onLeave }: AgoraV
 
 
 // Remote video player component
-const RemoteVideoPlayer = ({ user }: { user: IAgoraRTCRemoteUser }) => {
+const RemoteVideoPlayer = ({ user, displayName }: { user: IAgoraRTCRemoteUser; displayName: string }) => {
   const videoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -376,13 +477,13 @@ const RemoteVideoPlayer = ({ user }: { user: IAgoraRTCRemoteUser }) => {
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-primary/20 flex items-center justify-center">
             <span className="text-lg sm:text-2xl font-bold text-primary">
-              {String(user.uid).charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </span>
           </div>
         </div>
       )}
       <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 bg-black/60 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-sm">
-        User {user.uid}
+        {displayName}
       </div>
     </div>
   );
