@@ -21,6 +21,7 @@ import AIProjectAnalyzer from '@/components/admin/AIProjectAnalyzer';
 import { BlockedMessagesViewer } from '@/components/admin/BlockedMessagesViewer';
 import ReminderManager from '@/components/admin/ReminderManager';
 import InvestmentManager from '@/components/admin/InvestmentManager';
+import EmailNotificationDropdown from '@/components/admin/EmailNotificationDropdown';
 import { useCountUp } from '@/hooks/useCountUp';
 
 // Animated Currency Display Component
@@ -300,7 +301,14 @@ const AdminPanel = () => {
             </div>
             <h1 className="text-lg font-bold text-foreground sm:hidden">Admin</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <EmailNotificationDropdown 
+              onNavigateToEmails={() => {
+                // Scroll to emails tab or switch to it
+                const emailsTab = document.querySelector('[value="emails"]') as HTMLButtonElement;
+                if (emailsTab) emailsTab.click();
+              }}
+            />
             <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
               <span className="text-sm text-muted-foreground truncate max-w-[150px]">{userEmail}</span>
