@@ -6,24 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, svix-id, svix-timestamp, svix-signature',
 };
 
-interface ResendInboundEmail {
-  from: string;
-  to: string;
-  subject?: string;
-  text?: string;
-  html?: string;
-  headers?: Record<string, string>[];
-  attachments?: Array<{
-    filename: string;
-    content_type: string;
-    content: string;
-  }>;
-}
-
 // Parse email address to extract name and email
 const parseEmailAddress = (email: string): { name: string | null; email: string } => {
-  // Format: "Name <email@example.com>" or just "email@example.com"
-  const match = email.match(/^(?:"?([^"]*)"?\s*)?<?([^>]+)>?$/);
+  const match = email.match(/^(?:"?([^"]*)"?\s*)?<?([^>]+@[^>]+)>?$/);
   if (match) {
     return {
       name: match[1]?.trim() || null,
@@ -41,11 +26,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Parse the incoming webhook payload
     const payload = await req.json();
     console.log('Webhook payload type:', payload.type);
     
-    // Resend sends events with type field
     if (payload.type !== 'email.received') {
       console.log('Not an inbound email event, skipping');
       return new Response(
@@ -54,13 +37,46 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const emailData: ResendInboundEmail = payload.data;
-    console.log('Processing inbound email from:', emailData.from, 'to:', emailData.to);
+    const eventData = payload.data;
+    const emailId = eventData.email_id;
+    console.log('Processing inbound email, email_id:', emailId);
 
-    // Parse sender info
-    const sender = parseEmailAddress(emailData.from);
+    // Parse sender info from webhook data
+    const sender = parseEmailAddress(eventData.from || '');
+    const toEmail = Array.isArray(eventData.to) ? eventData.to[0] : eventData.to;
 
-    // Create Supabase client with service role for inserting
+    // Fetch full email content from Resend API
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    let textBody: string | null = null;
+    let htmlBody: string | null = null;
+    let headers: any = null;
+
+    if (resendApiKey && emailId) {
+      try {
+        console.log('Fetching full email content from Resend API...');
+        const emailResponse = await fetch(`https://api.resend.com/emails/${emailId}`, {
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+          },
+        });
+
+        if (emailResponse.ok) {
+          const fullEmail = await emailResponse.json();
+          console.log('Full email fetched successfully');
+          textBody = fullEmail.text || null;
+          htmlBody = fullEmail.html || null;
+          headers = fullEmail.headers || null;
+        } else {
+          console.error('Failed to fetch email from Resend:', emailResponse.status, await emailResponse.text());
+        }
+      } catch (fetchError) {
+        console.error('Error fetching email content from Resend:', fetchError);
+      }
+    } else {
+      console.warn('No RESEND_API_KEY or email_id, cannot fetch full content');
+    }
+
+    // Create Supabase client with service role
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -72,13 +88,13 @@ const handler = async (req: Request): Promise<Response> => {
       .insert({
         from_email: sender.email,
         from_name: sender.name,
-        to_email: emailData.to,
-        subject: emailData.subject || '(No Subject)',
-        text_body: emailData.text || null,
-        html_body: emailData.html || null,
-        headers: emailData.headers || null,
-        attachments: emailData.attachments ? JSON.stringify(emailData.attachments) : null,
-        received_at: new Date().toISOString(),
+        to_email: toEmail || '',
+        subject: eventData.subject || '(No Subject)',
+        text_body: textBody,
+        html_body: htmlBody,
+        headers: headers,
+        attachments: null,
+        received_at: eventData.created_at || new Date().toISOString(),
       })
       .select()
       .single();
