@@ -90,6 +90,10 @@ const EmailManager = () => {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [viewingMessage, setViewingMessage] = useState<ContactMessage | null>(null);
 
+  // View inbound email dialog
+  const [viewInboundDialogOpen, setViewInboundDialogOpen] = useState(false);
+  const [viewingInbound, setViewingInbound] = useState<InboundEmail | null>(null);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -282,6 +286,26 @@ const EmailManager = () => {
   const unreadContactCount = contactMessages.filter(m => !m.is_read).length;
   const unreadInboundCount = inboundEmails.filter(e => !e.is_read).length;
   const totalUnreadCount = unreadContactCount + unreadInboundCount;
+
+  const openViewInbound = (email: InboundEmail) => {
+    setViewingInbound(email);
+    setViewInboundDialogOpen(true);
+    if (!email.is_read) {
+      handleMarkInboundAsRead(email.id);
+    }
+  };
+
+  const handleReplyInbound = (email: InboundEmail) => {
+    // Pre-fill compose with reply info
+    setComposeTo(email.from_email);
+    setComposeToName(email.from_name || '');
+    setComposeSubject(`Re: ${email.subject || ''}`);
+    setComposeMessage('');
+    setViewInboundDialogOpen(false);
+    // Switch to compose tab
+    const composeTab = document.querySelector('[value="compose"]') as HTMLButtonElement;
+    if (composeTab) composeTab.click();
+  };
 
   const handleMarkInboundAsRead = async (id: string) => {
     try {
@@ -481,9 +505,10 @@ const EmailManager = () => {
                     {inboundEmails.map((email) => (
                       <div
                         key={email.id}
-                        className={`p-4 rounded-xl border transition-all hover:shadow-md ${
+                        className={`p-4 rounded-xl border transition-all hover:shadow-md cursor-pointer ${
                           !email.is_read ? 'bg-primary/5 border-primary/20' : 'bg-card'
                         }`}
+                        onClick={() => openViewInbound(email)}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
@@ -504,7 +529,15 @@ const EmailManager = () => {
                             </p>
                             <p className="text-xs text-muted-foreground mt-2">{formatDate(email.received_at)}</p>
                           </div>
-                          <div className="flex gap-1">
+                          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openViewInbound(email)}
+                              title="View full email"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
                             {!email.is_read && (
                               <Button
                                 variant="ghost"
@@ -749,6 +782,62 @@ const EmailManager = () => {
                 </Button>
                 <Button variant="outline" onClick={() => setReplyDialogOpen(false)}>
                   Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* View Inbound Email Dialog */}
+      <Dialog open={viewInboundDialogOpen} onOpenChange={setViewInboundDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              {viewingInbound?.subject || '(No Subject)'}
+            </DialogTitle>
+          </DialogHeader>
+          {viewingInbound && (
+            <div className="space-y-4">
+              <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {viewingInbound.from_name || viewingInbound.from_email}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{viewingInbound.from_email}</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{formatDate(viewingInbound.received_at)}</p>
+                </div>
+                <p className="text-xs text-muted-foreground">To: {viewingInbound.to_email}</p>
+              </div>
+              
+              <div className="border rounded-lg overflow-hidden">
+                {viewingInbound.html_body ? (
+                  <iframe
+                    srcDoc={viewingInbound.html_body}
+                    className="w-full min-h-[300px] border-0"
+                    sandbox="allow-same-origin"
+                    title="Email content"
+                  />
+                ) : (
+                  <div className="p-4 whitespace-pre-wrap text-sm">
+                    {viewingInbound.text_body || '(No content)'}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={() => handleReplyInbound(viewingInbound)} className="flex-1">
+                  <Reply className="h-4 w-4 mr-2" />
+                  Reply
+                </Button>
+                <Button variant="outline" onClick={() => handleArchiveInbound(viewingInbound.id)}>
+                  <Clock className="h-4 w-4 mr-2" />
+                  Archive
+                </Button>
+                <Button variant="outline" onClick={() => setViewInboundDialogOpen(false)}>
+                  Close
                 </Button>
               </div>
             </div>
