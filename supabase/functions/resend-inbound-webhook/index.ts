@@ -38,43 +38,20 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const eventData = payload.data;
-    const emailId = eventData.email_id;
-    console.log('Processing inbound email, email_id:', emailId);
+    console.log('Processing inbound email, keys:', Object.keys(eventData));
+    console.log('Payload data stringified:', JSON.stringify(eventData).substring(0, 2000));
 
     // Parse sender info from webhook data
     const sender = parseEmailAddress(eventData.from || '');
     const toEmail = Array.isArray(eventData.to) ? eventData.to[0] : eventData.to;
 
-    // Fetch full email content from Resend API
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    let textBody: string | null = null;
-    let htmlBody: string | null = null;
-    let headers: any = null;
+    // Extract content directly from webhook payload
+    const textBody = eventData.text || eventData.text_body || eventData.plain_text || null;
+    const htmlBody = eventData.html || eventData.html_body || eventData.body || null;
+    const headers = eventData.headers || null;
 
-    if (resendApiKey && emailId) {
-      try {
-        console.log('Fetching full email content from Resend API...');
-        const emailResponse = await fetch(`https://api.resend.com/emails/${emailId}`, {
-          headers: {
-            'Authorization': `Bearer ${resendApiKey}`,
-          },
-        });
-
-        if (emailResponse.ok) {
-          const fullEmail = await emailResponse.json();
-          console.log('Full email fetched successfully');
-          textBody = fullEmail.text || null;
-          htmlBody = fullEmail.html || null;
-          headers = fullEmail.headers || null;
-        } else {
-          console.error('Failed to fetch email from Resend:', emailResponse.status, await emailResponse.text());
-        }
-      } catch (fetchError) {
-        console.error('Error fetching email content from Resend:', fetchError);
-      }
-    } else {
-      console.warn('No RESEND_API_KEY or email_id, cannot fetch full content');
-    }
+    console.log('Text body length:', textBody?.length || 0);
+    console.log('HTML body length:', htmlBody?.length || 0);
 
     // Create Supabase client with service role
     const supabaseAdmin = createClient(
