@@ -38,20 +38,46 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const eventData = payload.data;
-    console.log('Processing inbound email, keys:', Object.keys(eventData));
-    console.log('Payload data stringified:', JSON.stringify(eventData).substring(0, 2000));
+    const emailId = eventData.email_id;
+    console.log('Processing inbound email, email_id:', emailId);
 
     // Parse sender info from webhook data
     const sender = parseEmailAddress(eventData.from || '');
     const toEmail = Array.isArray(eventData.to) ? eventData.to[0] : eventData.to;
 
-    // Extract content directly from webhook payload
-    const textBody = eventData.text || eventData.text_body || eventData.plain_text || null;
-    const htmlBody = eventData.html || eventData.html_body || eventData.body || null;
-    const headers = eventData.headers || null;
+    // Resend webhook does NOT include body - must fetch via Receiving API
+    let textBody: string | null = null;
+    let htmlBody: string | null = null;
+    let headers: any = null;
 
-    console.log('Text body length:', textBody?.length || 0);
-    console.log('HTML body length:', htmlBody?.length || 0);
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey && emailId) {
+      try {
+        console.log('Fetching email content via Receiving API...');
+        const emailResponse = await fetch(`https://api.resend.com/emails/receiving/${emailId}`, {
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+          },
+        });
+
+        if (emailResponse.ok) {
+          const fullEmail = await emailResponse.json();
+          console.log('Full email fetched, keys:', Object.keys(fullEmail));
+          textBody = fullEmail.text || null;
+          htmlBody = fullEmail.html || null;
+          headers = fullEmail.headers || null;
+          console.log('Text body length:', textBody?.length || 0);
+          console.log('HTML body length:', htmlBody?.length || 0);
+        } else {
+          const errText = await emailResponse.text();
+          console.error('Receiving API error:', emailResponse.status, errText);
+        }
+      } catch (fetchError) {
+        console.error('Error fetching email content:', fetchError);
+      }
+    } else {
+      console.warn('Missing RESEND_API_KEY or email_id');
+    }
 
     // Create Supabase client with service role
     const supabaseAdmin = createClient(
