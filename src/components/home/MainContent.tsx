@@ -13,6 +13,7 @@ import SocialMediaPlans from '../SocialMediaPlans';
 import GoogleAdPlans from '../GoogleAdPlans';
 import ZeroAdvanceSection from './ZeroAdvanceSection';
 import TeamShowcase from '../TeamShowcase';
+import PortfolioShowcase from '../PortfolioShowcase';
 
 const MainContent: React.FC = () => {
   return (
@@ -33,7 +34,9 @@ const MainContent: React.FC = () => {
       <section id="founder" aria-labelledby="founder-heading" className="w-full overflow-hidden">
         <Founder />
       </section>
-      {/* Portfolio section hidden as per request */}
+      <section id="portfolio" aria-labelledby="portfolio-heading" className="w-full overflow-hidden">
+        <PortfolioShowcase />
+      </section>
       <section id="seo-plans" aria-labelledby="seo-plans-heading" className="w-full overflow-hidden">
         <SeoPlans />
       </section>
