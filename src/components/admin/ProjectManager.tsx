@@ -195,6 +195,36 @@ const ProjectManager = () => {
 
         if (error) throw error;
         toast.success('Project updated successfully');
+
+        // Send payment update email if payment changed and project is not completed and client has email
+        const oldPaid = editingProject.advance_amount || 0;
+        const newPaid = projectData.advance_amount || 0;
+        const paymentChanged = newPaid !== oldPaid && newPaid > oldPaid;
+        const isNotCompleted = projectData.project_status !== 'completed';
+        const hasEmail = projectData.client_email;
+
+        if (paymentChanged && hasEmail) {
+          try {
+            const { error: emailError } = await supabase.functions.invoke('payment-update-email', {
+              body: {
+                clientEmail: projectData.client_email,
+                clientName: projectData.client_name,
+                projectName: projectData.project_name,
+                totalAmount: projectData.total_amount || 0,
+                paidAmount: newPaid,
+                remainingAmount: projectData.remaining_amount || 0,
+              },
+            });
+            if (emailError) {
+              console.error('Payment email error:', emailError);
+              toast.error('Project updated but payment email failed');
+            } else {
+              toast.success('Payment update email sent to client');
+            }
+          } catch (emailErr) {
+            console.error('Payment email error:', emailErr);
+          }
+        }
       } else {
         const { error } = await supabase
           .from('projects')
