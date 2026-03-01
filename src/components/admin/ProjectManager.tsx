@@ -196,14 +196,15 @@ const ProjectManager = () => {
         if (error) throw error;
         toast.success('Project updated successfully');
 
-        // Send payment update email if payment changed and project is not completed and client has email
+        const hasEmail = projectData.client_email;
+
+        // Send payment update email if payment changed and project is not completed
         const oldPaid = editingProject.advance_amount || 0;
         const newPaid = projectData.advance_amount || 0;
         const paymentChanged = newPaid !== oldPaid && newPaid > oldPaid;
         const isNotCompleted = projectData.project_status !== 'completed';
-        const hasEmail = projectData.client_email;
 
-        if (paymentChanged && hasEmail) {
+        if (paymentChanged && hasEmail && isNotCompleted) {
           try {
             const { error: emailError } = await supabase.functions.invoke('payment-update-email', {
               body: {
@@ -224,6 +225,35 @@ const ProjectManager = () => {
             }
           } catch (emailErr) {
             console.error('Payment email error:', emailErr);
+          }
+        }
+
+        // Send completion email when status changes to completed
+        const oldStatus = editingProject.project_status;
+        const newStatus = projectData.project_status;
+        if (oldStatus !== 'completed' && newStatus === 'completed' && hasEmail) {
+          try {
+            const { error: emailError } = await supabase.functions.invoke('project-completion-email', {
+              body: {
+                clientEmail: projectData.client_email,
+                clientName: projectData.client_name,
+                projectName: projectData.project_name,
+                totalAmount: projectData.total_amount || 0,
+                paidAmount: newPaid,
+                remainingAmount: projectData.remaining_amount || 0,
+                startDate: projectData.start_date || null,
+                endDate: projectData.end_date || null,
+                deadline: projectData.deadline || null,
+              },
+            });
+            if (emailError) {
+              console.error('Completion email error:', emailError);
+              toast.error('Project completed but completion email failed');
+            } else {
+              toast.success('🎉 Project completion email sent to client');
+            }
+          } catch (emailErr) {
+            console.error('Completion email error:', emailErr);
           }
         }
       } else {
