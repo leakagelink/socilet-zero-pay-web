@@ -213,6 +213,7 @@ const ProjectManager = () => {
                 totalAmount: projectData.total_amount || 0,
                 paidAmount: newPaid,
                 remainingAmount: projectData.remaining_amount || 0,
+                deadline: projectData.deadline || null,
               },
             });
             if (emailError) {

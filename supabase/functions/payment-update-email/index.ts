@@ -17,6 +17,7 @@ interface PaymentUpdateRequest {
   totalAmount: number;
   paidAmount: number;
   remainingAmount: number;
+  deadline?: string;
 }
 
 const formatCurrency = (amount: number) => {
@@ -27,9 +28,16 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
 const getPaymentEmailHtml = (data: PaymentUpdateRequest) => {
-  const { clientName, projectName, totalAmount, paidAmount, remainingAmount } = data;
+  const { clientName, projectName, totalAmount, paidAmount, remainingAmount, deadline } = data;
   const paidPercentage = totalAmount > 0 ? Math.round((paidAmount / totalAmount) * 100) : 0;
+  const formattedDeadline = formatDate(deadline);
 
   return `
 <!DOCTYPE html>
@@ -94,6 +102,15 @@ const getPaymentEmailHtml = (data: PaymentUpdateRequest) => {
                         <td style="padding: 8px 0; color: #dc2626; font-size: 14px; font-weight: 500;">⏳ Remaining Amount</td>
                         <td style="padding: 8px 0; color: #dc2626; font-size: 16px; font-weight: 700; text-align: right;">${formatCurrency(remainingAmount)}</td>
                       </tr>
+                      ${formattedDeadline ? `
+                      <tr>
+                        <td colspan="2" style="border-bottom: 1px solid #e5e7eb;"></td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">📅 Expected Completion</td>
+                        <td style="padding: 8px 0; color: #6366f1; font-size: 14px; font-weight: 600; text-align: right;">${formattedDeadline}</td>
+                      </tr>
+                      ` : ''}
                     </table>
 
                     <!-- Progress Bar -->
