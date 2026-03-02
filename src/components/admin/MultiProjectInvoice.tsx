@@ -60,6 +60,12 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
   const [discountAmount, setDiscountAmount] = useState(0);
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
+  const [upiId, setUpiId] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [ifscCode, setIfscCode] = useState('');
+  const [accountHolder, setAccountHolder] = useState('');
+  const [paymentLink, setPaymentLink] = useState('');
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -214,6 +220,12 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
           totalRemaining,
           dueDate: dueDate || null,
           notes: notes || null,
+          upiId: upiId || null,
+          paymentLink: paymentLink || null,
+          bankName: bankName || null,
+          accountHolder: accountHolder || null,
+          accountNumber: accountNumber || null,
+          ifscCode: ifscCode || null,
         },
       });
 
@@ -234,6 +246,12 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
     setDiscountAmount(0);
     setDueDate('');
     setNotes('');
+    setUpiId('');
+    setBankName('');
+    setAccountNumber('');
+    setIfscCode('');
+    setAccountHolder('');
+    setPaymentLink('');
   };
 
   return (
@@ -326,6 +344,39 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
                       <div className="space-y-2">
                         <Label>Notes</Label>
                         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Additional notes for the invoice..." rows={2} />
+                      </div>
+
+                      {/* Payment Details */}
+                      <Separator />
+                      <Label className="text-base font-semibold">3. Payment Details (Optional)</Label>
+                      
+                      <div className="space-y-2">
+                        <Label>UPI ID</Label>
+                        <Input value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="e.g. socilet@upi" />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Payment Link (GPay/PhonePe/Razorpay etc.)</Label>
+                        <Input value={paymentLink} onChange={(e) => setPaymentLink(e.target.value)} placeholder="https://pay.google.com/..." />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Bank Name</Label>
+                          <Input value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. State Bank of India" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Account Holder Name</Label>
+                          <Input value={accountHolder} onChange={(e) => setAccountHolder(e.target.value)} placeholder="e.g. Socilet Technologies" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Account Number</Label>
+                          <Input value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} placeholder="e.g. 1234567890" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>IFSC Code</Label>
+                          <Input value={ifscCode} onChange={(e) => setIfscCode(e.target.value)} placeholder="e.g. SBIN0001234" />
+                        </div>
                       </div>
                     </>
                   )}
@@ -474,6 +525,39 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
                   <div style={{ marginTop: '20px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px' }}>
                     <p style={{ fontSize: '13px', fontWeight: 600, color: '#92400e', margin: 0 }}>📝 Notes</p>
                     <p style={{ fontSize: '14px', color: '#78350f', margin: '4px 0 0' }}>{notes}</p>
+                  </div>
+                )}
+
+                {/* Payment Details */}
+                {(upiId || paymentLink || bankName) && (
+                  <div style={{ marginTop: '20px', background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '12px', padding: '16px 20px' }}>
+                    <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#4338ca', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: '8px' }}>💳 Payment Details</h4>
+                    
+                    {upiId && (
+                      <div style={{ marginBottom: '10px', padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
+                        <p style={{ fontSize: '12px', color: '#6b7280', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>UPI ID</p>
+                        <p style={{ fontSize: '16px', fontWeight: 700, color: '#4338ca', margin: '4px 0 0' }}>{upiId}</p>
+                      </div>
+                    )}
+
+                    {paymentLink && (
+                      <div style={{ marginBottom: '10px', padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
+                        <p style={{ fontSize: '12px', color: '#6b7280', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payment Link</p>
+                        <a href={paymentLink} style={{ fontSize: '14px', fontWeight: 600, color: '#6366f1', margin: '4px 0 0', display: 'block', wordBreak: 'break-all' }}>{paymentLink}</a>
+                      </div>
+                    )}
+
+                    {bankName && (
+                      <div style={{ padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
+                        <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bank Transfer Details</p>
+                        <table style={{ width: '100%' }}>
+                          {accountHolder && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Account Holder:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{accountHolder}</td></tr>}
+                          <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Bank:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{bankName}</td></tr>
+                          {accountNumber && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Account No:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{accountNumber}</td></tr>}
+                          {ifscCode && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>IFSC Code:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{ifscCode}</td></tr>}
+                        </table>
+                      </div>
+                    )}
                   </div>
                 )}
 
