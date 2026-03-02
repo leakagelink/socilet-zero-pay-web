@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, FileText, Eye, Edit, Trash2, Send, Download, Search, X, Printer, Check } from 'lucide-react';
+import MultiProjectInvoice from './MultiProjectInvoice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -358,12 +359,14 @@ const InvoiceManager = () => {
             <FileText className="h-6 w-6" />
             <CardTitle className="text-xl">Invoice Manager</CardTitle>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
-            <DialogTrigger asChild>
-              <Button variant="secondary" className="gap-2">
-                <Plus className="h-4 w-4" /> Create Invoice
-              </Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2">
+            <MultiProjectInvoice onInvoiceCreated={fetchInvoices} />
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+              <DialogTrigger asChild>
+                <Button variant="secondary" className="gap-2">
+                  <Plus className="h-4 w-4" /> Create Invoice
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{selectedInvoice ? 'Edit Invoice' : 'Create New Invoice'}</DialogTitle>
@@ -574,6 +577,7 @@ const InvoiceManager = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
       </CardHeader>
 
