@@ -33,6 +33,12 @@ interface InvoiceEmailRequest {
   totalRemaining: number;
   dueDate: string | null;
   notes: string | null;
+  upiId: string | null;
+  paymentLink: string | null;
+  bankName: string | null;
+  accountHolder: string | null;
+  accountNumber: string | null;
+  ifscCode: string | null;
 }
 
 const getStatusColor = (status: string) => {
@@ -195,6 +201,42 @@ const getInvoiceHtml = (data: InvoiceEmailRequest) => {
               <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 16px;">
                 <p style="margin: 0; font-size: 13px; font-weight: 600; color: #92400e;">📝 Notes</p>
                 <p style="margin: 4px 0 0; font-size: 14px; color: #78350f;">${data.notes}</p>
+              </div>
+            </td>
+          </tr>
+          ` : ''}
+
+          ${(data.upiId || data.paymentLink || data.bankName) ? `
+          <tr>
+            <td style="padding: 0 32px 16px;">
+              <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 20px;">
+                <h4 style="margin: 0 0 12px; font-size: 16px; font-weight: 700; color: #4338ca;">💳 Payment Details</h4>
+                
+                ${data.upiId ? `
+                <div style="margin-bottom: 10px; padding: 10px 14px; background: #fff; border-radius: 8px; border: 1px solid #e0e7ff;">
+                  <p style="margin: 0; font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">UPI ID</p>
+                  <p style="margin: 4px 0 0; font-size: 18px; font-weight: 700; color: #4338ca;">${data.upiId}</p>
+                </div>
+                ` : ''}
+
+                ${data.paymentLink ? `
+                <div style="margin-bottom: 10px; text-align: center;">
+                  <a href="${data.paymentLink}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 15px;">💰 Pay Now</a>
+                  <p style="margin: 8px 0 0; font-size: 12px; color: #6b7280;">Click above or copy: ${data.paymentLink}</p>
+                </div>
+                ` : ''}
+
+                ${data.bankName ? `
+                <div style="padding: 10px 14px; background: #fff; border-radius: 8px; border: 1px solid #e0e7ff;">
+                  <p style="margin: 0 0 8px; font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Bank Transfer Details</p>
+                  <table style="width: 100%;">
+                    ${data.accountHolder ? `<tr><td style="font-size: 13px; color: #6b7280; padding: 3px 0; width: 40%;">Account Holder</td><td style="font-size: 13px; font-weight: 600; color: #111;">${data.accountHolder}</td></tr>` : ''}
+                    <tr><td style="font-size: 13px; color: #6b7280; padding: 3px 0;">Bank</td><td style="font-size: 13px; font-weight: 600; color: #111;">${data.bankName}</td></tr>
+                    ${data.accountNumber ? `<tr><td style="font-size: 13px; color: #6b7280; padding: 3px 0;">Account No.</td><td style="font-size: 13px; font-weight: 600; color: #111;">${data.accountNumber}</td></tr>` : ''}
+                    ${data.ifscCode ? `<tr><td style="font-size: 13px; color: #6b7280; padding: 3px 0;">IFSC Code</td><td style="font-size: 13px; font-weight: 600; color: #111;">${data.ifscCode}</td></tr>` : ''}
+                  </table>
+                </div>
+                ` : ''}
               </div>
             </td>
           </tr>
