@@ -160,6 +160,10 @@ const InvoiceManager = () => {
   };
 
   const handleProjectSelect = (projectId: string) => {
+    if (projectId === 'none') {
+      setFormData({ ...formData, project_id: '' });
+      return;
+    }
     const project = projects.find(p => p.id === projectId);
     if (project) {
       setFormData({
@@ -369,12 +373,12 @@ const InvoiceManager = () => {
                 {/* Project Selection */}
                 <div className="space-y-2">
                   <Label>Link to Project (Optional)</Label>
-                  <Select value={formData.project_id} onValueChange={handleProjectSelect}>
+                  <Select value={formData.project_id || 'none'} onValueChange={handleProjectSelect}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a project" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No Project</SelectItem>
+                      <SelectItem value="none">No Project</SelectItem>
                       {projects.map(project => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.project_name} - {project.client_name}
