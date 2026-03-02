@@ -39,6 +39,7 @@ interface InvoiceEmailRequest {
   accountHolder: string | null;
   accountNumber: string | null;
   ifscCode: string | null;
+  qrImageUrl: string | null;
 }
 
 const getStatusColor = (status: string) => {
@@ -206,7 +207,7 @@ const getInvoiceHtml = (data: InvoiceEmailRequest) => {
           </tr>
           ` : ''}
 
-          ${(data.upiId || data.paymentLink || data.bankName) ? `
+          ${(data.upiId || data.paymentLink || data.bankName || data.qrImageUrl) ? `
           <tr>
             <td style="padding: 0 32px 16px;">
               <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 20px;">
@@ -235,6 +236,13 @@ const getInvoiceHtml = (data: InvoiceEmailRequest) => {
                     ${data.accountNumber ? `<tr><td style="font-size: 13px; color: #6b7280; padding: 3px 0;">Account No.</td><td style="font-size: 13px; font-weight: 600; color: #111;">${data.accountNumber}</td></tr>` : ''}
                     ${data.ifscCode ? `<tr><td style="font-size: 13px; color: #6b7280; padding: 3px 0;">IFSC Code</td><td style="font-size: 13px; font-weight: 600; color: #111;">${data.ifscCode}</td></tr>` : ''}
                   </table>
+                </div>
+                ` : ''}
+
+                ${data.qrImageUrl ? `
+                <div style="margin-top: 12px; text-align: center; padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #e0e7ff;">
+                  <p style="margin: 0 0 8px; font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Scan to Pay</p>
+                  <img src="${data.qrImageUrl}" alt="Payment QR Code" style="width: 160px; height: 160px; object-fit: contain; border-radius: 8px;" />
                 </div>
                 ` : ''}
               </div>

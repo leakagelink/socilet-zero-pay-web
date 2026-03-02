@@ -22,6 +22,7 @@ import { BlockedMessagesViewer } from '@/components/admin/BlockedMessagesViewer'
 import ReminderManager from '@/components/admin/ReminderManager';
 import InvestmentManager from '@/components/admin/InvestmentManager';
 import SpendManager from '@/components/admin/SpendManager';
+import PaymentMethodsManager from '@/components/admin/PaymentMethodsManager';
 import EmailNotificationDropdown from '@/components/admin/EmailNotificationDropdown';
 import { useCountUp } from '@/hooks/useCountUp';
 
@@ -535,6 +536,13 @@ const AdminPanel = () => {
                 <span className="hidden sm:inline">Investments</span>
               </TabsTrigger>
               <TabsTrigger 
+                value="payment-methods" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <IndianRupee className="h-4 w-4" />
+                <span className="hidden sm:inline">Pay Methods</span>
+              </TabsTrigger>
+              <TabsTrigger 
                 value="spends" 
                 className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-rose-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
               >
@@ -602,6 +610,10 @@ const AdminPanel = () => {
 
           <TabsContent value="spends" className="mt-6 animate-fade-in">
             <SpendManager />
+          </TabsContent>
+
+          <TabsContent value="payment-methods" className="mt-6 animate-fade-in">
+            <PaymentMethodsManager />
           </TabsContent>
         </Tabs>
       </main>
