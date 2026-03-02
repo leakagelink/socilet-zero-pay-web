@@ -1194,6 +1194,57 @@ export type Database = {
           },
         ]
       }
+      saved_payment_methods: {
+        Row: {
+          account_holder: string | null
+          account_number: string | null
+          bank_name: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          ifsc_code: string | null
+          is_default: boolean | null
+          label: string
+          method_type: string
+          payment_link: string | null
+          qr_image_url: string | null
+          updated_at: string
+          upi_id: string | null
+        }
+        Insert: {
+          account_holder?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          ifsc_code?: string | null
+          is_default?: boolean | null
+          label: string
+          method_type?: string
+          payment_link?: string | null
+          qr_image_url?: string | null
+          updated_at?: string
+          upi_id?: string | null
+        }
+        Update: {
+          account_holder?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          ifsc_code?: string | null
+          is_default?: boolean | null
+          label?: string
+          method_type?: string
+          payment_link?: string | null
+          qr_image_url?: string | null
+          updated_at?: string
+          upi_id?: string | null
+        }
+        Relationships: []
+      }
       service_credentials: {
         Row: {
           company_name: string

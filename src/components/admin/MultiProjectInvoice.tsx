@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Users, FileText, Download, Send, Check, ChevronDown, Printer } from 'lucide-react';
+import { Users, FileText, Download, Send, Check, ChevronDown, Printer, CreditCard, Building2, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,6 +12,20 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+
+interface SavedPaymentMethod {
+  id: string;
+  method_type: string;
+  label: string;
+  upi_id: string | null;
+  bank_name: string | null;
+  account_number: string | null;
+  ifsc_code: string | null;
+  account_holder: string | null;
+  payment_link: string | null;
+  qr_image_url: string | null;
+  is_default: boolean | null;
+}
 
 interface Project {
   id: string;
@@ -69,11 +83,40 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [savedPaymentMethods, setSavedPaymentMethods] = useState<SavedPaymentMethod[]>([]);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>('');
+  const [qrImageUrl, setQrImageUrl] = useState('');
   const invoiceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen) fetchProjects();
+    if (isOpen) {
+      fetchProjects();
+      fetchSavedPaymentMethods();
+    }
   }, [isOpen]);
+
+  const fetchSavedPaymentMethods = async () => {
+    const { data } = await supabase
+      .from('saved_payment_methods')
+      .select('*')
+      .order('is_default', { ascending: false })
+      .order('created_at', { ascending: false });
+    setSavedPaymentMethods((data as any) || []);
+    // Auto-select default
+    const defaultMethod = (data as any)?.find((m: any) => m.is_default);
+    if (defaultMethod) applyPaymentMethod(defaultMethod);
+  };
+
+  const applyPaymentMethod = (method: SavedPaymentMethod) => {
+    setSelectedPaymentMethodId(method.id);
+    setUpiId(method.upi_id || '');
+    setBankName(method.bank_name || '');
+    setAccountNumber(method.account_number || '');
+    setIfscCode(method.ifsc_code || '');
+    setAccountHolder(method.account_holder || '');
+    setPaymentLink(method.payment_link || '');
+    setQrImageUrl(method.qr_image_url || '');
+  };
 
   const fetchProjects = async () => {
     try {
@@ -226,6 +269,7 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
           accountHolder: accountHolder || null,
           accountNumber: accountNumber || null,
           ifscCode: ifscCode || null,
+          qrImageUrl: qrImageUrl || null,
         },
       });
 
@@ -252,6 +296,8 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
     setIfscCode('');
     setAccountHolder('');
     setPaymentLink('');
+    setSelectedPaymentMethodId('');
+    setQrImageUrl('');
   };
 
   return (
@@ -350,6 +396,34 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
                       <Separator />
                       <Label className="text-base font-semibold">3. Payment Details (Optional)</Label>
                       
+                      {savedPaymentMethods.length > 0 && (
+                        <div className="space-y-2">
+                          <Label>Select Saved Payment Method</Label>
+                          <Select value={selectedPaymentMethodId || 'none'} onValueChange={(v) => {
+                            if (v === 'none') {
+                              setSelectedPaymentMethodId('');
+                              setUpiId(''); setBankName(''); setAccountNumber('');
+                              setIfscCode(''); setAccountHolder(''); setPaymentLink(''); setQrImageUrl('');
+                              return;
+                            }
+                            const method = savedPaymentMethods.find(m => m.id === v);
+                            if (method) applyPaymentMethod(method);
+                          }}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose saved payment method" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">-- Manual Entry --</SelectItem>
+                              {savedPaymentMethods.map(m => (
+                                <SelectItem key={m.id} value={m.id}>
+                                  {m.method_type.toUpperCase()} — {m.label} {m.is_default ? '⭐' : ''}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
                       <div className="space-y-2">
                         <Label>UPI ID</Label>
                         <Input value={upiId} onChange={(e) => setUpiId(e.target.value)} placeholder="e.g. socilet@upi" />
@@ -378,6 +452,13 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
                           <Input value={ifscCode} onChange={(e) => setIfscCode(e.target.value)} placeholder="e.g. SBIN0001234" />
                         </div>
                       </div>
+
+                      {qrImageUrl && (
+                        <div className="space-y-2">
+                          <Label>QR Code Preview</Label>
+                          <img src={qrImageUrl} alt="QR Code" className="w-32 h-32 rounded-lg border object-contain" />
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -529,35 +610,48 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
                 )}
 
                 {/* Payment Details */}
-                {(upiId || paymentLink || bankName) && (
+                {(upiId || paymentLink || bankName || qrImageUrl) && (
                   <div style={{ marginTop: '20px', background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '12px', padding: '16px 20px' }}>
                     <h4 style={{ fontSize: '15px', fontWeight: 700, color: '#4338ca', margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: '8px' }}>💳 Payment Details</h4>
                     
-                    {upiId && (
-                      <div style={{ marginBottom: '10px', padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
-                        <p style={{ fontSize: '12px', color: '#6b7280', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>UPI ID</p>
-                        <p style={{ fontSize: '16px', fontWeight: 700, color: '#4338ca', margin: '4px 0 0' }}>{upiId}</p>
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                      <div style={{ flex: 1, minWidth: '200px' }}>
+                        {upiId && (
+                          <div style={{ marginBottom: '10px', padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
+                            <p style={{ fontSize: '12px', color: '#6b7280', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>UPI ID</p>
+                            <p style={{ fontSize: '16px', fontWeight: 700, color: '#4338ca', margin: '4px 0 0' }}>{upiId}</p>
+                          </div>
+                        )}
 
-                    {paymentLink && (
-                      <div style={{ marginBottom: '10px', padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
-                        <p style={{ fontSize: '12px', color: '#6b7280', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payment Link</p>
-                        <a href={paymentLink} style={{ fontSize: '14px', fontWeight: 600, color: '#6366f1', margin: '4px 0 0', display: 'block', wordBreak: 'break-all' }}>{paymentLink}</a>
-                      </div>
-                    )}
+                        {paymentLink && (
+                          <div style={{ marginBottom: '10px', padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
+                            <p style={{ fontSize: '12px', color: '#6b7280', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Payment Link</p>
+                            <a href={paymentLink} style={{ fontSize: '14px', fontWeight: 600, color: '#6366f1', margin: '4px 0 0', display: 'block', wordBreak: 'break-all' }}>{paymentLink}</a>
+                          </div>
+                        )}
 
-                    {bankName && (
-                      <div style={{ padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
-                        <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bank Transfer Details</p>
-                        <table style={{ width: '100%' }}>
-                          {accountHolder && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Account Holder:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{accountHolder}</td></tr>}
-                          <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Bank:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{bankName}</td></tr>
-                          {accountNumber && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Account No:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{accountNumber}</td></tr>}
-                          {ifscCode && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>IFSC Code:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{ifscCode}</td></tr>}
-                        </table>
+                        {bankName && (
+                          <div style={{ padding: '10px 14px', background: '#fff', borderRadius: '8px', border: '1px solid #e0e7ff' }}>
+                            <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bank Transfer Details</p>
+                            <table style={{ width: '100%' }}>
+                              <tbody>
+                                {accountHolder && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Account Holder:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{accountHolder}</td></tr>}
+                                <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Bank:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{bankName}</td></tr>
+                                {accountNumber && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>Account No:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{accountNumber}</td></tr>}
+                                {ifscCode && <tr><td style={{ fontSize: '13px', color: '#6b7280', padding: '2px 0' }}>IFSC Code:</td><td style={{ fontSize: '13px', fontWeight: 600, color: '#111' }}>{ifscCode}</td></tr>}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
-                    )}
+
+                      {qrImageUrl && (
+                        <div style={{ textAlign: 'center' }}>
+                          <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Scan to Pay</p>
+                          <img src={qrImageUrl} alt="Payment QR Code" style={{ width: '140px', height: '140px', borderRadius: '8px', border: '2px solid #e0e7ff', objectFit: 'contain' }} />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
