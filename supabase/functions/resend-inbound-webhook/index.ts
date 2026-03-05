@@ -125,6 +125,36 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Inbound email stored successfully:', data.id);
 
+    // Forward the email to personal Gmail
+    if (resendApiKey) {
+      try {
+        console.log('Forwarding email to tagdedheeraj4@gmail.com...');
+        const forwardRes = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Socilet Inbox <hello@socilet.in>',
+            to: ['tagdedheeraj4@gmail.com'],
+            subject: `[Fwd] ${eventData.subject || '(No Subject)'} — from ${sender.email}`,
+            html: htmlBody || `<pre>${textBody || '(No content)'}</pre>`,
+            text: `--- Forwarded from ${sender.name || sender.email} (${sender.email}) ---\n\n${textBody || '(No content)'}`,
+          }),
+        });
+
+        if (forwardRes.ok) {
+          console.log('Email forwarded successfully');
+        } else {
+          const errText = await forwardRes.text();
+          console.error('Forward failed:', forwardRes.status, errText);
+        }
+      } catch (fwdErr) {
+        console.error('Error forwarding email:', fwdErr);
+      }
+    }
+
     return new Response(
       JSON.stringify({ success: true, id: data.id }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
