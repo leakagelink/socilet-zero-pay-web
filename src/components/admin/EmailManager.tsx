@@ -94,6 +94,10 @@ const EmailManager = () => {
   const [viewInboundDialogOpen, setViewInboundDialogOpen] = useState(false);
   const [viewingInbound, setViewingInbound] = useState<InboundEmail | null>(null);
 
+  // View sent email dialog
+  const [viewSentDialogOpen, setViewSentDialogOpen] = useState(false);
+  const [viewingSent, setViewingSent] = useState<EmailLog | null>(null);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -674,7 +678,7 @@ const EmailManager = () => {
               ) : (
                 <div className="space-y-3">
                   {emailLogs.map((log) => (
-                    <div key={log.id} className="p-4 rounded-xl border bg-card hover:shadow-md transition-all">
+                      <div key={log.id} className="p-4 rounded-xl border bg-card hover:shadow-md transition-all cursor-pointer" onClick={() => { setViewingSent(log); setViewSentDialogOpen(true); }}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
@@ -702,6 +706,9 @@ const EmailManager = () => {
                           )}
                           <p className="text-xs text-muted-foreground mt-2">{formatDate(log.created_at)}</p>
                         </div>
+                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setViewingSent(log); setViewSentDialogOpen(true); }} title="View full email">
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -837,6 +844,56 @@ const EmailManager = () => {
                   Archive
                 </Button>
                 <Button variant="outline" onClick={() => setViewInboundDialogOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      {/* View Sent Email Dialog */}
+      <Dialog open={viewSentDialogOpen} onOpenChange={setViewSentDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg">
+              {viewingSent?.subject || '(No Subject)'}
+            </DialogTitle>
+          </DialogHeader>
+          {viewingSent && (
+            <div className="space-y-4">
+              <div className="space-y-2 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      To: {viewingSent.recipient_name ? `${viewingSent.recipient_name} <${viewingSent.recipient_email}>` : viewingSent.recipient_email}
+                    </p>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{formatDate(viewingSent.created_at)}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={viewingSent.email_type === 'payment_reminder' ? 'secondary' : 'outline'} className="text-xs">
+                    {viewingSent.email_type === 'payment_reminder' ? '💰 Reminder' : '✉️ Manual'}
+                  </Badge>
+                  {viewingSent.status === 'sent' ? (
+                    <Badge className="bg-green-500/10 text-green-600 text-xs">✅ Sent</Badge>
+                  ) : (
+                    <Badge variant="destructive" className="text-xs">❌ Failed</Badge>
+                  )}
+                  {viewingSent.days_until_due !== null && (
+                    <Badge variant="outline" className="text-xs">Due in {viewingSent.days_until_due} day(s)</Badge>
+                  )}
+                </div>
+              </div>
+              
+              <div className="border rounded-lg p-4">
+                <p className="text-sm font-medium text-muted-foreground mb-2">Email Content:</p>
+                <div className="whitespace-pre-wrap text-sm">
+                  {viewingSent.body_preview || '(No preview available)'}
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setViewSentDialogOpen(false)} className="flex-1">
                   Close
                 </Button>
               </div>
