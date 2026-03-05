@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, GripVertical, Calendar, Tag, User, MoreHorizontal, Edit, Trash2, X } from 'lucide-react';
+import { Plus, GripVertical, Calendar, Tag, User, MoreHorizontal, Edit, Trash2, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
@@ -57,6 +58,8 @@ const KanbanBoard = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [projectFilter, setProjectFilter] = useState<string>('all');
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [mobileColumnIndex, setMobileColumnIndex] = useState(1); // default to 'todo'
+  const isMobile = useIsMobile();
 
   const [formData, setFormData] = useState({
     project_id: '',
@@ -260,149 +263,209 @@ const KanbanBoard = () => {
   const getTasksByStatus = (status: TaskStatus) => 
     filteredTasks.filter(t => t.status === status);
 
+  const renderTaskCard = (task: Task) => (
+    <div
+      key={task.id}
+      draggable={!isMobile}
+      onDragStart={(e) => handleDragStart(e, task)}
+      className={`bg-card rounded-lg p-3 shadow-sm border cursor-grab hover:shadow-md transition-all ${
+        draggedTask?.id === task.id ? 'opacity-50' : ''
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h4 className="font-medium text-sm line-clamp-2">{task.title}</h4>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => openEdit(task)}>
+              <Edit className="h-4 w-4 mr-2" /> Edit
+            </DropdownMenuItem>
+            {isMobile && (
+              <>
+                {statusColumns.filter(c => c.key !== task.status).map(col => (
+                  <DropdownMenuItem key={col.key} onClick={async () => {
+                    try {
+                      const { error } = await supabase.from('tasks').update({ status: col.key }).eq('id', task.id);
+                      if (error) throw error;
+                      setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: col.key } : t));
+                      toast.success(`Moved to ${col.label}`);
+                    } catch { toast.error('Failed to move task'); }
+                  }}>
+                    <div className={`w-2 h-2 rounded-full ${col.color} mr-2`} /> Move to {col.label}
+                  </DropdownMenuItem>
+                ))}
+              </>
+            )}
+            <DropdownMenuItem 
+              onClick={() => handleDelete(task.id)}
+              className="text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" /> Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {task.description && (
+        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+          {task.description}
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-1 mb-2">
+        <Badge className={`text-xs ${priorityColors[task.priority]}`}>
+          {task.priority}
+        </Badge>
+        {task.labels.slice(0, 2).map(label => (
+          <Badge key={label} variant="outline" className="text-xs">
+            {label}
+          </Badge>
+        ))}
+        {task.labels.length > 2 && (
+          <Badge variant="outline" className="text-xs">
+            +{task.labels.length - 2}
+          </Badge>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        {task.assignee_name && (
+          <div className="flex items-center gap-1">
+            <User className="h-3 w-3" />
+            <span className="truncate max-w-[80px]">{task.assignee_name}</span>
+          </div>
+        )}
+        {task.due_date && (
+          <div className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            <span>{new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+          </div>
+        )}
+      </div>
+
+      {getProjectName(task.project_id) && (
+        <div className="mt-2 pt-2 border-t">
+          <span className="text-xs text-muted-foreground">
+            📁 {getProjectName(task.project_id)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderColumn = (column: typeof statusColumns[0]) => (
+    <div
+      key={column.key}
+      className={isMobile ? 'w-full' : 'flex-shrink-0 w-72'}
+      onDragOver={handleDragOver}
+      onDrop={(e) => handleDrop(e, column.key)}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <div className={`w-3 h-3 rounded-full ${column.color}`}></div>
+        <h3 className="font-semibold text-sm">{column.label}</h3>
+        <Badge variant="secondary" className="ml-auto text-xs">
+          {getTasksByStatus(column.key).length}
+        </Badge>
+      </div>
+
+      <div className="space-y-3 min-h-[200px] sm:min-h-[300px] bg-muted/30 rounded-xl p-3">
+        {getTasksByStatus(column.key).map(task => renderTaskCard(task))}
+
+        {getTasksByStatus(column.key).length === 0 && (
+          <div className="text-center py-8 text-muted-foreground text-sm">
+            No tasks
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <Card className="border-0 shadow-lg">
-      <CardHeader className="bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-t-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <GripVertical className="h-5 w-5" />
-            Task Board
-          </CardTitle>
-          <div className="flex items-center gap-3">
-            <Select value={projectFilter} onValueChange={setProjectFilter}>
-              <SelectTrigger className="w-[180px] bg-white/10 border-white/20 text-white">
-                <SelectValue placeholder="Filter by project" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
-                {projects.map(project => (
-                  <SelectItem key={project.id} value={project.id}>
-                    {project.project_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="secondary" onClick={() => { resetForm(); setIsDialogOpen(true); }}>
-              <Plus className="h-4 w-4 mr-2" /> Add Task
+      <CardHeader className="bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-t-xl px-3 sm:px-6 py-4">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+              <GripVertical className="h-5 w-5" />
+              Task Board
+            </CardTitle>
+            <Button variant="secondary" size={isMobile ? 'sm' : 'default'} onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+              <Plus className="h-4 w-4 mr-1 sm:mr-2" /> <span className="hidden sm:inline">Add </span>Task
             </Button>
           </div>
+          <Select value={projectFilter} onValueChange={setProjectFilter}>
+            <SelectTrigger className="w-full sm:w-[180px] bg-white/10 border-white/20 text-white text-sm">
+              <SelectValue placeholder="Filter by project" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Projects</SelectItem>
+              {projects.map(project => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.project_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 sm:p-6">
+      <CardContent className="p-3 sm:p-6">
         {loading ? (
           <div className="text-center py-8 text-muted-foreground">Loading tasks...</div>
-        ) : (
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {statusColumns.map(column => (
-              <div
-                key={column.key}
-                className="flex-shrink-0 w-72"
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, column.key)}
+        ) : isMobile ? (
+          /* Mobile: swipeable single column view */
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Button 
+                variant="ghost" size="icon" className="h-8 w-8"
+                disabled={mobileColumnIndex === 0}
+                onClick={() => setMobileColumnIndex(i => Math.max(0, i - 1))}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <div className={`w-3 h-3 rounded-full ${column.color}`}></div>
-                  <h3 className="font-semibold text-sm">{column.label}</h3>
-                  <Badge variant="secondary" className="ml-auto text-xs">
-                    {getTasksByStatus(column.key).length}
-                  </Badge>
-                </div>
-
-                <div className="space-y-3 min-h-[300px] bg-muted/30 rounded-xl p-3">
-                  {getTasksByStatus(column.key).map(task => (
-                    <div
-                      key={task.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, task)}
-                      className={`bg-card rounded-lg p-3 shadow-sm border cursor-grab hover:shadow-md transition-all ${
-                        draggedTask?.id === task.id ? 'opacity-50' : ''
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h4 className="font-medium text-sm line-clamp-2">{task.title}</h4>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => openEdit(task)}>
-                              <Edit className="h-4 w-4 mr-2" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleDelete(task.id)}
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-
-                      {task.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                          {task.description}
-                        </p>
-                      )}
-
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        <Badge className={`text-xs ${priorityColors[task.priority]}`}>
-                          {task.priority}
-                        </Badge>
-                        {task.labels.slice(0, 2).map(label => (
-                          <Badge key={label} variant="outline" className="text-xs">
-                            {label}
-                          </Badge>
-                        ))}
-                        {task.labels.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{task.labels.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        {task.assignee_name && (
-                          <div className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            <span className="truncate max-w-[80px]">{task.assignee_name}</span>
-                          </div>
-                        )}
-                        {task.due_date && (
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>{new Date(task.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {getProjectName(task.project_id) && (
-                        <div className="mt-2 pt-2 border-t">
-                          <span className="text-xs text-muted-foreground">
-                            📁 {getProjectName(task.project_id)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  {getTasksByStatus(column.key).length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground text-sm">
-                      No tasks
-                    </div>
-                  )}
-                </div>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="flex gap-1.5">
+                {statusColumns.map((col, i) => (
+                  <button
+                    key={col.key}
+                    onClick={() => setMobileColumnIndex(i)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                      i === mobileColumnIndex 
+                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {col.label}
+                    {getTasksByStatus(col.key).length > 0 && (
+                      <span className="ml-1">({getTasksByStatus(col.key).length})</span>
+                    )}
+                  </button>
+                ))}
               </div>
-            ))}
+              <Button 
+                variant="ghost" size="icon" className="h-8 w-8"
+                disabled={mobileColumnIndex === statusColumns.length - 1}
+                onClick={() => setMobileColumnIndex(i => Math.min(statusColumns.length - 1, i + 1))}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            {renderColumn(statusColumns[mobileColumnIndex])}
+          </div>
+        ) : (
+          /* Desktop: horizontal kanban */
+          <div className="flex gap-4 overflow-x-auto pb-4">
+            {statusColumns.map(column => renderColumn(column))}
           </div>
         )}
       </CardContent>
 
       {/* Task Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg w-[95vw] sm:w-full max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedTask ? 'Edit Task' : 'Create Task'}</DialogTitle>
           </DialogHeader>
