@@ -7,15 +7,31 @@ const corsHeaders = {
 };
 
 // Parse email address to extract name and email
-const parseEmailAddress = (email: string): { name: string | null; email: string } => {
-  const match = email.match(/^(?:"?([^"]*)"?\s*)?<?([^>]+@[^>]+)>?$/);
-  if (match) {
+const parseEmailAddress = (rawFrom: string): { name: string | null; email: string } => {
+  if (!rawFrom) return { name: null, email: '' };
+  
+  // Try format: "Display Name <email@domain.com>" or Display Name <email@domain.com>
+  const angleMatch = rawFrom.match(/^(.+?)\s*<([^>]+)>$/);
+  if (angleMatch) {
+    const displayName = angleMatch[1].replace(/^["']|["']$/g, '').trim();
     return {
-      name: match[1]?.trim() || null,
-      email: match[2]?.trim() || email
+      name: displayName || null,
+      email: angleMatch[2].trim()
     };
   }
-  return { name: null, email: email };
+  
+  // Try format: <email@domain.com>
+  const justAngle = rawFrom.match(/^<([^>]+)>$/);
+  if (justAngle) {
+    return { name: null, email: justAngle[1].trim() };
+  }
+  
+  // Plain email address
+  if (rawFrom.includes('@')) {
+    return { name: null, email: rawFrom.trim() };
+  }
+  
+  return { name: null, email: rawFrom.trim() };
 };
 
 const handler = async (req: Request): Promise<Response> => {
