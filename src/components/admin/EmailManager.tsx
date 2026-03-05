@@ -363,54 +363,55 @@ const EmailManager = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 shrink-0">
             <Mail className="h-5 w-5 text-white" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-foreground">Email Manager</h2>
-            <p className="text-sm text-muted-foreground">Send emails & manage messages</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Send emails & manage messages</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={handleCheckReminders}
             disabled={isCheckingReminders}
+            className="flex-1 sm:flex-none text-xs sm:text-sm"
           >
             {isCheckingReminders ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <Loader2 className="h-4 w-4 animate-spin mr-1 sm:mr-2" />
             ) : (
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="h-4 w-4 mr-1 sm:mr-2" />
             )}
-            Check Reminders
+            <span className="hidden sm:inline">Check </span>Reminders
           </Button>
-          <Button variant="outline" size="sm" onClick={fetchData}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={fetchData} className="flex-1 sm:flex-none text-xs sm:text-sm">
+            <RefreshCw className="h-4 w-4 mr-1 sm:mr-2" />
             Refresh
           </Button>
         </div>
       </div>
 
       <Tabs defaultValue="compose" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 gap-2 bg-muted/50 p-1 rounded-xl">
-          <TabsTrigger value="compose" className="rounded-lg">
-            <Send className="h-4 w-4 mr-2" />
+        <TabsList className="grid w-full grid-cols-3 gap-1 sm:gap-2 bg-muted/50 p-1 rounded-xl">
+          <TabsTrigger value="compose" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3">
+            <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Compose
           </TabsTrigger>
-          <TabsTrigger value="inbox" className="rounded-lg">
-            <Inbox className="h-4 w-4 mr-2" />
+          <TabsTrigger value="inbox" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3">
+            <Inbox className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Inbox
             {totalUnreadCount > 0 && (
-              <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+              <Badge variant="destructive" className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5 p-0 flex items-center justify-center text-[10px] sm:text-xs">
                 {totalUnreadCount}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="sent" className="rounded-lg">
-            <Clock className="h-4 w-4 mr-2" />
+          <TabsTrigger value="sent" className="rounded-lg text-xs sm:text-sm px-2 sm:px-3">
+            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Sent
           </TabsTrigger>
         </TabsList>
@@ -509,65 +510,44 @@ const EmailManager = () => {
                     {inboundEmails.map((email) => (
                       <div
                         key={email.id}
-                        className={`p-4 rounded-xl border transition-all hover:shadow-md cursor-pointer ${
+                        className={`p-3 sm:p-4 rounded-xl border transition-all hover:shadow-md cursor-pointer ${
                           !email.is_read ? 'bg-primary/5 border-primary/20' : 'bg-card'
                         }`}
                         onClick={() => openViewInbound(email)}
                       >
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold text-foreground">
+                            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
+                              <span className="font-semibold text-foreground text-sm sm:text-base truncate max-w-[200px] sm:max-w-none">
                                 {email.from_name || email.from_email}
                               </span>
                               {!email.is_read && (
-                                <Badge variant="secondary" className="text-xs">New</Badge>
+                                <Badge variant="secondary" className="text-[10px] sm:text-xs">New</Badge>
                               )}
-                              <Badge variant="outline" className="text-xs">📧 Email</Badge>
+                              <Badge variant="outline" className="text-[10px] sm:text-xs">📧 Email</Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground">{email.from_email}</p>
-                            <p className="text-sm text-muted-foreground">To: {email.to_email}</p>
-                            <p className="text-sm font-medium mt-2">{email.subject || '(No Subject)'}</p>
-                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                            <p className="text-xs sm:text-sm text-muted-foreground truncate">{email.from_email}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground truncate">To: {email.to_email}</p>
+                            <p className="text-xs sm:text-sm font-medium mt-1.5 sm:mt-2 line-clamp-1">{email.subject || '(No Subject)'}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 sm:line-clamp-2 mt-0.5 sm:mt-1">
                               {email.text_body || '(No content)'}
                             </p>
-                            <p className="text-xs text-muted-foreground mt-2">{formatDate(email.received_at)}</p>
+                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 sm:mt-2">{formatDate(email.received_at)}</p>
                           </div>
-                          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openViewInbound(email)}
-                              title="View full email"
-                            >
-                              <Eye className="h-4 w-4" />
+                          <div className="flex gap-0.5 sm:gap-1 self-end sm:self-start" onClick={(e) => e.stopPropagation()}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => openViewInbound(email)} title="View full email">
+                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
                             {!email.is_read && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleMarkInboundAsRead(email.id)}
-                                title="Mark as read"
-                              >
-                                <CheckCircle className="h-4 w-4" />
+                              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => handleMarkInboundAsRead(email.id)} title="Mark as read">
+                                <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                               </Button>
                             )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleArchiveInbound(email.id)}
-                              title="Archive"
-                            >
-                              <Clock className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => handleArchiveInbound(email.id)} title="Archive">
+                              <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteInbound(email.id)}
-                              title="Delete"
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 text-destructive hover:text-destructive" onClick={() => handleDeleteInbound(email.id)} title="Delete">
+                              <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         </div>
@@ -600,55 +580,39 @@ const EmailManager = () => {
                     {contactMessages.map((msg) => (
                       <div
                         key={msg.id}
-                        className={`p-4 rounded-xl border transition-all hover:shadow-md ${
+                        className={`p-3 sm:p-4 rounded-xl border transition-all hover:shadow-md ${
                           !msg.is_read ? 'bg-primary/5 border-primary/20' : 'bg-card'
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold text-foreground">{msg.sender_name}</span>
+                            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
+                              <span className="font-semibold text-foreground text-sm sm:text-base">{msg.sender_name}</span>
                               {!msg.is_read && (
-                                <Badge variant="secondary" className="text-xs">New</Badge>
+                                <Badge variant="secondary" className="text-[10px] sm:text-xs">New</Badge>
                               )}
                               {msg.is_replied && (
-                                <Badge variant="outline" className="text-xs text-emerald-600">Replied</Badge>
+                                <Badge variant="outline" className="text-[10px] sm:text-xs text-emerald-600">Replied</Badge>
                               )}
-                              <Badge variant="outline" className="text-xs">📝 Form</Badge>
+                              <Badge variant="outline" className="text-[10px] sm:text-xs">📝 Form</Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground">{msg.sender_email}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground truncate">{msg.sender_email}</p>
                             {msg.sender_phone && (
-                              <p className="text-sm text-muted-foreground">📞 {msg.sender_phone}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">📞 {msg.sender_phone}</p>
                             )}
-                            <p className="text-sm font-medium mt-2">{msg.subject || 'No subject'}</p>
-                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{msg.message}</p>
-                            <p className="text-xs text-muted-foreground mt-2">{formatDate(msg.created_at)}</p>
+                            <p className="text-xs sm:text-sm font-medium mt-1.5 sm:mt-2 line-clamp-1">{msg.subject || 'No subject'}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 sm:line-clamp-2 mt-0.5 sm:mt-1">{msg.message}</p>
+                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 sm:mt-2">{formatDate(msg.created_at)}</p>
                           </div>
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openViewDialog(msg)}
-                              title="View"
-                            >
-                              <Eye className="h-4 w-4" />
+                          <div className="flex gap-0.5 sm:gap-1 self-end sm:self-start">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => openViewDialog(msg)} title="View">
+                              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => openReplyDialog(msg)}
-                              title="Reply"
-                            >
-                              <Reply className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => openReplyDialog(msg)} title="Reply">
+                              <Reply className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteMessage(msg.id)}
-                              title="Delete"
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 text-destructive hover:text-destructive" onClick={() => handleDeleteMessage(msg.id)} title="Delete">
+                              <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         </div>
@@ -678,36 +642,36 @@ const EmailManager = () => {
               ) : (
                 <div className="space-y-3">
                   {emailLogs.map((log) => (
-                      <div key={log.id} className="p-4 rounded-xl border bg-card hover:shadow-md transition-all cursor-pointer" onClick={() => { setViewingSent(log); setViewSentDialogOpen(true); }}>
-                      <div className="flex items-start justify-between gap-4">
+                    <div key={log.id} className="p-3 sm:p-4 rounded-xl border bg-card hover:shadow-md transition-all cursor-pointer" onClick={() => { setViewingSent(log); setViewSentDialogOpen(true); }}>
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
                             <Badge
                               variant={log.email_type === 'payment_reminder' ? 'secondary' : 'outline'}
-                              className="text-xs"
+                              className="text-[10px] sm:text-xs"
                             >
                               {log.email_type === 'payment_reminder' ? '💰 Reminder' : '✉️ Manual'}
                             </Badge>
                             {log.status === 'sent' ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500" />
                             ) : (
-                              <AlertCircle className="h-4 w-4 text-red-500" />
+                              <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
                             )}
                           </div>
-                          <p className="font-medium text-foreground">{log.subject}</p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="font-medium text-foreground text-sm sm:text-base line-clamp-1">{log.subject}</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground truncate">
                             To: {log.recipient_name ? `${log.recipient_name} <${log.recipient_email}>` : log.recipient_email}
                           </p>
                           {log.body_preview && (
-                            <p className="text-sm text-muted-foreground line-clamp-1 mt-1">{log.body_preview}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 mt-0.5 sm:mt-1">{log.body_preview}</p>
                           )}
                           {log.days_until_due !== null && (
-                            <p className="text-xs text-amber-600 mt-1">Due in {log.days_until_due} day(s)</p>
+                            <p className="text-[10px] sm:text-xs text-amber-600 mt-0.5 sm:mt-1">Due in {log.days_until_due} day(s)</p>
                           )}
-                          <p className="text-xs text-muted-foreground mt-2">{formatDate(log.created_at)}</p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5 sm:mt-2">{formatDate(log.created_at)}</p>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setViewingSent(log); setViewSentDialogOpen(true); }} title="View full email">
-                          <Eye className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 self-end sm:self-start" onClick={(e) => { e.stopPropagation(); setViewingSent(log); setViewSentDialogOpen(true); }} title="View full email">
+                          <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </div>
@@ -721,7 +685,7 @@ const EmailManager = () => {
 
       {/* View Message Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg w-[95vw] sm:w-full max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Message from {viewingMessage?.sender_name}</DialogTitle>
           </DialogHeader>
@@ -754,7 +718,7 @@ const EmailManager = () => {
 
       {/* Reply Dialog */}
       <Dialog open={replyDialogOpen} onOpenChange={setReplyDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg w-[95vw] sm:w-full max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Reply to {replyingTo?.sender_name}</DialogTitle>
           </DialogHeader>
@@ -798,7 +762,7 @@ const EmailManager = () => {
 
       {/* View Inbound Email Dialog */}
       <Dialog open={viewInboundDialogOpen} onOpenChange={setViewInboundDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl w-[95vw] sm:w-full max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg">
               {viewingInbound?.subject || '(No Subject)'}
@@ -834,7 +798,7 @@ const EmailManager = () => {
                 )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button onClick={() => handleReplyInbound(viewingInbound)} className="flex-1">
                   <Reply className="h-4 w-4 mr-2" />
                   Reply
@@ -853,7 +817,7 @@ const EmailManager = () => {
       </Dialog>
       {/* View Sent Email Dialog */}
       <Dialog open={viewSentDialogOpen} onOpenChange={setViewSentDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl w-[95vw] sm:w-full max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg">
               {viewingSent?.subject || '(No Subject)'}
