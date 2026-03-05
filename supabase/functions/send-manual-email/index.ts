@@ -161,7 +161,7 @@ const handler = async (req: Request): Promise<Response> => {
       recipient_email: to,
       recipient_name: toName || null,
       subject: subject,
-      body_preview: message.substring(0, 200),
+      body_preview: message,
       status: 'sent',
       sent_by: user.id,
     });
