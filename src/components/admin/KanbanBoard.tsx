@@ -125,7 +125,7 @@ const KanbanBoard = () => {
 
     try {
       const taskData = {
-        project_id: formData.project_id || null,
+        project_id: formData.project_id && formData.project_id !== 'none' ? formData.project_id : null,
         title: formData.title,
         description: formData.description || null,
         status: formData.status,
@@ -529,7 +529,7 @@ const KanbanBoard = () => {
                     <SelectValue placeholder="Select project" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No Project</SelectItem>
+                    <SelectItem value="none">No Project</SelectItem>
                     {projects.map(project => (
                       <SelectItem key={project.id} value={project.id}>
                         {project.project_name}
