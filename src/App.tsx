@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +28,7 @@ import HireIndianDeveloper from "./pages/HireIndianDeveloper";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Investments from "./pages/Investments";
 import VersionChecker from "./components/VersionChecker";
+import SplashScreen from "./components/SplashScreen";
 
 // Create a new QueryClient instance outside of the component
 const queryClient = new QueryClient({
@@ -40,6 +41,8 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   // Add AdSense meta tag
   useEffect(() => {
     const adsenseMetaTag = document.createElement('meta');
@@ -54,6 +57,7 @@ const App = () => {
 
   return (
     <React.StrictMode>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <AuthProvider>
