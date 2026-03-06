@@ -41,6 +41,8 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   // Add AdSense meta tag
   useEffect(() => {
     const adsenseMetaTag = document.createElement('meta');
@@ -55,6 +57,7 @@ const App = () => {
 
   return (
     <React.StrictMode>
+      {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <AuthProvider>
