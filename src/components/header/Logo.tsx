@@ -15,7 +15,7 @@ const Logo = ({ onClick }: LogoProps) => {
       className={`flex items-center transition-transform hover:scale-105 duration-300 cursor-pointer ${isMobile ? 'ml-0' : ''}`}
     >
       <img 
-        src="/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png" 
+        src="/socilet-logo.png" 
         alt="Socilet Logo" 
         className={`${isMobile ? 'h-8' : 'h-14'} drop-shadow-sm`}
       />
