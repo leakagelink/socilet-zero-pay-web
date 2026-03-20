@@ -301,7 +301,7 @@ const WebsiteDevelopmentSEO: React.FC<BlogPostProps> = ({ post, onBack }) => {
                     "name": "Socilet",
                     "logo": {
                       "@type": "ImageObject",
-                      "url": "https://socilet.com/lovable-uploads/ccd00181-707e-4b7a-8083-b17b0673e60b.png"
+                      "url": "https://socilet.in/socilet-logo.png"
                     }
                   },
                   "mainEntityOfPage": {
