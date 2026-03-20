@@ -7,9 +7,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Agora Credentials
-const AGORA_APP_ID = '70055c1865ad4462bd0a92cb610707be';
-const AGORA_APP_CERTIFICATE = '2e1cbfe2c6e1407f8a49a21f3d706b14';
+// Agora Credentials from environment
+const AGORA_APP_ID = Deno.env.get('AGORA_APP_ID') || '70055c1865ad4462bd0a92cb610707be';
+const AGORA_APP_CERTIFICATE = Deno.env.get('AGORA_APP_CERTIFICATE') || '2e1cbfe2c6e1407f8a49a21f3d706b14';
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -20,10 +20,34 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    // Validate JWT authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid authentication token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const { action, roomName, title, description, createdBy, channelName: reqChannelName, uid, projectWorkspaceId } = await req.json();
-    console.log(`Action: ${action}, Room: ${roomName || reqChannelName}, Workspace: ${projectWorkspaceId || 'none'}`);
+    console.log(`Action: ${action}, Room: ${roomName || reqChannelName}, Workspace: ${projectWorkspaceId || 'none'}, User: ${claimsData.claims.sub}`);
 
     if (action === 'generate-token') {
       const channel = reqChannelName || roomName;
