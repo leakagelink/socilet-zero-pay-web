@@ -210,7 +210,7 @@ const AdminPanel = () => {
   useEffect(() => {
     if (!isLoggedIn) return;
 
-    const tables = ['spends', 'projects', 'digital_products', 'other_income', 'recurring_earnings'];
+    const tables = ['spends', 'projects', 'digital_products', 'other_income', 'recurring_earnings', 'cosmofeed_sales'];
     const channels = tables.map(table =>
       supabase
         .channel(`realtime-${table}`)
