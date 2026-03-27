@@ -802,6 +802,10 @@ const AdminPanel = () => {
           <TabsContent value="balance-tracker" className="mt-6 animate-fade-in">
             <BalanceTracker />
           </TabsContent>
+
+          <TabsContent value="cosmofeed" className="mt-6 animate-fade-in">
+            <CosmofeedSalesManager />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
