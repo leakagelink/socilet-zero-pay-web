@@ -339,6 +339,39 @@ export type Database = {
         }
         Relationships: []
       }
+      cosmofeed_products: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          gst_amount: number
+          id: string
+          is_active: boolean
+          price: number
+          product_title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          gst_amount?: number
+          id?: string
+          is_active?: boolean
+          price?: number
+          product_title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          gst_amount?: number
+          id?: string
+          is_active?: boolean
+          price?: number
+          product_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cosmofeed_sales: {
         Row: {
           created_at: string
@@ -349,6 +382,7 @@ export type Database = {
           notes: string | null
           payment_method: string | null
           price: number
+          product_id: string | null
           product_title: string
           quantity: number
           sale_date: string
@@ -363,6 +397,7 @@ export type Database = {
           notes?: string | null
           payment_method?: string | null
           price?: number
+          product_id?: string | null
           product_title: string
           quantity?: number
           sale_date?: string
@@ -377,12 +412,21 @@ export type Database = {
           notes?: string | null
           payment_method?: string | null
           price?: number
+          product_id?: string | null
           product_title?: string
           quantity?: number
           sale_date?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "cosmofeed_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "cosmofeed_products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       digital_products: {
         Row: {
