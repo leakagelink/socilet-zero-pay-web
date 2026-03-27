@@ -302,6 +302,7 @@ const BalanceTracker = () => {
                     digital_products: { label: 'Digital', color: 'text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30' },
                     other_income: { label: 'Other', color: 'text-amber-600 bg-amber-100 dark:text-amber-400 dark:bg-amber-900/30' },
                     spends: { label: 'Spend', color: 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30' },
+                    cosmofeed: { label: 'Cosmofeed', color: 'text-teal-600 bg-teal-100 dark:text-teal-400 dark:bg-teal-900/30' },
                   };
                   const s = sourceLabels[entry.source];
                   return (
