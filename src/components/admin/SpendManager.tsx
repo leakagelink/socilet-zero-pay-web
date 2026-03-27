@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,8 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Pencil, Trash2, Loader2, IndianRupee, TrendingDown, Calendar, Filter } from 'lucide-react';
-import { format } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { Plus, Pencil, Trash2, Loader2, IndianRupee, TrendingDown, Calendar, Filter, CalendarIcon } from 'lucide-react';
+import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
 
 interface Spend {
   id: string;
@@ -55,6 +58,9 @@ const SpendManager = () => {
   const [editingSpend, setEditingSpend] = useState<Spend | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterMonth, setFilterMonth] = useState<string>('all');
+  const [timePeriod, setTimePeriod] = useState<string>('all');
+  const [customFrom, setCustomFrom] = useState<Date | undefined>();
+  const [customTo, setCustomTo] = useState<Date | undefined>();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -161,21 +167,63 @@ const SpendManager = () => {
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
-  // Filter spends
-  const filteredSpends = spends.filter(s => {
-    if (filterCategory !== 'all' && s.category !== filterCategory) return false;
-    if (filterMonth !== 'all') {
-      const spendMonth = format(new Date(s.spend_date), 'yyyy-MM');
-      if (spendMonth !== filterMonth) return false;
+  // Time period date range helper
+  const getTimePeriodRange = (period: string): { start: Date; end: Date } | null => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    switch (period) {
+      case 'today': return { start: today, end: now };
+      case 'yesterday': { const y = subDays(today, 1); return { start: y, end: today }; }
+      case 'week': return { start: startOfWeek(today, { weekStartsOn: 1 }), end: now };
+      case 'month': return { start: startOfMonth(today), end: now };
+      case 'year': return { start: startOfYear(today), end: now };
+      case 'custom': {
+        if (customFrom && customTo) return { start: customFrom, end: new Date(customTo.getFullYear(), customTo.getMonth(), customTo.getDate(), 23, 59, 59) };
+        if (customFrom) return { start: customFrom, end: now };
+        return null;
+      }
+      default: return null;
     }
-    return true;
-  });
+  };
+
+  // Filter spends
+  const filteredSpends = useMemo(() => {
+    return spends.filter(s => {
+      if (filterCategory !== 'all' && s.category !== filterCategory) return false;
+      if (filterMonth !== 'all') {
+        const spendMonth = format(new Date(s.spend_date), 'yyyy-MM');
+        if (spendMonth !== filterMonth) return false;
+      }
+      const range = getTimePeriodRange(timePeriod);
+      if (range) {
+        const spendDate = new Date(s.spend_date);
+        if (!isWithinInterval(spendDate, { start: range.start, end: range.end })) return false;
+      }
+      return true;
+    });
+  }, [spends, filterCategory, filterMonth, timePeriod, customFrom, customTo]);
+
+  // Period-based stats
+  const periodStats = useMemo(() => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const calcSpend = (start: Date, end: Date) =>
+      spends.filter(s => {
+        const d = new Date(s.spend_date);
+        return isWithinInterval(d, { start, end });
+      }).reduce((sum, s) => sum + s.amount, 0);
+
+    return {
+      today: calcSpend(today, now),
+      yesterday: calcSpend(subDays(today, 1), today),
+      week: calcSpend(startOfWeek(today, { weekStartsOn: 1 }), now),
+      month: calcSpend(startOfMonth(today), now),
+      year: calcSpend(startOfYear(today), now),
+    };
+  }, [spends]);
 
   // Stats
   const totalSpend = filteredSpends.reduce((sum, s) => sum + s.amount, 0);
-  const thisMonthSpend = spends
-    .filter(s => format(new Date(s.spend_date), 'yyyy-MM') === format(new Date(), 'yyyy-MM'))
-    .reduce((sum, s) => sum + s.amount, 0);
 
   // Category-wise breakdown
   const categoryBreakdown = filteredSpends.reduce((acc, s) => {
@@ -269,12 +317,39 @@ const SpendManager = () => {
         </Dialog>
       </div>
 
-      {/* Stats Cards */}
+      {/* Period Stats */}
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+        {[
+          { label: 'Today', value: periodStats.today, key: 'today' },
+          { label: 'Yesterday', value: periodStats.yesterday, key: 'yesterday' },
+          { label: 'This Week', value: periodStats.week, key: 'week' },
+          { label: 'This Month', value: periodStats.month, key: 'month' },
+          { label: 'This Year', value: periodStats.year, key: 'year' },
+        ].map(({ label, value, key }) => (
+          <Card
+            key={key}
+            className={cn(
+              "cursor-pointer border transition-all duration-200 hover:shadow-md",
+              timePeriod === key
+                ? "border-red-500 bg-red-50 dark:bg-red-950/30 shadow-md"
+                : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            )}
+            onClick={() => setTimePeriod(timePeriod === key ? 'all' : key)}
+          >
+            <CardContent className="px-3 py-3">
+              <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">{label}</p>
+              <p className="text-sm sm:text-lg font-bold text-red-600 dark:text-red-400 mt-0.5">{formatCurrency(value)}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Main Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card className="border-0 bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/25">
           <CardHeader className="pb-1 px-4 pt-4">
             <CardTitle className="text-xs font-medium text-red-100 flex items-center gap-2">
-              <IndianRupee className="h-4 w-4" /> Total Spend
+              <IndianRupee className="h-4 w-4" /> {timePeriod !== 'all' ? 'Filtered' : 'Total'} Spend
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
@@ -283,20 +358,7 @@ const SpendManager = () => {
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-          <CardHeader className="pb-1 px-4 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-              <Calendar className="h-4 w-4" /> This Month
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">{formatCurrency(thisMonthSpend)}</p>
-            <p className="text-xs text-muted-foreground mt-1">{format(new Date(), 'MMM yyyy')}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-2 sm:col-span-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <Card className="col-span-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <CardHeader className="pb-1 px-4 pt-4">
             <CardTitle className="text-xs font-medium text-muted-foreground">Category Breakdown</CardTitle>
           </CardHeader>
@@ -312,6 +374,44 @@ const SpendManager = () => {
                   </div>
                 ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Custom Date Range */}
+        <Card className="col-span-2 sm:col-span-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <CardHeader className="pb-1 px-4 pt-4">
+            <CardTitle className="text-xs font-medium text-muted-foreground">Custom Range</CardTitle>
+          </CardHeader>
+          <CardContent className="px-3 pb-3 space-y-2">
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("h-8 text-xs flex-1 justify-start", !customFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="h-3 w-3 mr-1" />
+                    {customFrom ? format(customFrom, 'dd MMM') : 'From'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent mode="single" selected={customFrom} onSelect={(d) => { setCustomFrom(d); if (d) setTimePeriod('custom'); }} initialFocus className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("h-8 text-xs flex-1 justify-start", !customTo && "text-muted-foreground")}>
+                    <CalendarIcon className="h-3 w-3 mr-1" />
+                    {customTo ? format(customTo, 'dd MMM') : 'To'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent mode="single" selected={customTo} onSelect={(d) => { setCustomTo(d); if (d) setTimePeriod('custom'); }} initialFocus className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {timePeriod === 'custom' && (
+              <Button variant="ghost" size="sm" className="h-7 text-xs w-full" onClick={() => { setTimePeriod('all'); setCustomFrom(undefined); setCustomTo(undefined); }}>
+                Clear Range
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -339,6 +439,12 @@ const SpendManager = () => {
             ))}
           </SelectContent>
         </Select>
+        {timePeriod !== 'all' && (
+          <Badge variant="secondary" className="h-9 px-3 flex items-center gap-1 text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
+            {timePeriod === 'custom' ? `${customFrom ? format(customFrom, 'dd MMM') : '?'} - ${customTo ? format(customTo, 'dd MMM') : '?'}` : timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)}
+            <button onClick={() => { setTimePeriod('all'); setCustomFrom(undefined); setCustomTo(undefined); }} className="ml-1 hover:text-red-900">×</button>
+          </Badge>
+        )}
       </div>
 
       {/* Spends Table */}
