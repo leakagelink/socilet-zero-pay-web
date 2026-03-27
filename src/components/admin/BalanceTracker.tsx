@@ -11,7 +11,7 @@ import { CalendarIcon, Landmark, FolderKanban, Package, RefreshCw, Wallet, Trend
 interface BalanceEntry {
   amount: number;
   date: string;
-  source: 'projects' | 'recurring' | 'digital_products' | 'other_income' | 'spends';
+  source: 'projects' | 'recurring' | 'digital_products' | 'other_income' | 'spends' | 'cosmofeed';
   description: string;
 }
 
