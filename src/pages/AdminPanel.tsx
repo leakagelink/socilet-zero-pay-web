@@ -132,17 +132,21 @@ const AdminPanel = () => {
     }
     try {
       // Get the current row id
-      const { data: existing } = await supabase
-        .from('bank_balance_settings' as any)
+      const { data: existing, error: fetchErr } = await (supabase as any)
+        .from('bank_balance_settings')
         .select('id')
         .limit(1)
         .single();
       
+      if (fetchErr) throw fetchErr;
+      
       if (existing) {
-        await supabase
-          .from('bank_balance_settings' as any)
-          .update({ base_balance: newBalance, last_updated_at: new Date().toISOString() } as any)
-          .eq('id', (existing as any).id);
+        const { error: updateErr } = await (supabase as any)
+          .from('bank_balance_settings')
+          .update({ base_balance: newBalance, last_updated_at: new Date().toISOString() })
+          .eq('id', existing.id);
+        
+        if (updateErr) throw updateErr;
       }
       
       toast.success('Balance updated successfully');
@@ -150,7 +154,8 @@ const AdminPanel = () => {
       setBalanceInput('');
       fetchRevenueStats();
     } catch (err: any) {
-      toast.error('Failed to update balance: ' + err.message);
+      console.error('Balance update error:', err);
+      toast.error('Failed to update balance: ' + (err.message || 'Unknown error'));
     }
   };
 
