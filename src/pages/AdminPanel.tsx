@@ -74,27 +74,36 @@ const AdminPanel = () => {
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
     try {
-      // Fetch projects data
-      const { data: projects } = await supabase
-        .from('projects')
-        .select('total_amount, remaining_amount, advance_amount');
+      // Fetch all data in parallel
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes] = await Promise.all([
+        supabase.from('projects').select('total_amount, remaining_amount, advance_amount'),
+        supabase.from('digital_products').select('resell_price, profit'),
+        supabase.from('other_income').select('amount, paid_amount, status'),
+        supabase.from('spends').select('amount'),
+        supabase.from('recurring_earnings').select('amount, is_active'),
+      ]);
 
-      // Fetch digital products data
-      const { data: digitalProducts } = await supabase
-        .from('digital_products')
-        .select('resell_price, profit');
-
-      // Fetch other income data
-      const { data: otherIncomes } = await supabase
-        .from('other_income')
-        .select('amount');
+      const projects = projectsRes.data;
+      const digitalProducts = digitalRes.data;
+      const otherIncomes = otherRes.data;
+      const spends = spendsRes.data;
+      const recurring = recurringRes.data;
 
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
       const projectsReceived = projects?.reduce((sum, p) => sum + (p.advance_amount || 0), 0) || 0;
       const digitalRevenue = digitalProducts?.reduce((sum, p) => sum + (p.resell_price || 0), 0) || 0;
       const digitalProfit = digitalProducts?.reduce((sum, p) => sum + (p.profit || 0), 0) || 0;
-      const otherIncomeTotal = otherIncomes?.reduce((sum, o) => sum + (o.amount || 0), 0) || 0;
+      const otherIncomeTotal = otherIncomes?.reduce((sum, o) => {
+        if (o.status === 'paid') return sum + (o.amount || 0);
+        if (o.status === 'partial') return sum + (o.paid_amount || 0);
+        return sum;
+      }, 0) || 0;
+      const totalSpends = spends?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
+      const recurringEarnings = recurring?.filter(r => r.is_active).reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
+
+      const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal;
+      const availableBalance = totalIncome - totalSpends;
 
       setRevenueStats({
         projectsRevenue,
@@ -102,7 +111,10 @@ const AdminPanel = () => {
         digitalRevenue,
         digitalProfit,
         otherIncome: otherIncomeTotal,
-        totalRevenue: projectsReceived + digitalRevenue + otherIncomeTotal,
+        totalRevenue: totalIncome,
+        totalSpends,
+        recurringEarnings,
+        availableBalance,
       });
     } catch (err) {
       console.error('Error fetching revenue stats:', err);
