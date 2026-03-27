@@ -317,12 +317,39 @@ const SpendManager = () => {
         </Dialog>
       </div>
 
-      {/* Stats Cards */}
+      {/* Period Stats */}
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
+        {[
+          { label: 'Today', value: periodStats.today, key: 'today' },
+          { label: 'Yesterday', value: periodStats.yesterday, key: 'yesterday' },
+          { label: 'This Week', value: periodStats.week, key: 'week' },
+          { label: 'This Month', value: periodStats.month, key: 'month' },
+          { label: 'This Year', value: periodStats.year, key: 'year' },
+        ].map(({ label, value, key }) => (
+          <Card
+            key={key}
+            className={cn(
+              "cursor-pointer border transition-all duration-200 hover:shadow-md",
+              timePeriod === key
+                ? "border-red-500 bg-red-50 dark:bg-red-950/30 shadow-md"
+                : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+            )}
+            onClick={() => setTimePeriod(timePeriod === key ? 'all' : key)}
+          >
+            <CardContent className="px-3 py-3">
+              <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">{label}</p>
+              <p className="text-sm sm:text-lg font-bold text-red-600 dark:text-red-400 mt-0.5">{formatCurrency(value)}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Main Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card className="border-0 bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/25">
           <CardHeader className="pb-1 px-4 pt-4">
             <CardTitle className="text-xs font-medium text-red-100 flex items-center gap-2">
-              <IndianRupee className="h-4 w-4" /> Total Spend
+              <IndianRupee className="h-4 w-4" /> {timePeriod !== 'all' ? 'Filtered' : 'Total'} Spend
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-4">
@@ -331,20 +358,7 @@ const SpendManager = () => {
           </CardContent>
         </Card>
 
-        <Card className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-          <CardHeader className="pb-1 px-4 pt-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-              <Calendar className="h-4 w-4" /> This Month
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl sm:text-2xl font-bold text-orange-600 dark:text-orange-400">{formatCurrency(thisMonthSpend)}</p>
-            <p className="text-xs text-muted-foreground mt-1">{format(new Date(), 'MMM yyyy')}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-2 sm:col-span-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <Card className="col-span-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           <CardHeader className="pb-1 px-4 pt-4">
             <CardTitle className="text-xs font-medium text-muted-foreground">Category Breakdown</CardTitle>
           </CardHeader>
@@ -360,6 +374,44 @@ const SpendManager = () => {
                   </div>
                 ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Custom Date Range */}
+        <Card className="col-span-2 sm:col-span-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <CardHeader className="pb-1 px-4 pt-4">
+            <CardTitle className="text-xs font-medium text-muted-foreground">Custom Range</CardTitle>
+          </CardHeader>
+          <CardContent className="px-3 pb-3 space-y-2">
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("h-8 text-xs flex-1 justify-start", !customFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="h-3 w-3 mr-1" />
+                    {customFrom ? format(customFrom, 'dd MMM') : 'From'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent mode="single" selected={customFrom} onSelect={(d) => { setCustomFrom(d); if (d) setTimePeriod('custom'); }} initialFocus className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className={cn("h-8 text-xs flex-1 justify-start", !customTo && "text-muted-foreground")}>
+                    <CalendarIcon className="h-3 w-3 mr-1" />
+                    {customTo ? format(customTo, 'dd MMM') : 'To'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent mode="single" selected={customTo} onSelect={(d) => { setCustomTo(d); if (d) setTimePeriod('custom'); }} initialFocus className="p-3 pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {timePeriod === 'custom' && (
+              <Button variant="ghost" size="sm" className="h-7 text-xs w-full" onClick={() => { setTimePeriod('all'); setCustomFrom(undefined); setCustomTo(undefined); }}>
+                Clear Range
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -387,6 +439,12 @@ const SpendManager = () => {
             ))}
           </SelectContent>
         </Select>
+        {timePeriod !== 'all' && (
+          <Badge variant="secondary" className="h-9 px-3 flex items-center gap-1 text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">
+            {timePeriod === 'custom' ? `${customFrom ? format(customFrom, 'dd MMM') : '?'} - ${customTo ? format(customTo, 'dd MMM') : '?'}` : timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)}
+            <button onClick={() => { setTimePeriod('all'); setCustomFrom(undefined); setCustomTo(undefined); }} className="ml-1 hover:text-red-900">×</button>
+          </Badge>
+        )}
       </div>
 
       {/* Spends Table */}
