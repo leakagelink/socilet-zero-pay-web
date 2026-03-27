@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -46,6 +46,9 @@ interface RevenueStats {
   digitalProfit: number;
   otherIncome: number;
   totalRevenue: number;
+  totalSpends: number;
+  recurringEarnings: number;
+  availableBalance: number;
 }
 
 const AdminPanel = () => {
@@ -63,32 +66,44 @@ const AdminPanel = () => {
     digitalProfit: 0,
     otherIncome: 0,
     totalRevenue: 0,
+    totalSpends: 0,
+    recurringEarnings: 0,
+    availableBalance: 0,
   });
 
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
     try {
-      // Fetch projects data
-      const { data: projects } = await supabase
-        .from('projects')
-        .select('total_amount, remaining_amount, advance_amount');
+      // Fetch all data in parallel
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes] = await Promise.all([
+        supabase.from('projects').select('total_amount, remaining_amount, advance_amount'),
+        supabase.from('digital_products').select('resell_price, profit'),
+        supabase.from('other_income').select('amount, paid_amount, status'),
+        supabase.from('spends').select('amount'),
+        supabase.from('recurring_earnings').select('amount, is_active'),
+      ]);
 
-      // Fetch digital products data
-      const { data: digitalProducts } = await supabase
-        .from('digital_products')
-        .select('resell_price, profit');
-
-      // Fetch other income data
-      const { data: otherIncomes } = await supabase
-        .from('other_income')
-        .select('amount');
+      const projects = projectsRes.data;
+      const digitalProducts = digitalRes.data;
+      const otherIncomes = otherRes.data;
+      const spends = spendsRes.data;
+      const recurring = recurringRes.data;
 
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
       const projectsReceived = projects?.reduce((sum, p) => sum + (p.advance_amount || 0), 0) || 0;
       const digitalRevenue = digitalProducts?.reduce((sum, p) => sum + (p.resell_price || 0), 0) || 0;
       const digitalProfit = digitalProducts?.reduce((sum, p) => sum + (p.profit || 0), 0) || 0;
-      const otherIncomeTotal = otherIncomes?.reduce((sum, o) => sum + (o.amount || 0), 0) || 0;
+      const otherIncomeTotal = otherIncomes?.reduce((sum, o) => {
+        if (o.status === 'paid') return sum + (o.amount || 0);
+        if (o.status === 'partial') return sum + (o.paid_amount || 0);
+        return sum;
+      }, 0) || 0;
+      const totalSpends = spends?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
+      const recurringEarnings = recurring?.filter(r => r.is_active).reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
+
+      const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal;
+      const availableBalance = totalIncome - totalSpends;
 
       setRevenueStats({
         projectsRevenue,
@@ -96,7 +111,10 @@ const AdminPanel = () => {
         digitalRevenue,
         digitalProfit,
         otherIncome: otherIncomeTotal,
-        totalRevenue: projectsReceived + digitalRevenue + otherIncomeTotal,
+        totalRevenue: totalIncome,
+        totalSpends,
+        recurringEarnings,
+        availableBalance,
       });
     } catch (err) {
       console.error('Error fetching revenue stats:', err);
@@ -342,7 +360,58 @@ const AdminPanel = () => {
             </div>
           </div>
           
-          {/* Modern Stats Grid */}
+          {/* Available Balance - Prominent Card */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+            <Card className="sm:col-span-1 group relative overflow-hidden border-0 bg-gradient-to-br from-indigo-600 to-violet-700 shadow-xl shadow-indigo-500/30">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-indigo-100 flex items-center gap-2">
+                  <Landmark className="h-4 w-4" />
+                  Available Balance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 relative">
+                <p className={`text-2xl sm:text-3xl font-bold ${revenueStats.availableBalance >= 0 ? 'text-white' : 'text-red-200'}`}>
+                  <AnimatedCurrency value={revenueStats.availableBalance} />
+                </p>
+                <p className="text-xs text-indigo-100/80 mt-1">Total Income - Total Spends</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/25">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-red-100 flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4" />
+                  Total Spends
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 relative">
+                <p className="text-xl sm:text-2xl font-bold text-white">
+                  <AnimatedCurrency value={revenueStats.totalSpends} />
+                </p>
+                <p className="text-xs text-red-100/80 mt-1">All expenses</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg shadow-cyan-500/25">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-cyan-100 flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Monthly Recurring
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 relative">
+                <p className="text-xl sm:text-2xl font-bold text-white">
+                  <AnimatedCurrency value={revenueStats.recurringEarnings} />
+                </p>
+                <p className="text-xs text-cyan-100/80 mt-1">Active subscriptions</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Existing Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <Card className="col-span-2 sm:col-span-1 group relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
