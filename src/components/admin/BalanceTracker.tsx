@@ -27,12 +27,13 @@ const BalanceTracker = () => {
   const fetchAllEntries = async () => {
     setLoading(true);
     try {
-      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes] = await Promise.all([
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, cosmofeedRes] = await Promise.all([
         supabase.from('projects').select('advance_amount, created_at, client_name, project_name'),
         supabase.from('digital_products').select('resell_price, sale_date, service_name, customer_name'),
         supabase.from('other_income').select('amount, paid_amount, payment_date, client_name, work_description, status'),
         supabase.from('spends').select('amount, spend_date, title, category'),
         supabase.from('recurring_earnings').select('amount, start_date, client_name, project_name, is_active'),
+        (supabase as any).from('cosmofeed_sales').select('net_amount, sale_date, product_title, quantity'),
       ]);
 
       const allEntries: BalanceEntry[] = [];
