@@ -136,6 +136,30 @@ export type Database = {
           },
         ]
       }
+      bank_balance_settings: {
+        Row: {
+          base_balance: number
+          id: string
+          last_updated_at: string
+          notes: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          base_balance?: number
+          id?: string
+          last_updated_at?: string
+          notes?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          base_balance?: number
+          id?: string
+          last_updated_at?: string
+          notes?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       blocked_chat_logs: {
         Row: {
           block_reason: string

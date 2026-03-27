@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark, Pencil, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -70,17 +70,19 @@ const AdminPanel = () => {
     recurringEarnings: 0,
     availableBalance: 0,
   });
+  const [isEditingBalance, setIsEditingBalance] = useState(false);
+  const [balanceInput, setBalanceInput] = useState('');
 
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
     try {
-      // Fetch all data in parallel
-      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes] = await Promise.all([
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, balanceRes] = await Promise.all([
         supabase.from('projects').select('total_amount, remaining_amount, advance_amount'),
         supabase.from('digital_products').select('resell_price, profit'),
         supabase.from('other_income').select('amount, paid_amount, status'),
         supabase.from('spends').select('amount'),
         supabase.from('recurring_earnings').select('amount, is_active'),
+        supabase.from('bank_balance_settings' as any).select('base_balance').limit(1).single(),
       ]);
 
       const projects = projectsRes.data;
@@ -88,6 +90,7 @@ const AdminPanel = () => {
       const otherIncomes = otherRes.data;
       const spends = spendsRes.data;
       const recurring = recurringRes.data;
+      const baseBalance = (balanceRes.data as any)?.base_balance || 0;
 
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
@@ -103,7 +106,7 @@ const AdminPanel = () => {
       const recurringEarnings = recurring?.filter(r => r.is_active).reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
 
       const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal;
-      const availableBalance = totalIncome - totalSpends;
+      const availableBalance = baseBalance + totalIncome - totalSpends;
 
       setRevenueStats({
         projectsRevenue,
@@ -118,6 +121,36 @@ const AdminPanel = () => {
       });
     } catch (err) {
       console.error('Error fetching revenue stats:', err);
+    }
+  };
+
+  const handleUpdateBalance = async () => {
+    const newBalance = parseFloat(balanceInput);
+    if (isNaN(newBalance)) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+    try {
+      // Get the current row id
+      const { data: existing } = await supabase
+        .from('bank_balance_settings' as any)
+        .select('id')
+        .limit(1)
+        .single();
+      
+      if (existing) {
+        await supabase
+          .from('bank_balance_settings' as any)
+          .update({ base_balance: newBalance, last_updated_at: new Date().toISOString() } as any)
+          .eq('id', (existing as any).id);
+      }
+      
+      toast.success('Balance updated successfully');
+      setIsEditingBalance(false);
+      setBalanceInput('');
+      fetchRevenueStats();
+    } catch (err: any) {
+      toast.error('Failed to update balance: ' + err.message);
     }
   };
 
@@ -384,16 +417,55 @@ const AdminPanel = () => {
             <Card className="sm:col-span-1 group relative overflow-hidden border-0 bg-gradient-to-br from-indigo-600 to-violet-700 shadow-xl shadow-indigo-500/30">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
               <CardHeader className="pb-1 px-4 pt-4 relative">
-                <CardTitle className="text-xs font-medium text-indigo-100 flex items-center gap-2">
-                  <Landmark className="h-4 w-4" />
-                  Available Balance
+                <CardTitle className="text-xs font-medium text-indigo-100 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Landmark className="h-4 w-4" />
+                    Available Balance
+                  </span>
+                  {!isEditingBalance && (
+                    <button
+                      onClick={() => {
+                        setBalanceInput(revenueStats.availableBalance.toString());
+                        setIsEditingBalance(true);
+                      }}
+                      className="p-1 rounded-md hover:bg-white/20 transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5 text-indigo-200" />
+                    </button>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-4 pb-4 relative">
-                <p className={`text-2xl sm:text-3xl font-bold ${revenueStats.availableBalance >= 0 ? 'text-white' : 'text-red-200'}`}>
-                  <AnimatedCurrency value={revenueStats.availableBalance} />
-                </p>
-                <p className="text-xs text-indigo-100/80 mt-1">Total Income - Total Spends</p>
+                {isEditingBalance ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-bold text-lg">₹</span>
+                      <Input
+                        type="number"
+                        value={balanceInput}
+                        onChange={(e) => setBalanceInput(e.target.value)}
+                        className="h-9 bg-white/20 border-white/30 text-white placeholder:text-white/50 text-lg font-bold"
+                        placeholder="Enter balance"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleUpdateBalance} className="h-7 px-3 bg-white/20 hover:bg-white/30 text-white text-xs">
+                        <Check className="h-3 w-3 mr-1" /> Save
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setIsEditingBalance(false); setBalanceInput(''); }} className="h-7 px-3 text-white/80 hover:text-white hover:bg-white/10 text-xs">
+                        <X className="h-3 w-3 mr-1" /> Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className={`text-2xl sm:text-3xl font-bold ${revenueStats.availableBalance >= 0 ? 'text-white' : 'text-red-200'}`}>
+                      <AnimatedCurrency value={revenueStats.availableBalance} />
+                    </p>
+                    <p className="text-xs text-indigo-100/80 mt-1">Base + Income - Spends</p>
+                  </>
+                )}
               </CardContent>
             </Card>
 
