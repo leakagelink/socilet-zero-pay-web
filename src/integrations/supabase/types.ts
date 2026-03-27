@@ -339,6 +339,51 @@ export type Database = {
         }
         Relationships: []
       }
+      cosmofeed_sales: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          gst_amount: number
+          id: string
+          net_amount: number
+          notes: string | null
+          payment_method: string | null
+          price: number
+          product_title: string
+          quantity: number
+          sale_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          gst_amount?: number
+          id?: string
+          net_amount?: number
+          notes?: string | null
+          payment_method?: string | null
+          price?: number
+          product_title: string
+          quantity?: number
+          sale_date?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          gst_amount?: number
+          id?: string
+          net_amount?: number
+          notes?: string | null
+          payment_method?: string | null
+          price?: number
+          product_title?: string
+          quantity?: number
+          sale_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       digital_products: {
         Row: {
           created_at: string

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark, Pencil, Check, X } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark, Pencil, Check, X, ShoppingBag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,6 +24,7 @@ import InvestmentManager from '@/components/admin/InvestmentManager';
 import SpendManager from '@/components/admin/SpendManager';
 import PaymentMethodsManager from '@/components/admin/PaymentMethodsManager';
 import BalanceTracker from '@/components/admin/BalanceTracker';
+import CosmofeedSalesManager from '@/components/admin/CosmofeedSalesManager';
 import EmailNotificationDropdown from '@/components/admin/EmailNotificationDropdown';
 import { useCountUp } from '@/hooks/useCountUp';
 
@@ -77,13 +78,14 @@ const AdminPanel = () => {
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
     try {
-      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, balanceRes] = await Promise.all([
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, balanceRes, cosmofeedRes] = await Promise.all([
         supabase.from('projects').select('total_amount, remaining_amount, advance_amount'),
         supabase.from('digital_products').select('resell_price, profit'),
         supabase.from('other_income').select('amount, paid_amount, status'),
         supabase.from('spends').select('amount'),
         supabase.from('recurring_earnings').select('amount, is_active'),
         (supabase as any).from('bank_balance_settings').select('base_balance').limit(1).single(),
+        (supabase as any).from('cosmofeed_sales').select('net_amount'),
       ]);
 
       const projects = projectsRes.data;
@@ -92,6 +94,7 @@ const AdminPanel = () => {
       const spends = spendsRes.data;
       const recurring = recurringRes.data;
       const baseBalance = (balanceRes.data as any)?.base_balance || 0;
+      const cosmofeedTotal = (cosmofeedRes.data as any[])?.reduce((sum: number, c: any) => sum + (c.net_amount || 0), 0) || 0;
 
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
@@ -106,7 +109,7 @@ const AdminPanel = () => {
       const totalSpends = spends?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
       const recurringEarnings = recurring?.filter(r => r.is_active).reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
 
-      const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal;
+      const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal + cosmofeedTotal;
       const availableBalance = baseBalance + totalIncome - totalSpends;
 
       setRevenueStats({
@@ -207,7 +210,7 @@ const AdminPanel = () => {
   useEffect(() => {
     if (!isLoggedIn) return;
 
-    const tables = ['spends', 'projects', 'digital_products', 'other_income', 'recurring_earnings'];
+    const tables = ['spends', 'projects', 'digital_products', 'other_income', 'recurring_earnings', 'cosmofeed_sales'];
     const channels = tables.map(table =>
       supabase
         .channel(`realtime-${table}`)
@@ -724,6 +727,13 @@ const AdminPanel = () => {
                 <Landmark className="h-4 w-4" />
                 <span className="hidden sm:inline">Balance</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="cosmofeed" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden sm:inline">Cosmofeed</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -793,6 +803,10 @@ const AdminPanel = () => {
 
           <TabsContent value="balance-tracker" className="mt-6 animate-fade-in">
             <BalanceTracker />
+          </TabsContent>
+
+          <TabsContent value="cosmofeed" className="mt-6 animate-fade-in">
+            <CosmofeedSalesManager />
           </TabsContent>
         </Tabs>
       </main>

@@ -6,12 +6,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval, isToday, isYesterday } from 'date-fns';
-import { CalendarIcon, Landmark, FolderKanban, Package, RefreshCw, Wallet, TrendingDown, TrendingUp, Filter, X } from 'lucide-react';
+import { CalendarIcon, Landmark, FolderKanban, Package, RefreshCw, Wallet, TrendingDown, TrendingUp, Filter, X, ShoppingBag } from 'lucide-react';
 
 interface BalanceEntry {
   amount: number;
   date: string;
-  source: 'projects' | 'recurring' | 'digital_products' | 'other_income' | 'spends';
+  source: 'projects' | 'recurring' | 'digital_products' | 'other_income' | 'spends' | 'cosmofeed';
   description: string;
 }
 
@@ -27,12 +27,13 @@ const BalanceTracker = () => {
   const fetchAllEntries = async () => {
     setLoading(true);
     try {
-      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes] = await Promise.all([
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, cosmofeedRes] = await Promise.all([
         supabase.from('projects').select('advance_amount, created_at, client_name, project_name'),
         supabase.from('digital_products').select('resell_price, sale_date, service_name, customer_name'),
         supabase.from('other_income').select('amount, paid_amount, payment_date, client_name, work_description, status'),
         supabase.from('spends').select('amount, spend_date, title, category'),
         supabase.from('recurring_earnings').select('amount, start_date, client_name, project_name, is_active'),
+        (supabase as any).from('cosmofeed_sales').select('net_amount, sale_date, product_title, quantity'),
       ]);
 
       const allEntries: BalanceEntry[] = [];
@@ -86,6 +87,18 @@ const BalanceTracker = () => {
         }
       });
 
+      // Cosmofeed sales
+      (cosmofeedRes.data as any[])?.forEach((c: any) => {
+        if (c.net_amount > 0) {
+          allEntries.push({
+            amount: c.net_amount,
+            date: c.sale_date,
+            source: 'cosmofeed',
+            description: `${c.product_title}${c.quantity > 1 ? ' x' + c.quantity : ''}`,
+          });
+        }
+      });
+
       // Spends (negative)
       spendsRes.data?.forEach(s => {
         if (s.amount > 0) {
@@ -110,7 +123,7 @@ const BalanceTracker = () => {
     fetchAllEntries();
 
     // Realtime subscriptions
-    const channels = ['projects', 'digital_products', 'other_income', 'spends', 'recurring_earnings'].map(table =>
+    const channels = ['projects', 'digital_products', 'other_income', 'spends', 'recurring_earnings', 'cosmofeed_sales'].map(table =>
       supabase.channel(`balance-${table}`).on('postgres_changes', { event: '*', schema: 'public', table }, () => fetchAllEntries()).subscribe()
     );
 
@@ -145,9 +158,10 @@ const BalanceTracker = () => {
     const recurring = filteredEntries.filter(e => e.source === 'recurring').reduce((s, e) => s + e.amount, 0);
     const digital = filteredEntries.filter(e => e.source === 'digital_products').reduce((s, e) => s + e.amount, 0);
     const other = filteredEntries.filter(e => e.source === 'other_income').reduce((s, e) => s + e.amount, 0);
+    const cosmofeed = filteredEntries.filter(e => e.source === 'cosmofeed').reduce((s, e) => s + e.amount, 0);
     const spends = filteredEntries.filter(e => e.source === 'spends').reduce((s, e) => s + Math.abs(e.amount), 0);
-    const totalIncome = projects + recurring + digital + other;
-    return { projects, recurring, digital, other, spends, totalIncome, net: totalIncome - spends };
+    const totalIncome = projects + recurring + digital + other + cosmofeed;
+    return { projects, recurring, digital, other, cosmofeed, spends, totalIncome, net: totalIncome - spends };
   }, [filteredEntries]);
 
   const fmt = (v: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(v);
@@ -166,6 +180,7 @@ const BalanceTracker = () => {
     { key: 'recurring' as const, label: 'Recurring', icon: RefreshCw, color: 'text-cyan-400', bg: 'bg-cyan-500/20' },
     { key: 'digital' as const, label: 'Digital Products', icon: Package, color: 'text-purple-400', bg: 'bg-purple-500/20' },
     { key: 'other' as const, label: 'Other Income', icon: Wallet, color: 'text-amber-400', bg: 'bg-amber-500/20' },
+    { key: 'cosmofeed' as const, label: 'Cosmofeed', icon: ShoppingBag, color: 'text-teal-400', bg: 'bg-teal-500/20' },
   ];
 
   return (
@@ -289,6 +304,7 @@ const BalanceTracker = () => {
                     digital_products: { label: 'Digital', color: 'text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30' },
                     other_income: { label: 'Other', color: 'text-amber-600 bg-amber-100 dark:text-amber-400 dark:bg-amber-900/30' },
                     spends: { label: 'Spend', color: 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30' },
+                    cosmofeed: { label: 'Cosmofeed', color: 'text-teal-600 bg-teal-100 dark:text-teal-400 dark:bg-teal-900/30' },
                   };
                   const s = sourceLabels[entry.source];
                   return (
