@@ -180,6 +180,7 @@ const BalanceTracker = () => {
     { key: 'recurring' as const, label: 'Recurring', icon: RefreshCw, color: 'text-cyan-400', bg: 'bg-cyan-500/20' },
     { key: 'digital' as const, label: 'Digital Products', icon: Package, color: 'text-purple-400', bg: 'bg-purple-500/20' },
     { key: 'other' as const, label: 'Other Income', icon: Wallet, color: 'text-amber-400', bg: 'bg-amber-500/20' },
+    { key: 'cosmofeed' as const, label: 'Cosmofeed', icon: ShoppingBag, color: 'text-teal-400', bg: 'bg-teal-500/20' },
   ];
 
   return (
