@@ -167,21 +167,63 @@ const SpendManager = () => {
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
-  // Filter spends
-  const filteredSpends = spends.filter(s => {
-    if (filterCategory !== 'all' && s.category !== filterCategory) return false;
-    if (filterMonth !== 'all') {
-      const spendMonth = format(new Date(s.spend_date), 'yyyy-MM');
-      if (spendMonth !== filterMonth) return false;
+  // Time period date range helper
+  const getTimePeriodRange = (period: string): { start: Date; end: Date } | null => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    switch (period) {
+      case 'today': return { start: today, end: now };
+      case 'yesterday': { const y = subDays(today, 1); return { start: y, end: today }; }
+      case 'week': return { start: startOfWeek(today, { weekStartsOn: 1 }), end: now };
+      case 'month': return { start: startOfMonth(today), end: now };
+      case 'year': return { start: startOfYear(today), end: now };
+      case 'custom': {
+        if (customFrom && customTo) return { start: customFrom, end: new Date(customTo.getFullYear(), customTo.getMonth(), customTo.getDate(), 23, 59, 59) };
+        if (customFrom) return { start: customFrom, end: now };
+        return null;
+      }
+      default: return null;
     }
-    return true;
-  });
+  };
+
+  // Filter spends
+  const filteredSpends = useMemo(() => {
+    return spends.filter(s => {
+      if (filterCategory !== 'all' && s.category !== filterCategory) return false;
+      if (filterMonth !== 'all') {
+        const spendMonth = format(new Date(s.spend_date), 'yyyy-MM');
+        if (spendMonth !== filterMonth) return false;
+      }
+      const range = getTimePeriodRange(timePeriod);
+      if (range) {
+        const spendDate = new Date(s.spend_date);
+        if (!isWithinInterval(spendDate, { start: range.start, end: range.end })) return false;
+      }
+      return true;
+    });
+  }, [spends, filterCategory, filterMonth, timePeriod, customFrom, customTo]);
+
+  // Period-based stats
+  const periodStats = useMemo(() => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const calcSpend = (start: Date, end: Date) =>
+      spends.filter(s => {
+        const d = new Date(s.spend_date);
+        return isWithinInterval(d, { start, end });
+      }).reduce((sum, s) => sum + s.amount, 0);
+
+    return {
+      today: calcSpend(today, now),
+      yesterday: calcSpend(subDays(today, 1), today),
+      week: calcSpend(startOfWeek(today, { weekStartsOn: 1 }), now),
+      month: calcSpend(startOfMonth(today), now),
+      year: calcSpend(startOfYear(today), now),
+    };
+  }, [spends]);
 
   // Stats
   const totalSpend = filteredSpends.reduce((sum, s) => sum + s.amount, 0);
-  const thisMonthSpend = spends
-    .filter(s => format(new Date(s.spend_date), 'yyyy-MM') === format(new Date(), 'yyyy-MM'))
-    .reduce((sum, s) => sum + s.amount, 0);
 
   // Category-wise breakdown
   const categoryBreakdown = filteredSpends.reduce((acc, s) => {
