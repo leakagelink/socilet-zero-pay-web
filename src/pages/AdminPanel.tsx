@@ -23,6 +23,7 @@ import ReminderManager from '@/components/admin/ReminderManager';
 import InvestmentManager from '@/components/admin/InvestmentManager';
 import SpendManager from '@/components/admin/SpendManager';
 import PaymentMethodsManager from '@/components/admin/PaymentMethodsManager';
+import BalanceTracker from '@/components/admin/BalanceTracker';
 import EmailNotificationDropdown from '@/components/admin/EmailNotificationDropdown';
 import { useCountUp } from '@/hooks/useCountUp';
 
@@ -716,6 +717,13 @@ const AdminPanel = () => {
                 <TrendingDown className="h-4 w-4" />
                 <span className="hidden sm:inline">Spends</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="balance-tracker" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <Landmark className="h-4 w-4" />
+                <span className="hidden sm:inline">Balance</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -781,6 +789,10 @@ const AdminPanel = () => {
 
           <TabsContent value="payment-methods" className="mt-6 animate-fade-in">
             <PaymentMethodsManager />
+          </TabsContent>
+
+          <TabsContent value="balance-tracker" className="mt-6 animate-fade-in">
+            <BalanceTracker />
           </TabsContent>
         </Tabs>
       </main>
