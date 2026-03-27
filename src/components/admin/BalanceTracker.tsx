@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval, isToday, isYesterday } from 'date-fns';
-import { CalendarIcon, Landmark, FolderKanban, Package, RefreshCw, Wallet, TrendingDown, TrendingUp, Filter, X } from 'lucide-react';
+import { CalendarIcon, Landmark, FolderKanban, Package, RefreshCw, Wallet, TrendingDown, TrendingUp, Filter, X, ShoppingBag } from 'lucide-react';
 
 interface BalanceEntry {
   amount: number;
