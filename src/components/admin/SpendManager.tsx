@@ -58,6 +58,9 @@ const SpendManager = () => {
   const [editingSpend, setEditingSpend] = useState<Spend | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterMonth, setFilterMonth] = useState<string>('all');
+  const [timePeriod, setTimePeriod] = useState<string>('all');
+  const [customFrom, setCustomFrom] = useState<Date | undefined>();
+  const [customTo, setCustomTo] = useState<Date | undefined>();
 
   const [formData, setFormData] = useState({
     title: '',
