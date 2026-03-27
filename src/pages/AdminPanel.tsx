@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark } from 'lucide-react';
+import { Lock, Loader2, LogOut, Shield, FolderKanban, Package, TrendingUp, IndianRupee, RefreshCw, Wallet, Mail, Key, FileText, LayoutGrid, Bell, FileSpreadsheet, Bot, ShieldAlert, AlarmClock, PiggyBank, TrendingDown, Landmark, Pencil, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
