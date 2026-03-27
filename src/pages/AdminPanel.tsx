@@ -46,6 +46,9 @@ interface RevenueStats {
   digitalProfit: number;
   otherIncome: number;
   totalRevenue: number;
+  totalSpends: number;
+  recurringEarnings: number;
+  availableBalance: number;
 }
 
 const AdminPanel = () => {
