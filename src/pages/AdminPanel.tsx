@@ -725,6 +725,13 @@ const AdminPanel = () => {
                 <Landmark className="h-4 w-4" />
                 <span className="hidden sm:inline">Balance</span>
               </TabsTrigger>
+              <TabsTrigger 
+                value="cosmofeed" 
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=inactive]:bg-muted/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted"
+              >
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden sm:inline">Cosmofeed</span>
+              </TabsTrigger>
             </TabsList>
           </div>
 
