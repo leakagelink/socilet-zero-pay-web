@@ -360,7 +360,58 @@ const AdminPanel = () => {
             </div>
           </div>
           
-          {/* Modern Stats Grid */}
+          {/* Available Balance - Prominent Card */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+            <Card className="sm:col-span-1 group relative overflow-hidden border-0 bg-gradient-to-br from-indigo-600 to-violet-700 shadow-xl shadow-indigo-500/30">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-indigo-100 flex items-center gap-2">
+                  <Landmark className="h-4 w-4" />
+                  Available Balance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 relative">
+                <p className={`text-2xl sm:text-3xl font-bold ${revenueStats.availableBalance >= 0 ? 'text-white' : 'text-red-200'}`}>
+                  <AnimatedCurrency value={revenueStats.availableBalance} />
+                </p>
+                <p className="text-xs text-indigo-100/80 mt-1">Total Income - Total Spends</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/25">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-red-100 flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4" />
+                  Total Spends
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 relative">
+                <p className="text-xl sm:text-2xl font-bold text-white">
+                  <AnimatedCurrency value={revenueStats.totalSpends} />
+                </p>
+                <p className="text-xs text-red-100/80 mt-1">All expenses</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg shadow-cyan-500/25">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+              <CardHeader className="pb-1 px-4 pt-4 relative">
+                <CardTitle className="text-xs font-medium text-cyan-100 flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Monthly Recurring
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 relative">
+                <p className="text-xl sm:text-2xl font-bold text-white">
+                  <AnimatedCurrency value={revenueStats.recurringEarnings} />
+                </p>
+                <p className="text-xs text-cyan-100/80 mt-1">Active subscriptions</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Existing Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             <Card className="col-span-2 sm:col-span-1 group relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25">
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
