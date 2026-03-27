@@ -66,6 +66,9 @@ const AdminPanel = () => {
     digitalProfit: 0,
     otherIncome: 0,
     totalRevenue: 0,
+    totalSpends: 0,
+    recurringEarnings: 0,
+    availableBalance: 0,
   });
 
   // Fetch revenue stats
