@@ -158,9 +158,10 @@ const BalanceTracker = () => {
     const recurring = filteredEntries.filter(e => e.source === 'recurring').reduce((s, e) => s + e.amount, 0);
     const digital = filteredEntries.filter(e => e.source === 'digital_products').reduce((s, e) => s + e.amount, 0);
     const other = filteredEntries.filter(e => e.source === 'other_income').reduce((s, e) => s + e.amount, 0);
+    const cosmofeed = filteredEntries.filter(e => e.source === 'cosmofeed').reduce((s, e) => s + e.amount, 0);
     const spends = filteredEntries.filter(e => e.source === 'spends').reduce((s, e) => s + Math.abs(e.amount), 0);
-    const totalIncome = projects + recurring + digital + other;
-    return { projects, recurring, digital, other, spends, totalIncome, net: totalIncome - spends };
+    const totalIncome = projects + recurring + digital + other + cosmofeed;
+    return { projects, recurring, digital, other, cosmofeed, spends, totalIncome, net: totalIncome - spends };
   }, [filteredEntries]);
 
   const fmt = (v: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(v);
