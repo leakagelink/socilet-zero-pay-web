@@ -82,7 +82,7 @@ const AdminPanel = () => {
         supabase.from('other_income').select('amount, paid_amount, status'),
         supabase.from('spends').select('amount'),
         supabase.from('recurring_earnings').select('amount, is_active'),
-        supabase.from('bank_balance_settings' as any).select('base_balance').limit(1).single(),
+        (supabase as any).from('bank_balance_settings').select('base_balance').limit(1).single(),
       ]);
 
       const projects = projectsRes.data;
@@ -125,32 +125,39 @@ const AdminPanel = () => {
   };
 
   const handleUpdateBalance = async () => {
-    const newBalance = parseFloat(balanceInput);
-    if (isNaN(newBalance)) {
+    const desiredBalance = parseFloat(balanceInput);
+    if (isNaN(desiredBalance)) {
       toast.error('Please enter a valid amount');
       return;
     }
     try {
-      // Get the current row id
-      const { data: existing } = await supabase
-        .from('bank_balance_settings' as any)
+      // Reverse calculate: base_balance = desired - income + spends
+      const newBase = desiredBalance - revenueStats.totalRevenue + revenueStats.totalSpends;
+
+      const { data: existing, error: fetchErr } = await (supabase as any)
+        .from('bank_balance_settings')
         .select('id')
         .limit(1)
         .single();
       
+      if (fetchErr) throw fetchErr;
+      
       if (existing) {
-        await supabase
-          .from('bank_balance_settings' as any)
-          .update({ base_balance: newBalance, last_updated_at: new Date().toISOString() } as any)
-          .eq('id', (existing as any).id);
+        const { error: updateErr } = await (supabase as any)
+          .from('bank_balance_settings')
+          .update({ base_balance: newBase, last_updated_at: new Date().toISOString() })
+          .eq('id', existing.id);
+        
+        if (updateErr) throw updateErr;
       }
       
-      toast.success('Balance updated successfully');
+      toast.success('Balance updated to ₹' + desiredBalance.toLocaleString('en-IN'));
       setIsEditingBalance(false);
       setBalanceInput('');
       fetchRevenueStats();
     } catch (err: any) {
-      toast.error('Failed to update balance: ' + err.message);
+      console.error('Balance update error:', err);
+      toast.error('Failed to update balance: ' + (err.message || 'Unknown error'));
     }
   };
 
