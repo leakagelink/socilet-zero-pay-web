@@ -28,7 +28,7 @@ interface Spend {
 
 const CATEGORIES = [
   'general', 'hosting', 'domain', 'software', 'tools', 'marketing',
-  'salary', 'freelancer', 'office', 'travel', 'food', 'subscription', 'home', 'petrol', 'other'
+  'salary', 'freelancer', 'office', 'travel', 'food', 'subscription', 'home', 'petrol', 'ad spend', 'other'
 ];
 
 const PAYMENT_METHODS = ['UPI', 'Bank Transfer', 'Cash', 'Credit Card', 'Debit Card', 'PayPal', 'Other'];
@@ -48,6 +48,7 @@ const categoryColors: Record<string, string> = {
   subscription: 'bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300',
   home: 'bg-lime-100 text-lime-700 dark:bg-lime-900 dark:text-lime-300',
   petrol: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
+  'ad spend': 'bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300',
   other: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
 };
 
