@@ -70,6 +70,8 @@ const AdminPanel = () => {
     recurringEarnings: 0,
     availableBalance: 0,
   });
+  const [isEditingBalance, setIsEditingBalance] = useState(false);
+  const [balanceInput, setBalanceInput] = useState('');
 
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
