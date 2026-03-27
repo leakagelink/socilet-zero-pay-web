@@ -23,6 +23,7 @@ import ReminderManager from '@/components/admin/ReminderManager';
 import InvestmentManager from '@/components/admin/InvestmentManager';
 import SpendManager from '@/components/admin/SpendManager';
 import PaymentMethodsManager from '@/components/admin/PaymentMethodsManager';
+import BalanceTracker from '@/components/admin/BalanceTracker';
 import EmailNotificationDropdown from '@/components/admin/EmailNotificationDropdown';
 import { useCountUp } from '@/hooks/useCountUp';
 
