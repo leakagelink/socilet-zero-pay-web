@@ -162,6 +162,25 @@ const AdminPanel = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Realtime subscription for balance updates
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const tables = ['spends', 'projects', 'digital_products', 'other_income', 'recurring_earnings'];
+    const channels = tables.map(table =>
+      supabase
+        .channel(`realtime-${table}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
+          fetchRevenueStats();
+        })
+        .subscribe()
+    );
+
+    return () => {
+      channels.forEach(ch => supabase.removeChannel(ch));
+    };
+  }, [isLoggedIn]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
