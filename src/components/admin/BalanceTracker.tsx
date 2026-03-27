@@ -87,6 +87,18 @@ const BalanceTracker = () => {
         }
       });
 
+      // Cosmofeed sales
+      (cosmofeedRes.data as any[])?.forEach((c: any) => {
+        if (c.net_amount > 0) {
+          allEntries.push({
+            amount: c.net_amount,
+            date: c.sale_date,
+            source: 'cosmofeed',
+            description: `${c.product_title}${c.quantity > 1 ? ' x' + c.quantity : ''}`,
+          });
+        }
+      });
+
       // Spends (negative)
       spendsRes.data?.forEach(s => {
         if (s.amount > 0) {
