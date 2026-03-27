@@ -78,13 +78,14 @@ const AdminPanel = () => {
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
     try {
-      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, balanceRes] = await Promise.all([
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, balanceRes, cosmofeedRes] = await Promise.all([
         supabase.from('projects').select('total_amount, remaining_amount, advance_amount'),
         supabase.from('digital_products').select('resell_price, profit'),
         supabase.from('other_income').select('amount, paid_amount, status'),
         supabase.from('spends').select('amount'),
         supabase.from('recurring_earnings').select('amount, is_active'),
         (supabase as any).from('bank_balance_settings').select('base_balance').limit(1).single(),
+        (supabase as any).from('cosmofeed_sales').select('net_amount'),
       ]);
 
       const projects = projectsRes.data;
@@ -93,6 +94,7 @@ const AdminPanel = () => {
       const spends = spendsRes.data;
       const recurring = recurringRes.data;
       const baseBalance = (balanceRes.data as any)?.base_balance || 0;
+      const cosmofeedTotal = (cosmofeedRes.data as any[])?.reduce((sum: number, c: any) => sum + (c.net_amount || 0), 0) || 0;
 
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
@@ -107,7 +109,7 @@ const AdminPanel = () => {
       const totalSpends = spends?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
       const recurringEarnings = recurring?.filter(r => r.is_active).reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
 
-      const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal;
+      const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal + cosmofeedTotal;
       const availableBalance = baseBalance + totalIncome - totalSpends;
 
       setRevenueStats({
