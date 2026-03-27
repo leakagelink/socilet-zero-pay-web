@@ -790,6 +790,10 @@ const AdminPanel = () => {
           <TabsContent value="payment-methods" className="mt-6 animate-fade-in">
             <PaymentMethodsManager />
           </TabsContent>
+
+          <TabsContent value="balance-tracker" className="mt-6 animate-fade-in">
+            <BalanceTracker />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
