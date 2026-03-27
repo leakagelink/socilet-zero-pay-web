@@ -24,6 +24,7 @@ import InvestmentManager from '@/components/admin/InvestmentManager';
 import SpendManager from '@/components/admin/SpendManager';
 import PaymentMethodsManager from '@/components/admin/PaymentMethodsManager';
 import BalanceTracker from '@/components/admin/BalanceTracker';
+import CosmofeedSalesManager from '@/components/admin/CosmofeedSalesManager';
 import EmailNotificationDropdown from '@/components/admin/EmailNotificationDropdown';
 import { useCountUp } from '@/hooks/useCountUp';
 
