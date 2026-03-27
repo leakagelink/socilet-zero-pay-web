@@ -25,7 +25,7 @@ interface Spend {
 
 const CATEGORIES = [
   'general', 'hosting', 'domain', 'software', 'tools', 'marketing',
-  'salary', 'freelancer', 'office', 'travel', 'food', 'subscription', 'other'
+  'salary', 'freelancer', 'office', 'travel', 'food', 'subscription', 'home', 'petrol', 'other'
 ];
 
 const PAYMENT_METHODS = ['UPI', 'Bank Transfer', 'Cash', 'Credit Card', 'Debit Card', 'PayPal', 'Other'];
