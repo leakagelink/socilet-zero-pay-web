@@ -76,13 +76,13 @@ const AdminPanel = () => {
   // Fetch revenue stats
   const fetchRevenueStats = async () => {
     try {
-      // Fetch all data in parallel
-      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes] = await Promise.all([
+      const [projectsRes, digitalRes, otherRes, spendsRes, recurringRes, balanceRes] = await Promise.all([
         supabase.from('projects').select('total_amount, remaining_amount, advance_amount'),
         supabase.from('digital_products').select('resell_price, profit'),
         supabase.from('other_income').select('amount, paid_amount, status'),
         supabase.from('spends').select('amount'),
         supabase.from('recurring_earnings').select('amount, is_active'),
+        supabase.from('bank_balance_settings' as any).select('base_balance').limit(1).single(),
       ]);
 
       const projects = projectsRes.data;
@@ -90,6 +90,7 @@ const AdminPanel = () => {
       const otherIncomes = otherRes.data;
       const spends = spendsRes.data;
       const recurring = recurringRes.data;
+      const baseBalance = (balanceRes.data as any)?.base_balance || 0;
 
       const projectsRevenue = projects?.reduce((sum, p) => sum + (p.total_amount || 0), 0) || 0;
       const projectsPending = projects?.reduce((sum, p) => sum + (p.remaining_amount || 0), 0) || 0;
@@ -105,7 +106,7 @@ const AdminPanel = () => {
       const recurringEarnings = recurring?.filter(r => r.is_active).reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
 
       const totalIncome = projectsReceived + digitalRevenue + otherIncomeTotal;
-      const availableBalance = totalIncome - totalSpends;
+      const availableBalance = baseBalance + totalIncome - totalSpends;
 
       setRevenueStats({
         projectsRevenue,
@@ -120,6 +121,36 @@ const AdminPanel = () => {
       });
     } catch (err) {
       console.error('Error fetching revenue stats:', err);
+    }
+  };
+
+  const handleUpdateBalance = async () => {
+    const newBalance = parseFloat(balanceInput);
+    if (isNaN(newBalance)) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+    try {
+      // Get the current row id
+      const { data: existing } = await supabase
+        .from('bank_balance_settings' as any)
+        .select('id')
+        .limit(1)
+        .single();
+      
+      if (existing) {
+        await supabase
+          .from('bank_balance_settings' as any)
+          .update({ base_balance: newBalance, last_updated_at: new Date().toISOString() } as any)
+          .eq('id', (existing as any).id);
+      }
+      
+      toast.success('Balance updated successfully');
+      setIsEditingBalance(false);
+      setBalanceInput('');
+      fetchRevenueStats();
+    } catch (err: any) {
+      toast.error('Failed to update balance: ' + err.message);
     }
   };
 
