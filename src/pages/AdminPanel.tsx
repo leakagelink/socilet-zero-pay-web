@@ -125,13 +125,15 @@ const AdminPanel = () => {
   };
 
   const handleUpdateBalance = async () => {
-    const newBalance = parseFloat(balanceInput);
-    if (isNaN(newBalance)) {
+    const desiredBalance = parseFloat(balanceInput);
+    if (isNaN(desiredBalance)) {
       toast.error('Please enter a valid amount');
       return;
     }
     try {
-      // Get the current row id
+      // Reverse calculate: base_balance = desired - income + spends
+      const newBase = desiredBalance - revenueStats.totalRevenue + revenueStats.totalSpends;
+
       const { data: existing, error: fetchErr } = await (supabase as any)
         .from('bank_balance_settings')
         .select('id')
@@ -143,13 +145,13 @@ const AdminPanel = () => {
       if (existing) {
         const { error: updateErr } = await (supabase as any)
           .from('bank_balance_settings')
-          .update({ base_balance: newBalance, last_updated_at: new Date().toISOString() })
+          .update({ base_balance: newBase, last_updated_at: new Date().toISOString() })
           .eq('id', existing.id);
         
         if (updateErr) throw updateErr;
       }
       
-      toast.success('Balance updated successfully');
+      toast.success('Balance updated to ₹' + desiredBalance.toLocaleString('en-IN'));
       setIsEditingBalance(false);
       setBalanceInput('');
       fetchRevenueStats();
