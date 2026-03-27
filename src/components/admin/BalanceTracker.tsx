@@ -123,7 +123,7 @@ const BalanceTracker = () => {
     fetchAllEntries();
 
     // Realtime subscriptions
-    const channels = ['projects', 'digital_products', 'other_income', 'spends', 'recurring_earnings'].map(table =>
+    const channels = ['projects', 'digital_products', 'other_income', 'spends', 'recurring_earnings', 'cosmofeed_sales'].map(table =>
       supabase.channel(`balance-${table}`).on('postgres_changes', { event: '*', schema: 'public', table }, () => fetchAllEntries()).subscribe()
     );
 
