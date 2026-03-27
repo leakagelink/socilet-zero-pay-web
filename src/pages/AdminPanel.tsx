@@ -82,7 +82,7 @@ const AdminPanel = () => {
         supabase.from('other_income').select('amount, paid_amount, status'),
         supabase.from('spends').select('amount'),
         supabase.from('recurring_earnings').select('amount, is_active'),
-        supabase.from('bank_balance_settings' as any).select('base_balance').limit(1).single(),
+        (supabase as any).from('bank_balance_settings').select('base_balance').limit(1).single(),
       ]);
 
       const projects = projectsRes.data;
