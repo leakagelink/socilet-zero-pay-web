@@ -987,13 +987,25 @@ const ProjectManager = () => {
                     </Badge>
                   </div>
                   
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium">{formatCurrency(project.total_amount)}</span>
-                      {project.remaining_amount !== null && project.remaining_amount > 0 && (
-                        <span className="text-amber-600">Due: {formatCurrency(project.remaining_amount)}</span>
-                      )}
+                  <div className="flex flex-col gap-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{formatCurrency(project.total_amount)}</span>
+                        {project.remaining_amount !== null && project.remaining_amount > 0 && (
+                          <span className="text-amber-600">Due: {formatCurrency(project.remaining_amount)}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        {formatDate(project.deadline)}
+                      </div>
                     </div>
+                    {getAddonDues(project.id).count > 0 && (
+                      <span className="text-orange-600 dark:text-orange-400 font-medium">
+                        +Addons Due: {formatCurrency(getAddonDues(project.id).total)} ({getAddonDues(project.id).count})
+                      </span>
+                    )}
+                  </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Calendar className="h-3 w-3" />
                       {formatDate(project.deadline)}
