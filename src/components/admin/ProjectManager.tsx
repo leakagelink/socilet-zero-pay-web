@@ -212,6 +212,7 @@ const ProjectManager = () => {
     });
     setEditingProject(project);
     setViewMode('form');
+    fetchAddons(project.id);
   };
 
   // Go back to list
