@@ -188,6 +188,8 @@ const ProjectManager = () => {
     console.log('Opening add form');
     resetForm();
     setEditingProject(null);
+    setAddons([]);
+    setNewAddon({ description: '', amount: '' });
     setViewMode('form');
   };
 
