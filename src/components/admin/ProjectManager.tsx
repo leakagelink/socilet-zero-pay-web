@@ -97,6 +97,69 @@ const ProjectManager = () => {
     }
   };
 
+  // Fetch addons for a project
+  const fetchAddons = async (projectId: string) => {
+    setLoadingAddons(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('project_addons')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setAddons(data || []);
+    } catch (err: any) {
+      console.error('Error fetching addons:', err);
+    } finally {
+      setLoadingAddons(false);
+    }
+  };
+
+  const addAddon = async () => {
+    if (!newAddon.description.trim() || !editingProject) return;
+    try {
+      const { error } = await (supabase as any).from('project_addons').insert({
+        project_id: editingProject.id,
+        description: newAddon.description.trim(),
+        amount: parseFloat(newAddon.amount) || 0,
+        status: 'pending',
+      });
+      if (error) throw error;
+      toast.success('Add-on added!');
+      setNewAddon({ description: '', amount: '' });
+      fetchAddons(editingProject.id);
+    } catch (err: any) {
+      toast.error('Failed to add add-on');
+    }
+  };
+
+  const updateAddonStatus = async (addonId: string, status: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from('project_addons')
+        .update({ status })
+        .eq('id', addonId);
+      if (error) throw error;
+      if (editingProject) fetchAddons(editingProject.id);
+    } catch (err: any) {
+      toast.error('Failed to update');
+    }
+  };
+
+  const deleteAddon = async (addonId: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from('project_addons')
+        .delete()
+        .eq('id', addonId);
+      if (error) throw error;
+      toast.success('Add-on deleted');
+      if (editingProject) fetchAddons(editingProject.id);
+    } catch (err: any) {
+      toast.error('Failed to delete');
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
   }, []);
