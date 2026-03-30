@@ -1006,11 +1006,6 @@ const ProjectManager = () => {
                       </span>
                     )}
                   </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      {formatDate(project.deadline)}
-                    </div>
-                  </div>
 
                   <div className="flex items-center gap-2 pt-1">
                     <Button
