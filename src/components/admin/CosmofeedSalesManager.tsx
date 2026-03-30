@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
-import { CalendarIcon, Plus, Trash2, ShoppingBag, Pencil, Check, X, Package, TrendingUp } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, ShoppingBag, Pencil, Check, X, Package, TrendingUp, BarChart3, ArrowUpDown } from 'lucide-react';
 
 interface CosmofeedProduct {
   id: string;
@@ -38,6 +38,7 @@ type TimePeriod = 'all' | 'today' | 'yesterday' | 'week' | 'month' | 'year' | 'c
 const CosmofeedSalesManager = () => {
   const [products, setProducts] = useState<CosmofeedProduct[]>([]);
   const [sales, setSales] = useState<CosmofeedSale[]>([]);
+  const [adSpends, setAdSpends] = useState<{amount: number; spend_date: string; title: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
@@ -56,12 +57,14 @@ const CosmofeedSalesManager = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const [prodRes, salesRes] = await Promise.all([
+    const [prodRes, salesRes, adSpendRes] = await Promise.all([
       (supabase as any).from('cosmofeed_products').select('*').order('product_title'),
       (supabase as any).from('cosmofeed_sales').select('*').order('sale_date', { ascending: false }),
+      (supabase as any).from('spends').select('amount, spend_date, title').eq('category', 'ad spend'),
     ]);
     setProducts(prodRes.data || []);
     setSales(salesRes.data || []);
+    setAdSpends(adSpendRes.data || []);
     setLoading(false);
   };
 
@@ -69,7 +72,8 @@ const CosmofeedSalesManager = () => {
     fetchData();
     const ch1 = supabase.channel('cf-products').on('postgres_changes', { event: '*', schema: 'public', table: 'cosmofeed_products' }, () => fetchData()).subscribe();
     const ch2 = supabase.channel('cf-sales').on('postgres_changes', { event: '*', schema: 'public', table: 'cosmofeed_sales' }, () => fetchData()).subscribe();
-    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); };
+    const ch3 = supabase.channel('cf-adspends').on('postgres_changes', { event: '*', schema: 'public', table: 'spends' }, () => fetchData()).subscribe();
+    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); supabase.removeChannel(ch3); };
   }, []);
 
   // ---- Product CRUD ----
@@ -192,6 +196,32 @@ const CosmofeedSalesManager = () => {
 
   const activeProducts = products.filter(p => p.is_active);
 
+  // Ad Spend vs Cosmofeed Profit comparison
+  const comparisonStats = useMemo(() => {
+    const periods: { label: string; key: TimePeriod }[] = [
+      { label: 'Today', key: 'today' },
+      { label: 'Yesterday', key: 'yesterday' },
+      { label: 'This Week', key: 'week' },
+      { label: 'This Month', key: 'month' },
+      { label: 'This Year', key: 'year' },
+      { label: 'All Time', key: 'all' },
+    ];
+    return periods.map(p => {
+      const range = getDateRange(p.key);
+      let periodSales = sales;
+      let periodAds = adSpends;
+      if (range) {
+        periodSales = sales.filter(s => isWithinInterval(new Date(s.sale_date), { start: range.start, end: range.end }));
+        periodAds = adSpends.filter(a => isWithinInterval(new Date(a.spend_date), { start: range.start, end: range.end }));
+      }
+      const revenue = periodSales.reduce((s, x) => s + x.net_amount, 0);
+      const adTotal = periodAds.reduce((s, x) => s + x.amount, 0);
+      const profit = revenue - adTotal;
+      const roas = adTotal > 0 ? revenue / adTotal : 0;
+      return { ...p, revenue, adTotal, profit, roas };
+    });
+  }, [sales, adSpends]);
+
   const periodCards = [
     { label: 'Today', key: 'today' as TimePeriod, color: 'from-emerald-500 to-green-500' },
     { label: 'Yesterday', key: 'yesterday' as TimePeriod, color: 'from-blue-500 to-cyan-500' },
@@ -203,14 +233,101 @@ const CosmofeedSalesManager = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="sales">
-        <TabsList className="grid w-full grid-cols-2 max-w-xs">
+        <TabsList className="grid w-full grid-cols-3 max-w-md">
           <TabsTrigger value="sales" className="flex items-center gap-1.5">
             <TrendingUp className="h-4 w-4" /> Sales
+          </TabsTrigger>
+          <TabsTrigger value="compare" className="flex items-center gap-1.5">
+            <BarChart3 className="h-4 w-4" /> Compare
           </TabsTrigger>
           <TabsTrigger value="products" className="flex items-center gap-1.5">
             <Package className="h-4 w-4" /> Products
           </TabsTrigger>
         </TabsList>
+
+        {/* ===== COMPARE TAB ===== */}
+        <TabsContent value="compare" className="space-y-4 mt-4">
+          <div className="flex items-center gap-2 mb-2">
+            <ArrowUpDown className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold">Ad Spend vs Cosmofeed Profit</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {comparisonStats.map(stat => {
+              const isProfitable = stat.profit >= 0;
+              return (
+                <Card key={stat.key} className="overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">Cosmofeed Revenue</span>
+                      <span className="font-semibold text-primary">{fmt(stat.revenue)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">Ad Spend</span>
+                      <span className="font-semibold text-destructive">{fmt(stat.adTotal)}</span>
+                    </div>
+                    <div className="border-t pt-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-medium">Net Profit</span>
+                        <span className={cn("font-bold text-lg", isProfitable ? "text-primary" : "text-destructive")}>
+                          {isProfitable ? '+' : ''}{fmt(stat.profit)}
+                        </span>
+                      </div>
+                    </div>
+                    {stat.adTotal > 0 && (
+                      <div className="flex justify-between items-center bg-muted/50 rounded-md px-2 py-1">
+                        <span className="text-xs text-muted-foreground">ROAS</span>
+                        <span className={cn("text-sm font-semibold", stat.roas >= 1 ? "text-primary" : "text-destructive")}>
+                          {stat.roas.toFixed(2)}x
+                        </span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Detailed breakdown */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Period-wise Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-3 font-medium">Period</th>
+                      <th className="text-right py-2 px-3 font-medium">Revenue</th>
+                      <th className="text-right py-2 px-3 font-medium">Ad Spend</th>
+                      <th className="text-right py-2 px-3 font-medium">Profit</th>
+                      <th className="text-right py-2 px-3 font-medium">ROAS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comparisonStats.map(stat => (
+                      <tr key={stat.key} className="border-b last:border-0 hover:bg-muted/50">
+                        <td className="py-2 px-3 font-medium">{stat.label}</td>
+                        <td className="py-2 px-3 text-right text-primary">{fmt(stat.revenue)}</td>
+                        <td className="py-2 px-3 text-right text-destructive">{fmt(stat.adTotal)}</td>
+                        <td className={cn("py-2 px-3 text-right font-semibold", stat.profit >= 0 ? "text-primary" : "text-destructive")}>
+                          {stat.profit >= 0 ? '+' : ''}{fmt(stat.profit)}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {stat.adTotal > 0 ? `${stat.roas.toFixed(2)}x` : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* ===== PRODUCTS TAB ===== */}
         <TabsContent value="products" className="space-y-4 mt-4">
