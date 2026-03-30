@@ -38,6 +38,9 @@ type TimePeriod = 'all' | 'today' | 'yesterday' | 'week' | 'month' | 'year' | 'c
 const CosmofeedSalesManager = () => {
   const [products, setProducts] = useState<CosmofeedProduct[]>([]);
   const [sales, setSales] = useState<CosmofeedSale[]>([]);
+  const [adSpends, setAdSpends] = useState<{amount: number; spend_date: string; title: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sales, setSales] = useState<CosmofeedSale[]>([]);
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
