@@ -40,8 +40,6 @@ const CosmofeedSalesManager = () => {
   const [sales, setSales] = useState<CosmofeedSale[]>([]);
   const [adSpends, setAdSpends] = useState<{amount: number; spend_date: string; title: string}[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sales, setSales] = useState<CosmofeedSale[]>([]);
-  const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
   const [customTo, setCustomTo] = useState<Date | undefined>();
@@ -59,12 +57,14 @@ const CosmofeedSalesManager = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const [prodRes, salesRes] = await Promise.all([
+    const [prodRes, salesRes, adSpendRes] = await Promise.all([
       (supabase as any).from('cosmofeed_products').select('*').order('product_title'),
       (supabase as any).from('cosmofeed_sales').select('*').order('sale_date', { ascending: false }),
+      (supabase as any).from('spends').select('amount, spend_date, title').eq('category', 'ad spend'),
     ]);
     setProducts(prodRes.data || []);
     setSales(salesRes.data || []);
+    setAdSpends(adSpendRes.data || []);
     setLoading(false);
   };
 
