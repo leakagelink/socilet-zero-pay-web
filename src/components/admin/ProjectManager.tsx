@@ -161,8 +161,27 @@ const ProjectManager = () => {
     }
   };
 
+  const fetchAllAddons = async () => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('project_addons')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const grouped: Record<string, ProjectAddon[]> = {};
+      (data || []).forEach((a: any) => {
+        if (!grouped[a.project_id]) grouped[a.project_id] = [];
+        grouped[a.project_id].push(a);
+      });
+      setAllAddons(grouped);
+    } catch (err) {
+      console.error('Error fetching all addons:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
+    fetchAllAddons();
   }, []);
 
   // Reset form
