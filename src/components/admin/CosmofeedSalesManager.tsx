@@ -196,6 +196,32 @@ const CosmofeedSalesManager = () => {
 
   const activeProducts = products.filter(p => p.is_active);
 
+  // Ad Spend vs Cosmofeed Profit comparison
+  const comparisonStats = useMemo(() => {
+    const periods: { label: string; key: TimePeriod }[] = [
+      { label: 'Today', key: 'today' },
+      { label: 'Yesterday', key: 'yesterday' },
+      { label: 'This Week', key: 'week' },
+      { label: 'This Month', key: 'month' },
+      { label: 'This Year', key: 'year' },
+      { label: 'All Time', key: 'all' },
+    ];
+    return periods.map(p => {
+      const range = getDateRange(p.key);
+      let periodSales = sales;
+      let periodAds = adSpends;
+      if (range) {
+        periodSales = sales.filter(s => isWithinInterval(new Date(s.sale_date), { start: range.start, end: range.end }));
+        periodAds = adSpends.filter(a => isWithinInterval(new Date(a.spend_date), { start: range.start, end: range.end }));
+      }
+      const revenue = periodSales.reduce((s, x) => s + x.net_amount, 0);
+      const adTotal = periodAds.reduce((s, x) => s + x.amount, 0);
+      const profit = revenue - adTotal;
+      const roas = adTotal > 0 ? revenue / adTotal : 0;
+      return { ...p, revenue, adTotal, profit, roas };
+    });
+  }, [sales, adSpends]);
+
   const periodCards = [
     { label: 'Today', key: 'today' as TimePeriod, color: 'from-emerald-500 to-green-500' },
     { label: 'Yesterday', key: 'yesterday' as TimePeriod, color: 'from-blue-500 to-cyan-500' },
@@ -207,9 +233,12 @@ const CosmofeedSalesManager = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="sales">
-        <TabsList className="grid w-full grid-cols-2 max-w-xs">
+        <TabsList className="grid w-full grid-cols-3 max-w-md">
           <TabsTrigger value="sales" className="flex items-center gap-1.5">
             <TrendingUp className="h-4 w-4" /> Sales
+          </TabsTrigger>
+          <TabsTrigger value="compare" className="flex items-center gap-1.5">
+            <BarChart3 className="h-4 w-4" /> Compare
           </TabsTrigger>
           <TabsTrigger value="products" className="flex items-center gap-1.5">
             <Package className="h-4 w-4" /> Products
