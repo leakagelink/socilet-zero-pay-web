@@ -408,6 +408,12 @@ const ProjectManager = () => {
     setDeleteProjectName('');
   };
 
+  const getAddonDues = (projectId: string) => {
+    const projectAddons = allAddons[projectId] || [];
+    const pending = projectAddons.filter(a => a.status === 'pending');
+    return { total: pending.reduce((s, a) => s + a.amount, 0), count: pending.length };
+  };
+
   // Filter projects
   const filteredProjects = projects.filter(project => 
     project.client_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
