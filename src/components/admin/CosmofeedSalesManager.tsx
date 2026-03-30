@@ -245,6 +245,90 @@ const CosmofeedSalesManager = () => {
           </TabsTrigger>
         </TabsList>
 
+        {/* ===== COMPARE TAB ===== */}
+        <TabsContent value="compare" className="space-y-4 mt-4">
+          <div className="flex items-center gap-2 mb-2">
+            <ArrowUpDown className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold">Ad Spend vs Cosmofeed Profit</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {comparisonStats.map(stat => {
+              const isProfitable = stat.profit >= 0;
+              return (
+                <Card key={stat.key} className="overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">Cosmofeed Revenue</span>
+                      <span className="font-semibold text-primary">{fmt(stat.revenue)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">Ad Spend</span>
+                      <span className="font-semibold text-destructive">{fmt(stat.adTotal)}</span>
+                    </div>
+                    <div className="border-t pt-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-medium">Net Profit</span>
+                        <span className={cn("font-bold text-lg", isProfitable ? "text-primary" : "text-destructive")}>
+                          {isProfitable ? '+' : ''}{fmt(stat.profit)}
+                        </span>
+                      </div>
+                    </div>
+                    {stat.adTotal > 0 && (
+                      <div className="flex justify-between items-center bg-muted/50 rounded-md px-2 py-1">
+                        <span className="text-xs text-muted-foreground">ROAS</span>
+                        <span className={cn("text-sm font-semibold", stat.roas >= 1 ? "text-primary" : "text-destructive")}>
+                          {stat.roas.toFixed(2)}x
+                        </span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Detailed breakdown */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Period-wise Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-3 font-medium">Period</th>
+                      <th className="text-right py-2 px-3 font-medium">Revenue</th>
+                      <th className="text-right py-2 px-3 font-medium">Ad Spend</th>
+                      <th className="text-right py-2 px-3 font-medium">Profit</th>
+                      <th className="text-right py-2 px-3 font-medium">ROAS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {comparisonStats.map(stat => (
+                      <tr key={stat.key} className="border-b last:border-0 hover:bg-muted/50">
+                        <td className="py-2 px-3 font-medium">{stat.label}</td>
+                        <td className="py-2 px-3 text-right text-primary">{fmt(stat.revenue)}</td>
+                        <td className="py-2 px-3 text-right text-destructive">{fmt(stat.adTotal)}</td>
+                        <td className={cn("py-2 px-3 text-right font-semibold", stat.profit >= 0 ? "text-primary" : "text-destructive")}>
+                          {stat.profit >= 0 ? '+' : ''}{fmt(stat.profit)}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {stat.adTotal > 0 ? `${stat.roas.toFixed(2)}x` : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* ===== PRODUCTS TAB ===== */}
         <TabsContent value="products" className="space-y-4 mt-4">
           <div className="flex items-center justify-between">
