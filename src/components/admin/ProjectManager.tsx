@@ -58,6 +58,9 @@ const ProjectManager = () => {
   const [deleteProjectName, setDeleteProjectName] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [addons, setAddons] = useState<ProjectAddon[]>([]);
+  const [newAddon, setNewAddon] = useState({ description: '', amount: '' });
+  const [loadingAddons, setLoadingAddons] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
