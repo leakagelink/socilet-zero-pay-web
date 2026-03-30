@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Loader2, Search, Calendar, ArrowLeft, Save } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Search, Calendar, ArrowLeft, Save, PackagePlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,6 +37,15 @@ export interface Project {
   updated_at: string;
 }
 
+interface ProjectAddon {
+  id?: string;
+  project_id?: string;
+  description: string;
+  amount: number;
+  status: string;
+  created_at?: string;
+}
+
 type ViewMode = 'list' | 'form';
 
 const ProjectManager = () => {
@@ -49,6 +58,9 @@ const ProjectManager = () => {
   const [deleteProjectName, setDeleteProjectName] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [addons, setAddons] = useState<ProjectAddon[]>([]);
+  const [newAddon, setNewAddon] = useState({ description: '', amount: '' });
+  const [loadingAddons, setLoadingAddons] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -85,6 +97,69 @@ const ProjectManager = () => {
     }
   };
 
+  // Fetch addons for a project
+  const fetchAddons = async (projectId: string) => {
+    setLoadingAddons(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('project_addons')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setAddons(data || []);
+    } catch (err: any) {
+      console.error('Error fetching addons:', err);
+    } finally {
+      setLoadingAddons(false);
+    }
+  };
+
+  const addAddon = async () => {
+    if (!newAddon.description.trim() || !editingProject) return;
+    try {
+      const { error } = await (supabase as any).from('project_addons').insert({
+        project_id: editingProject.id,
+        description: newAddon.description.trim(),
+        amount: parseFloat(newAddon.amount) || 0,
+        status: 'pending',
+      });
+      if (error) throw error;
+      toast.success('Add-on added!');
+      setNewAddon({ description: '', amount: '' });
+      fetchAddons(editingProject.id);
+    } catch (err: any) {
+      toast.error('Failed to add add-on');
+    }
+  };
+
+  const updateAddonStatus = async (addonId: string, status: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from('project_addons')
+        .update({ status })
+        .eq('id', addonId);
+      if (error) throw error;
+      if (editingProject) fetchAddons(editingProject.id);
+    } catch (err: any) {
+      toast.error('Failed to update');
+    }
+  };
+
+  const deleteAddon = async (addonId: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from('project_addons')
+        .delete()
+        .eq('id', addonId);
+      if (error) throw error;
+      toast.success('Add-on deleted');
+      if (editingProject) fetchAddons(editingProject.id);
+    } catch (err: any) {
+      toast.error('Failed to delete');
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -113,6 +188,8 @@ const ProjectManager = () => {
     console.log('Opening add form');
     resetForm();
     setEditingProject(null);
+    setAddons([]);
+    setNewAddon({ description: '', amount: '' });
     setViewMode('form');
   };
 
@@ -135,6 +212,7 @@ const ProjectManager = () => {
     });
     setEditingProject(project);
     setViewMode('form');
+    fetchAddons(project.id);
   };
 
   // Go back to list
@@ -555,6 +633,96 @@ const ProjectManager = () => {
                 </div>
               </div>
             </div>
+
+            {/* Extra Work / Add-ons - Only show when editing */}
+            {editingProject && (
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-xs sm:text-sm text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                  <PackagePlus className="h-4 w-4" />
+                  Extra Work / Add-ons
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Client ne project ke beech me koi extra kaam karwaya ho to yahan add karo — pata chalega extra payment kis chiz ka hai.
+                </p>
+
+                {/* Add new addon */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    placeholder="Extra work description (e.g., API integration, new page)"
+                    value={newAddon.description}
+                    onChange={(e) => setNewAddon(prev => ({ ...prev, description: e.target.value }))}
+                    className="h-9 sm:h-10 flex-1"
+                  />
+                  <Input
+                    placeholder="Amount (₹)"
+                    type="number"
+                    value={newAddon.amount}
+                    onChange={(e) => setNewAddon(prev => ({ ...prev, amount: e.target.value }))}
+                    className="h-9 sm:h-10 w-full sm:w-32"
+                    min="0"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={addAddon}
+                    disabled={!newAddon.description.trim()}
+                    className="h-9 sm:h-10"
+                  >
+                    <Plus className="h-4 w-4 mr-1" /> Add
+                  </Button>
+                </div>
+
+                {/* Addon list */}
+                {loadingAddons ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : addons.length > 0 ? (
+                  <div className="space-y-2">
+                    {addons.map((addon) => (
+                      <div
+                        key={addon.id}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-muted/50 border"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{addon.description}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatCurrency(addon.amount)} • {new Date(addon.created_at || '').toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={addon.status}
+                            onChange={(e) => addon.id && updateAddonStatus(addon.id, e.target.value)}
+                            className="text-xs rounded-md border border-input bg-background px-2 py-1"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="waived">Waived</option>
+                          </select>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-destructive"
+                            onClick={() => addon.id && deleteAddon(addon.id)}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="flex justify-between items-center pt-2 text-sm font-medium border-t">
+                      <span>Total Extra: {formatCurrency(addons.reduce((s, a) => s + a.amount, 0))}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">
+                        Paid: {formatCurrency(addons.filter(a => a.status === 'paid').reduce((s, a) => s + a.amount, 0))}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-3">No extra work added yet.</p>
+                )}
+              </div>
+            )}
 
             {/* Submit Buttons */}
             <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-4 border-t">
