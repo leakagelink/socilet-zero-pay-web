@@ -37,6 +37,15 @@ export interface Project {
   updated_at: string;
 }
 
+interface ProjectAddon {
+  id?: string;
+  project_id?: string;
+  description: string;
+  amount: number;
+  status: string;
+  created_at?: string;
+}
+
 type ViewMode = 'list' | 'form';
 
 const ProjectManager = () => {
