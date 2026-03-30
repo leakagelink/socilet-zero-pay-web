@@ -929,6 +929,11 @@ const ProjectManager = () => {
                               Due: {formatCurrency(project.remaining_amount)}
                             </p>
                           )}
+                          {getAddonDues(project.id).count > 0 && (
+                            <p className="text-orange-600 dark:text-orange-400 text-xs font-medium">
+                              +Addons Due: {formatCurrency(getAddonDues(project.id).total)} ({getAddonDues(project.id).count})
+                            </p>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
