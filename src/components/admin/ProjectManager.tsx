@@ -61,6 +61,7 @@ const ProjectManager = () => {
   const [addons, setAddons] = useState<ProjectAddon[]>([]);
   const [newAddon, setNewAddon] = useState({ description: '', amount: '' });
   const [loadingAddons, setLoadingAddons] = useState(false);
+  const [allAddons, setAllAddons] = useState<Record<string, ProjectAddon[]>>({});
   
   // Form state
   const [formData, setFormData] = useState({
@@ -160,8 +161,27 @@ const ProjectManager = () => {
     }
   };
 
+  const fetchAllAddons = async () => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('project_addons')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const grouped: Record<string, ProjectAddon[]> = {};
+      (data || []).forEach((a: any) => {
+        if (!grouped[a.project_id]) grouped[a.project_id] = [];
+        grouped[a.project_id].push(a);
+      });
+      setAllAddons(grouped);
+    } catch (err) {
+      console.error('Error fetching all addons:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
+    fetchAllAddons();
   }, []);
 
   // Reset form
@@ -386,6 +406,12 @@ const ProjectManager = () => {
   const cancelDelete = () => {
     setDeleteProjectId(null);
     setDeleteProjectName('');
+  };
+
+  const getAddonDues = (projectId: string) => {
+    const projectAddons = allAddons[projectId] || [];
+    const pending = projectAddons.filter(a => a.status === 'pending');
+    return { total: pending.reduce((s, a) => s + a.amount, 0), count: pending.length };
   };
 
   // Filter projects
@@ -903,6 +929,11 @@ const ProjectManager = () => {
                               Due: {formatCurrency(project.remaining_amount)}
                             </p>
                           )}
+                          {getAddonDues(project.id).count > 0 && (
+                            <p className="text-orange-600 dark:text-orange-400 text-xs font-medium">
+                              +Addons Due: {formatCurrency(getAddonDues(project.id).total)} ({getAddonDues(project.id).count})
+                            </p>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -956,17 +987,24 @@ const ProjectManager = () => {
                     </Badge>
                   </div>
                   
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium">{formatCurrency(project.total_amount)}</span>
-                      {project.remaining_amount !== null && project.remaining_amount > 0 && (
-                        <span className="text-amber-600">Due: {formatCurrency(project.remaining_amount)}</span>
-                      )}
+                  <div className="flex flex-col gap-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{formatCurrency(project.total_amount)}</span>
+                        {project.remaining_amount !== null && project.remaining_amount > 0 && (
+                          <span className="text-amber-600">Due: {formatCurrency(project.remaining_amount)}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        {formatDate(project.deadline)}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      {formatDate(project.deadline)}
-                    </div>
+                    {getAddonDues(project.id).count > 0 && (
+                      <span className="text-orange-600 dark:text-orange-400 font-medium">
+                        +Addons Due: {formatCurrency(getAddonDues(project.id).total)} ({getAddonDues(project.id).count})
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 pt-1">
