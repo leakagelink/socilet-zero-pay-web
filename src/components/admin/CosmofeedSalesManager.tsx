@@ -72,7 +72,8 @@ const CosmofeedSalesManager = () => {
     fetchData();
     const ch1 = supabase.channel('cf-products').on('postgres_changes', { event: '*', schema: 'public', table: 'cosmofeed_products' }, () => fetchData()).subscribe();
     const ch2 = supabase.channel('cf-sales').on('postgres_changes', { event: '*', schema: 'public', table: 'cosmofeed_sales' }, () => fetchData()).subscribe();
-    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); };
+    const ch3 = supabase.channel('cf-adspends').on('postgres_changes', { event: '*', schema: 'public', table: 'spends' }, () => fetchData()).subscribe();
+    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); supabase.removeChannel(ch3); };
   }, []);
 
   // ---- Product CRUD ----
