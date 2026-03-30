@@ -61,6 +61,7 @@ const ProjectManager = () => {
   const [addons, setAddons] = useState<ProjectAddon[]>([]);
   const [newAddon, setNewAddon] = useState({ description: '', amount: '' });
   const [loadingAddons, setLoadingAddons] = useState(false);
+  const [allAddons, setAllAddons] = useState<Record<string, ProjectAddon[]>>({});
   
   // Form state
   const [formData, setFormData] = useState({
