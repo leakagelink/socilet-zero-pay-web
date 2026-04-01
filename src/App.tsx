@@ -62,7 +62,8 @@ const App = () => {
             <BrowserRouter>
               <VersionChecker />
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Auth />} />
+                <Route path="/home" element={<Index />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/track-project" element={<TrackMyProject />} />
