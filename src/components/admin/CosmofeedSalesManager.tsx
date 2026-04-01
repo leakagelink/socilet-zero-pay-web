@@ -35,6 +35,12 @@ interface CosmofeedSale {
 
 type TimePeriod = 'all' | 'today' | 'yesterday' | 'week' | 'month' | 'year' | 'custom';
 
+interface AdSpendEntry {
+  amount: number;
+  spend_date: string;
+  title: string;
+}
+
 const CosmofeedSalesManager = () => {
   const [products, setProducts] = useState<CosmofeedProduct[]>([]);
   const [sales, setSales] = useState<CosmofeedSale[]>([]);
