@@ -20,15 +20,8 @@ const Auth = () => {
     isValid: false, 
     errors: [] 
   });
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
-
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (user) {
-      navigate('/home');
-    }
-  }, [user, navigate]);
 
   // Real-time password validation for signup
   useEffect(() => {
