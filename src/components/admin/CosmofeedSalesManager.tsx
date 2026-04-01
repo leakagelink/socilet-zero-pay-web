@@ -44,7 +44,11 @@ interface AdSpendEntry {
 const CosmofeedSalesManager = () => {
   const [products, setProducts] = useState<CosmofeedProduct[]>([]);
   const [sales, setSales] = useState<CosmofeedSale[]>([]);
-  const [adSpends, setAdSpends] = useState<{amount: number; spend_date: string; title: string}[]>([]);
+  const [adSpends, setAdSpends] = useState<AdSpendEntry[]>([]);
+  const [analyticsProduct, setAnalyticsProduct] = useState<string>('all');
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<TimePeriod>('all');
+  const [analyticsCustomFrom, setAnalyticsCustomFrom] = useState<Date | undefined>();
+  const [analyticsCustomTo, setAnalyticsCustomTo] = useState<Date | undefined>();
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
