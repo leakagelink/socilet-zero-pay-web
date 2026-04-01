@@ -78,7 +78,15 @@ const SpendManager = () => {
 
   useEffect(() => {
     fetchSpends();
+    fetchCosmofeedProducts();
   }, []);
+
+  const fetchCosmofeedProducts = async () => {
+    try {
+      const { data } = await supabase.from('cosmofeed_products').select('id, product_title').eq('is_active', true);
+      setCosmofeedProducts(data || []);
+    } catch (err) { /* ignore */ }
+  };
 
   const fetchSpends = async () => {
     try {
