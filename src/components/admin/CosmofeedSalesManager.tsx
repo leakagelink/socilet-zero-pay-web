@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
-import { CalendarIcon, Plus, Trash2, ShoppingBag, Pencil, Check, X, Package, TrendingUp, BarChart3, ArrowUpDown } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, ShoppingBag, Pencil, Check, X, Package, TrendingUp, BarChart3, ArrowUpDown, PieChart } from 'lucide-react';
 
 interface CosmofeedProduct {
   id: string;
