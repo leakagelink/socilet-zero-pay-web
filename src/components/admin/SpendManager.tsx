@@ -63,6 +63,10 @@ const SpendManager = () => {
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
   const [customTo, setCustomTo] = useState<Date | undefined>();
 
+  const [cosmofeedProducts, setCosmofeedProducts] = useState<{id: string; product_title: string}[]>([]);
+  const [adSpendTarget, setAdSpendTarget] = useState<string>('');
+  const [adSpendOtherText, setAdSpendOtherText] = useState('');
+
   const [formData, setFormData] = useState({
     title: '',
     category: 'general',
