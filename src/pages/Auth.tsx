@@ -55,7 +55,7 @@ const Auth = () => {
         toast.error(error);
       } else {
         toast.success('Login successful!');
-        navigate('/');
+        navigate('/home');
       }
     } catch (error: any) {
       toast.error(error.message || 'An unexpected error occurred');
