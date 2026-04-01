@@ -284,9 +284,9 @@ const SpendManager = () => {
                 <Input value={formData.title} onChange={e => setFormData(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. Hostinger Renewal" />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
+               <div>
                   <label className="text-sm font-medium">Category *</label>
-                  <Select value={formData.category} onValueChange={v => setFormData(p => ({ ...p, category: v }))}>
+                  <Select value={formData.category} onValueChange={v => { setFormData(p => ({ ...p, category: v })); if (v !== 'ad spend') { setAdSpendTarget(''); setAdSpendOtherText(''); } }}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {CATEGORIES.map(c => (
@@ -300,6 +300,23 @@ const SpendManager = () => {
                   <Input type="number" step="0.01" min="0" value={formData.amount} onChange={e => setFormData(p => ({ ...p, amount: e.target.value }))} required placeholder="0" />
                 </div>
               </div>
+              {formData.category === 'ad spend' && (
+                <div>
+                  <label className="text-sm font-medium">Ad Spend For *</label>
+                  <Select value={adSpendTarget} onValueChange={v => { setAdSpendTarget(v); if (v !== 'other') { setAdSpendOtherText(''); setFormData(p => ({ ...p, title: `Ad Spend - ${cosmofeedProducts.find(cp => cp.id === v)?.product_title || v}` })); } else { setFormData(p => ({ ...p, title: '' })); } }}>
+                    <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
+                    <SelectContent>
+                      {cosmofeedProducts.map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.product_title}</SelectItem>
+                      ))}
+                      <SelectItem value="other">Other (Custom)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {adSpendTarget === 'other' && (
+                    <Input className="mt-2" value={adSpendOtherText} onChange={e => { setAdSpendOtherText(e.target.value); setFormData(p => ({ ...p, title: `Ad Spend - ${e.target.value}` })); }} placeholder="Type custom ad spend purpose..." />
+                  )}
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-medium">Date *</label>
