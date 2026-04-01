@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { format, subDays, startOfWeek, startOfMonth, startOfYear, isWithinInterval } from 'date-fns';
-import { CalendarIcon, Plus, Trash2, ShoppingBag, Pencil, Check, X, Package, TrendingUp, BarChart3, ArrowUpDown } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2, ShoppingBag, Pencil, Check, X, Package, TrendingUp, BarChart3, ArrowUpDown, PieChart } from 'lucide-react';
 
 interface CosmofeedProduct {
   id: string;
@@ -35,10 +35,20 @@ interface CosmofeedSale {
 
 type TimePeriod = 'all' | 'today' | 'yesterday' | 'week' | 'month' | 'year' | 'custom';
 
+interface AdSpendEntry {
+  amount: number;
+  spend_date: string;
+  title: string;
+}
+
 const CosmofeedSalesManager = () => {
   const [products, setProducts] = useState<CosmofeedProduct[]>([]);
   const [sales, setSales] = useState<CosmofeedSale[]>([]);
-  const [adSpends, setAdSpends] = useState<{amount: number; spend_date: string; title: string}[]>([]);
+  const [adSpends, setAdSpends] = useState<AdSpendEntry[]>([]);
+  const [analyticsProduct, setAnalyticsProduct] = useState<string>('all');
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<TimePeriod>('all');
+  const [analyticsCustomFrom, setAnalyticsCustomFrom] = useState<Date | undefined>();
+  const [analyticsCustomTo, setAnalyticsCustomTo] = useState<Date | undefined>();
   const [loading, setLoading] = useState(true);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('all');
   const [customFrom, setCustomFrom] = useState<Date | undefined>();
@@ -230,12 +240,84 @@ const CosmofeedSalesManager = () => {
     { label: 'This Year', key: 'year' as TimePeriod, color: 'from-pink-500 to-rose-500' },
   ];
 
+  // Product-wise Analytics
+  const productAnalytics = useMemo(() => {
+    const getAnalyticsRange = () => {
+      if (analyticsPeriod === 'custom') {
+        return { start: analyticsCustomFrom || new Date(), end: analyticsCustomTo || new Date() };
+      }
+      return getDateRange(analyticsPeriod);
+    };
+    const range = getAnalyticsRange();
+
+    // Match ad spends to products by title pattern "Ad Spend - <product_title>"
+    const productMap: Record<string, { product_title: string; adSpend: number; revenue: number; salesCount: number; gst: number }> = {};
+
+    // Initialize with all products
+    products.forEach(p => {
+      productMap[p.id] = { product_title: p.product_title, adSpend: 0, revenue: 0, salesCount: 0, gst: 0 };
+    });
+    // Add "Other" bucket
+    productMap['other'] = { product_title: 'Other', adSpend: 0, revenue: 0, salesCount: 0, gst: 0 };
+
+    // Filter and assign sales
+    let filtSales = sales;
+    if (range) filtSales = sales.filter(s => isWithinInterval(new Date(s.sale_date), { start: range.start, end: range.end }));
+    
+    filtSales.forEach(s => {
+      const key = s.product_id && productMap[s.product_id] ? s.product_id : 'other';
+      productMap[key].revenue += s.net_amount;
+      productMap[key].salesCount += s.quantity;
+      productMap[key].gst += s.gst_amount * s.quantity;
+    });
+
+    // Filter and assign ad spends
+    let filtAds = adSpends;
+    if (range) filtAds = adSpends.filter(a => isWithinInterval(new Date(a.spend_date), { start: range.start, end: range.end }));
+
+    filtAds.forEach(a => {
+      // Title format: "Ad Spend - <product_title>" or custom
+      const titleMatch = a.title.replace(/^Ad Spend\s*-\s*/, '').trim();
+      const matchedProduct = products.find(p => p.product_title.toLowerCase() === titleMatch.toLowerCase());
+      if (matchedProduct && productMap[matchedProduct.id]) {
+        productMap[matchedProduct.id].adSpend += a.amount;
+      } else {
+        productMap['other'].adSpend += a.amount;
+      }
+    });
+
+    // Filter by selected product
+    let entries = Object.entries(productMap).map(([id, data]) => ({ id, ...data, profit: data.revenue - data.adSpend, roas: data.adSpend > 0 ? data.revenue / data.adSpend : 0 }));
+    
+    if (analyticsProduct !== 'all') {
+      entries = entries.filter(e => e.id === analyticsProduct);
+    }
+
+    // Remove empty entries when showing all
+    if (analyticsProduct === 'all') {
+      entries = entries.filter(e => e.adSpend > 0 || e.revenue > 0);
+    }
+
+    const totals = entries.reduce((acc, e) => ({
+      adSpend: acc.adSpend + e.adSpend,
+      revenue: acc.revenue + e.revenue,
+      profit: acc.profit + e.profit,
+      salesCount: acc.salesCount + e.salesCount,
+      gst: acc.gst + e.gst,
+    }), { adSpend: 0, revenue: 0, profit: 0, salesCount: 0, gst: 0 });
+
+    return { entries, totals, totalRoas: totals.adSpend > 0 ? totals.revenue / totals.adSpend : 0 };
+  }, [sales, adSpends, products, analyticsProduct, analyticsPeriod, analyticsCustomFrom, analyticsCustomTo]);
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="sales">
-        <TabsList className="grid w-full grid-cols-3 max-w-md">
+        <TabsList className="grid w-full grid-cols-4 max-w-lg">
           <TabsTrigger value="sales" className="flex items-center gap-1.5">
             <TrendingUp className="h-4 w-4" /> Sales
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-1.5">
+            <PieChart className="h-4 w-4" /> Analytics
           </TabsTrigger>
           <TabsTrigger value="compare" className="flex items-center gap-1.5">
             <BarChart3 className="h-4 w-4" /> Compare
@@ -244,6 +326,146 @@ const CosmofeedSalesManager = () => {
             <Package className="h-4 w-4" /> Products
           </TabsTrigger>
         </TabsList>
+
+        {/* ===== ANALYTICS TAB ===== */}
+        <TabsContent value="analytics" className="space-y-4 mt-4">
+          <div className="flex items-center gap-2 mb-2">
+            <PieChart className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold">Product-wise Ad Spend Analytics</h3>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="min-w-[200px]">
+              <Select value={analyticsProduct} onValueChange={setAnalyticsProduct}>
+                <SelectTrigger><SelectValue placeholder="All Products" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Products</SelectItem>
+                  {products.map(p => (
+                    <SelectItem key={p.id} value={p.id}>{p.product_title}</SelectItem>
+                  ))}
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-1 flex-wrap">
+              {(['all', 'today', 'yesterday', 'week', 'month', 'year'] as TimePeriod[]).map(p => (
+                <Button key={p} variant={analyticsPeriod === p ? 'default' : 'outline'} size="sm" onClick={() => setAnalyticsPeriod(p)} className="capitalize text-xs">
+                  {p === 'all' ? 'All Time' : p === 'week' ? 'This Week' : p === 'month' ? 'This Month' : p === 'year' ? 'This Year' : p}
+                </Button>
+              ))}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant={analyticsPeriod === 'custom' ? 'default' : 'outline'} size="sm" className="text-xs">
+                    <CalendarIcon className="h-3 w-3 mr-1" /> Custom
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-4 space-y-3" align="start">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">From</p>
+                    <Calendar mode="single" selected={analyticsCustomFrom} onSelect={d => { setAnalyticsCustomFrom(d); setAnalyticsPeriod('custom'); }} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">To</p>
+                    <Calendar mode="single" selected={analyticsCustomTo} onSelect={d => { setAnalyticsCustomTo(d); setAnalyticsPeriod('custom'); }} />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <Card className="border-0 bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg">
+              <CardContent className="p-3">
+                <p className="text-xs opacity-80">Ad Spend</p>
+                <p className="text-xl font-bold">{fmt(productAnalytics.totals.adSpend)}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-lg">
+              <CardContent className="p-3">
+                <p className="text-xs opacity-80">Revenue</p>
+                <p className="text-xl font-bold">{fmt(productAnalytics.totals.revenue)}</p>
+              </CardContent>
+            </Card>
+            <Card className={cn("border-0 text-white shadow-lg", productAnalytics.totals.profit >= 0 ? "bg-gradient-to-br from-blue-500 to-indigo-600" : "bg-gradient-to-br from-red-600 to-rose-700")}>
+              <CardContent className="p-3">
+                <p className="text-xs opacity-80">Net Profit</p>
+                <p className="text-xl font-bold">{productAnalytics.totals.profit >= 0 ? '+' : ''}{fmt(productAnalytics.totals.profit)}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-lg">
+              <CardContent className="p-3">
+                <p className="text-xs opacity-80">ROAS</p>
+                <p className="text-xl font-bold">{productAnalytics.totalRoas > 0 ? `${productAnalytics.totalRoas.toFixed(2)}x` : '—'}</p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg">
+              <CardContent className="p-3">
+                <p className="text-xs opacity-80">Sales</p>
+                <p className="text-xl font-bold">{productAnalytics.totals.salesCount}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Product-wise Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Product-wise Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {productAnalytics.entries.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">No data for this filter</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 px-3 font-medium">Product</th>
+                        <th className="text-right py-2 px-3 font-medium">Ad Spend</th>
+                        <th className="text-right py-2 px-3 font-medium">Revenue</th>
+                        <th className="text-right py-2 px-3 font-medium">GST</th>
+                        <th className="text-right py-2 px-3 font-medium">Profit</th>
+                        <th className="text-right py-2 px-3 font-medium">ROAS</th>
+                        <th className="text-right py-2 px-3 font-medium">Sales</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productAnalytics.entries.map(e => (
+                        <tr key={e.id} className="border-b last:border-0 hover:bg-muted/50">
+                          <td className="py-2 px-3 font-medium">{e.product_title}</td>
+                          <td className="py-2 px-3 text-right text-destructive">{fmt(e.adSpend)}</td>
+                          <td className="py-2 px-3 text-right text-primary">{fmt(e.revenue)}</td>
+                          <td className="py-2 px-3 text-right text-muted-foreground">{fmt(e.gst)}</td>
+                          <td className={cn("py-2 px-3 text-right font-semibold", e.profit >= 0 ? "text-primary" : "text-destructive")}>
+                            {e.profit >= 0 ? '+' : ''}{fmt(e.profit)}
+                          </td>
+                          <td className="py-2 px-3 text-right">
+                            {e.adSpend > 0 ? <span className={cn("font-semibold", e.roas >= 1 ? "text-primary" : "text-destructive")}>{e.roas.toFixed(2)}x</span> : '—'}
+                          </td>
+                          <td className="py-2 px-3 text-right">{e.salesCount}</td>
+                        </tr>
+                      ))}
+                      {productAnalytics.entries.length > 1 && (
+                        <tr className="bg-muted/50 font-semibold">
+                          <td className="py-2 px-3">Total</td>
+                          <td className="py-2 px-3 text-right text-destructive">{fmt(productAnalytics.totals.adSpend)}</td>
+                          <td className="py-2 px-3 text-right text-primary">{fmt(productAnalytics.totals.revenue)}</td>
+                          <td className="py-2 px-3 text-right text-muted-foreground">{fmt(productAnalytics.totals.gst)}</td>
+                          <td className={cn("py-2 px-3 text-right", productAnalytics.totals.profit >= 0 ? "text-primary" : "text-destructive")}>
+                            {productAnalytics.totals.profit >= 0 ? '+' : ''}{fmt(productAnalytics.totals.profit)}
+                          </td>
+                          <td className="py-2 px-3 text-right">{productAnalytics.totalRoas > 0 ? `${productAnalytics.totalRoas.toFixed(2)}x` : '—'}</td>
+                          <td className="py-2 px-3 text-right">{productAnalytics.totals.salesCount}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* ===== COMPARE TAB ===== */}
         <TabsContent value="compare" className="space-y-4 mt-4">
