@@ -174,6 +174,8 @@ const SpendManager = () => {
       notes: '',
     });
     setEditingSpend(null);
+    setAdSpendTarget('');
+    setAdSpendOtherText('');
     setIsDialogOpen(false);
   };
 
