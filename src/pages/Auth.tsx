@@ -20,8 +20,15 @@ const Auth = () => {
     isValid: false, 
     errors: [] 
   });
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   // Real-time password validation for signup
   useEffect(() => {
@@ -48,7 +55,7 @@ const Auth = () => {
         toast.error(error);
       } else {
         toast.success('Login successful!');
-        navigate('/home');
+        navigate('/');
       }
     } catch (error: any) {
       toast.error(error.message || 'An unexpected error occurred');
