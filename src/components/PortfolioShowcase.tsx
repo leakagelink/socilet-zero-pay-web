@@ -56,6 +56,9 @@ const projects: Project[] = [
   // SaaS & CRM
   { name: 'Shoporo', url: 'https://shoporo.in/', category: 'saas-crm' },
   { name: 'InboxBeam', url: 'https://inboxbeam.in', category: 'saas-crm' },
+  // Social Media & MLM
+  { name: 'GigMint', url: 'https://gigmint.online', category: 'social-mlm' },
+  { name: 'ShareBuzz', url: 'https://sharebuzz.fun/', category: 'social-mlm' },
 ];
 
 const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
