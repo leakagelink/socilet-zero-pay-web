@@ -29,7 +29,7 @@ const projects: Project[] = [
   { name: 'WP AI Fixer Buddy', url: 'https://wordpressaifixerbuddy.online/', category: 'ai-tools' },
   { name: 'DocuCreator Pro', url: 'https://docucreatorpro.online', category: 'ai-tools' },
   { name: 'Gold Loan Tool', url: 'https://goldloantool.online/', category: 'ai-tools' },
-  { name: 'ByteVigil', url: 'https://bytevigil.one/', category: 'ai-tools' },
+  { name: 'ByteVigil', url: 'https://bytevigil.one/', category: 'saas-crm' },
   { name: 'IdeaValidate', url: 'https://ideavalidate.online/', category: 'ai-tools' },
   { name: 'PluginPal', url: 'https://pluginpal.xyz/', category: 'ai-tools' },
   { name: 'Solar Savings Calculator', url: 'https://solarsavingscalculator.site/', category: 'ai-tools' },
