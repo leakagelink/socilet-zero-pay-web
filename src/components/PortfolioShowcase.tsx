@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Globe, TrendingUp, Bot, Rocket, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging';
+type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging' | 'saas-crm';
 
 interface Project {
   name: string;
@@ -18,7 +18,7 @@ const projects: Project[] = [
   { name: 'Chic Fusion Makeovers', url: 'https://chicfusionmakeovers.in/', category: 'business' },
   { name: 'Gayatri Kashyap', url: 'https://gayatrikashyap.in/', category: 'business' },
   { name: 'Dheeraj Tagde', url: 'https://dheerajtagde.in', category: 'business' },
-  { name: 'InboxBeam', url: 'https://inboxbeam.in', category: 'business' },
+  { name: 'Navbharat Fertilizer', url: 'https://navbharatfertilizer.com', category: 'business' },
   // Trading Platforms
   { name: 'CoinGoldFX', url: 'https://coingoldfx.in', category: 'trading' },
   { name: 'VaultIQ', url: 'https://vaultiq.in', category: 'trading' },
@@ -43,18 +43,29 @@ const projects: Project[] = [
   { name: 'Build My Biz Online', url: 'https://buildmybizonline.in/', category: 'landing' },
   { name: '100 Business Ideas', url: 'https://100businessideas.in/', category: 'landing' },
   { name: 'Crypto Arb Mastery', url: 'https://cryptoarbmastery.in/', category: 'landing' },
-  // Blogging
+  // Automation Blogging
+  { name: 'Queshable', url: 'https://queshable.com/', category: 'blogging' },
+  { name: 'TechMozz', url: 'https://techmozz.com/', category: 'blogging' },
+  { name: 'WaveTheNews', url: 'https://wavethenews.com', category: 'blogging' },
+  { name: 'GenerativeSolo', url: 'https://generativesolo.com', category: 'blogging' },
+  { name: 'DimensionAngle', url: 'https://dimensionangle.com', category: 'blogging' },
   { name: 'AI Se Seekho', url: 'https://aiseseekho.in', category: 'blogging' },
+  { name: 'USA Insurance Policy Guide', url: 'https://usainsurancepolicyguide.com', category: 'blogging' },
+  { name: 'Suzu Travels Blog', url: 'https://blogs.suzutravels.com', category: 'blogging' },
   { name: 'OnlineSevaHelp', url: 'https://onlinesevahelp.in', category: 'blogging' },
+  // SaaS & CRM
+  { name: 'Shoporo', url: 'https://shoporo.in/', category: 'saas-crm' },
+  { name: 'InboxBeam', url: 'https://inboxbeam.in', category: 'saas-crm' },
 ];
 
 const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
   { key: 'all', label: 'All Projects', icon: <Globe className="w-4 h-4" /> },
   { key: 'business', label: 'Business & Portfolio', icon: <Globe className="w-4 h-4" /> },
+  { key: 'saas-crm', label: 'SaaS & CRM', icon: <Rocket className="w-4 h-4" /> },
   { key: 'trading', label: 'Trading Platforms', icon: <TrendingUp className="w-4 h-4" /> },
   { key: 'ai-tools', label: 'AI & Automation', icon: <Bot className="w-4 h-4" /> },
   { key: 'landing', label: 'Landing Pages', icon: <Rocket className="w-4 h-4" /> },
-  { key: 'blogging', label: 'Blogging', icon: <BookOpen className="w-4 h-4" /> },
+  { key: 'blogging', label: 'Automation Blogging', icon: <BookOpen className="w-4 h-4" /> },
 ];
 
 const PortfolioShowcase: React.FC = () => {
