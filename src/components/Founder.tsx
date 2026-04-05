@@ -39,7 +39,7 @@ const Founder = () => {
               <div className="relative mx-auto w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white shadow-xl mb-8">
                 {/* Updated founder image */}
                 <img 
-                  src="/lovable-uploads/2ee68a1b-0ec0-47b8-b622-98ff6c6141b3.png" 
+                  src="/lovable-uploads/founder-dheeraj.jpg" 
                   alt="Dheeraj Tagde - Founder & CEO of Socilet, 7+ years WordPress and AI development expert"
                   title="Dheeraj Tagde - Zero Advance Payment Digital Services Founder"
                   loading="lazy"
