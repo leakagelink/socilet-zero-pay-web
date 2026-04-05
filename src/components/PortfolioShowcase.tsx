@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { ExternalLink, Globe, TrendingUp, Bot, Rocket, BookOpen } from 'lucide-react';
+import { ExternalLink, Globe, TrendingUp, Bot, Rocket, BookOpen, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging' | 'saas-crm';
+type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging' | 'saas-crm' | 'social-mlm';
 
 interface Project {
   name: string;
@@ -29,7 +29,7 @@ const projects: Project[] = [
   { name: 'WP AI Fixer Buddy', url: 'https://wordpressaifixerbuddy.online/', category: 'ai-tools' },
   { name: 'DocuCreator Pro', url: 'https://docucreatorpro.online', category: 'ai-tools' },
   { name: 'Gold Loan Tool', url: 'https://goldloantool.online/', category: 'ai-tools' },
-  { name: 'ByteVigil', url: 'https://bytevigil.one/', category: 'ai-tools' },
+  { name: 'ByteVigil', url: 'https://bytevigil.one/', category: 'saas-crm' },
   { name: 'IdeaValidate', url: 'https://ideavalidate.online/', category: 'ai-tools' },
   { name: 'PluginPal', url: 'https://pluginpal.xyz/', category: 'ai-tools' },
   { name: 'Solar Savings Calculator', url: 'https://solarsavingscalculator.site/', category: 'ai-tools' },
@@ -56,6 +56,9 @@ const projects: Project[] = [
   // SaaS & CRM
   { name: 'Shoporo', url: 'https://shoporo.in/', category: 'saas-crm' },
   { name: 'InboxBeam', url: 'https://inboxbeam.in', category: 'saas-crm' },
+  // Social Media & MLM
+  { name: 'GigMint', url: 'https://gigmint.online', category: 'social-mlm' },
+  { name: 'ShareBuzz', url: 'https://sharebuzz.fun/', category: 'social-mlm' },
 ];
 
 const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
@@ -66,6 +69,7 @@ const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
   { key: 'ai-tools', label: 'AI & Automation', icon: <Bot className="w-4 h-4" /> },
   { key: 'landing', label: 'Landing Pages', icon: <Rocket className="w-4 h-4" /> },
   { key: 'blogging', label: 'Automation Blogging', icon: <BookOpen className="w-4 h-4" /> },
+  { key: 'social-mlm', label: 'Social Media & MLM', icon: <Share2 className="w-4 h-4" /> },
 ];
 
 const PortfolioShowcase: React.FC = () => {
