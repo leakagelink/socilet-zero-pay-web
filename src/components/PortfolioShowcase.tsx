@@ -69,6 +69,7 @@ const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
   { key: 'ai-tools', label: 'AI & Automation', icon: <Bot className="w-4 h-4" /> },
   { key: 'landing', label: 'Landing Pages', icon: <Rocket className="w-4 h-4" /> },
   { key: 'blogging', label: 'Automation Blogging', icon: <BookOpen className="w-4 h-4" /> },
+  { key: 'social-mlm', label: 'Social Media & MLM', icon: <Share2 className="w-4 h-4" /> },
 ];
 
 const PortfolioShowcase: React.FC = () => {
