@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Globe, TrendingUp, Bot, Rocket, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging' | 'saas-crm';
+type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging' | 'saas-crm' | 'social-mlm';
 
 interface Project {
   name: string;
