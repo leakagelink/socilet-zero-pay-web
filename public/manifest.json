@@ -1,0 +1,22 @@
+{
+  "name": "Socilet - Zero Advance Payment Web & App Development",
+  "short_name": "Socilet",
+  "description": "No upfront payment web developer from India. 900+ projects delivered. Pay only after completion.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/socilet-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/socilet-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
