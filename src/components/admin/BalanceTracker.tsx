@@ -122,12 +122,12 @@ const BalanceTracker = () => {
   useEffect(() => {
     fetchAllEntries();
 
-    // Realtime subscriptions
-    const channels = ['projects', 'digital_products', 'other_income', 'spends', 'recurring_earnings', 'cosmofeed_sales'].map(table =>
-      supabase.channel(`balance-${table}`).on('postgres_changes', { event: '*', schema: 'public', table }, () => fetchAllEntries()).subscribe()
-    );
+    // Poll for updates every 30 seconds (realtime removed for security)
+    const interval = setInterval(() => {
+      fetchAllEntries();
+    }, 30000);
 
-    return () => { channels.forEach(c => supabase.removeChannel(c)); };
+    return () => { clearInterval(interval); };
   }, []);
 
   const getDateRange = (period: TimePeriod) => {
