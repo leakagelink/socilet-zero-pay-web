@@ -115,6 +115,41 @@ const HireIndianDeveloper = () => {
     window.open('https://wa.me/917024466980?text=Hi! I\'m interested in hiring Indian developer services for my US/Canada business.', '_blank');
   };
 
+  const jsonLdService = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Hire Indian Developer",
+    "name": "Hire Indian Developer - Save 70% on Development Costs",
+    "description": "Hire skilled Indian developers for web and app development at 70% lower cost than US/Canada rates. Zero advance payment, pay after completion.",
+    "url": "https://socilet.in/hire-indian-developer",
+    "provider": {
+      "@type": "Organization",
+      "name": "Socilet",
+      "url": "https://socilet.in",
+      "logo": "https://socilet.in/socilet-logo.png"
+    },
+    "areaServed": [
+      {"@type": "Country", "name": "United States"},
+      {"@type": "Country", "name": "Canada"},
+      {"@type": "Country", "name": "United Kingdom"},
+      {"@type": "Country", "name": "Australia"}
+    ],
+    "offers": {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock",
+      "description": "Zero Risk - Pay Only After Completion"
+    }
+  };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in"},
+      {"@type": "ListItem", "position": 2, "name": "Hire Indian Developer", "item": "https://socilet.in/hire-indian-developer"}
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <Helmet>

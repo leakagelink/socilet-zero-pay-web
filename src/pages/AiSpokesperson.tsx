@@ -16,6 +16,40 @@ const AiSpokesperson = () => {
       <Helmet>
         <title>AI Spokesperson Services | Socilet</title>
         <meta name="description" content="Create virtual presenters and spokespersons powered by AI for your marketing needs." />
+        <link rel="canonical" href="https://socilet.in/ai-spokesperson" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "AI Video Production",
+          "name": "AI Spokesperson Video Creation Service",
+          "description": "Create realistic AI-powered virtual presenters and spokespersons for marketing, training, product demos, and brand promotions.",
+          "url": "https://socilet.in/ai-spokesperson",
+          "provider": {
+            "@type": "Organization",
+            "name": "Socilet",
+            "url": "https://socilet.in",
+            "logo": "https://socilet.in/socilet-logo.png"
+          },
+          "areaServed": [
+            {"@type": "Country", "name": "United States"},
+            {"@type": "Country", "name": "Canada"},
+            {"@type": "Country", "name": "India"}
+          ],
+          "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "priceCurrency": "INR",
+            "description": "AI Spokesperson Videos - Affordable Pricing"
+          }
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in"},
+            {"@type": "ListItem", "position": 2, "name": "AI Spokesperson", "item": "https://socilet.in/ai-spokesperson"}
+          ]
+        })}</script>
       </Helmet>
       <Header />
       <main className="pt-20">

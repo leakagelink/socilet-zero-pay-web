@@ -16,6 +16,51 @@ const WebsiteDevelopment = () => {
       <Helmet>
         <title>Website Development Services | Socilet</title>
         <meta name="description" content="Custom website development with responsive design and modern UI/UX practices." />
+        <link rel="canonical" href="https://socilet.in/website-development" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Website Development",
+          "name": "Professional Website Development - Zero Advance Payment",
+          "description": "Custom website development with React, Next.js, WordPress. Responsive design, SEO optimization, and modern UI/UX. No upfront payment required.",
+          "url": "https://socilet.in/website-development",
+          "provider": {
+            "@type": "Organization",
+            "name": "Socilet",
+            "url": "https://socilet.in",
+            "logo": "https://socilet.in/socilet-logo.png"
+          },
+          "areaServed": [
+            {"@type": "Country", "name": "United States"},
+            {"@type": "Country", "name": "Canada"},
+            {"@type": "Country", "name": "India"}
+          ],
+          "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "priceCurrency": "INR",
+            "description": "Zero Advance Payment - Pay Only After Completion"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Website Development Services",
+            "itemListElement": [
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Business Website Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "E-Commerce Website Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "WordPress Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Landing Page Design"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "SaaS Web Application Development"}}
+            ]
+          }
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in"},
+            {"@type": "ListItem", "position": 2, "name": "Website Development", "item": "https://socilet.in/website-development"}
+          ]
+        })}</script>
       </Helmet>
       <Header />
       <main className="pt-20">
