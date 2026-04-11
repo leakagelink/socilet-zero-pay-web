@@ -53,7 +53,7 @@ const AffiliateDashboard = () => {
       if (affiliateUser) {
         const { data, error } = await supabase
           .from('referrals')
-          .select('*')
+          .select('id, affiliate_id, client_name, project_type, commission_amount, status, notes, created_at, completed_at, project_value')
           .eq('affiliate_id', affiliateUser.id)
           .order('created_at', { ascending: false });
 

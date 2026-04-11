@@ -210,18 +210,13 @@ const AdminPanel = () => {
   useEffect(() => {
     if (!isLoggedIn) return;
 
-    const tables = ['spends', 'projects', 'digital_products', 'other_income', 'recurring_earnings', 'cosmofeed_sales'];
-    const channels = tables.map(table =>
-      supabase
-        .channel(`realtime-${table}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table }, () => {
-          fetchRevenueStats();
-        })
-        .subscribe()
-    );
+    // Poll for updates every 30 seconds (realtime removed for security)
+    const interval = setInterval(() => {
+      fetchRevenueStats();
+    }, 30000);
 
     return () => {
-      channels.forEach(ch => supabase.removeChannel(ch));
+      clearInterval(interval);
     };
   }, [isLoggedIn]);
 
