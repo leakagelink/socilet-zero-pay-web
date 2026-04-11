@@ -80,6 +80,34 @@ const PortfolioShowcase: React.FC = () => {
 
   return (
     <section className="py-16 md:py-24 bg-muted/30">
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Socilet Portfolio - Our Projects",
+          "description": "Explore 35+ live websites and applications built by Socilet. Business websites, SaaS platforms, AI tools, trading platforms, and more.",
+          "url": "https://socilet.in/#portfolio",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Socilet",
+            "url": "https://socilet.in",
+            "logo": "https://socilet.in/socilet-logo.png"
+          },
+          "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": projects.length,
+            "itemListElement": projects.map((p, i) => ({
+              "@type": "ListItem",
+              "position": i + 1,
+              "item": {
+                "@type": "WebSite",
+                "name": p.name,
+                "url": p.url
+              }
+            }))
+          }
+        })}</script>
+      </Helmet>
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
