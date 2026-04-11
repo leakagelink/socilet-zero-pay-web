@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { ExternalLink, Globe, TrendingUp, Bot, Rocket, BookOpen, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet';
 
 type Category = 'all' | 'business' | 'trading' | 'ai-tools' | 'landing' | 'blogging' | 'saas-crm' | 'social-mlm';
 
