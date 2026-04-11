@@ -18,9 +18,19 @@ interface EmailRequest {
   replyTo?: string;
 }
 
+const escapeHtml = (text: string): string => {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
 const getEmailHtml = (recipientName: string, message: string) => {
-  // Convert newlines to <br> for HTML
-  const formattedMessage = message.replace(/\n/g, '<br>');
+  // Sanitize inputs and convert newlines to <br> for HTML
+  const sanitizedName = escapeHtml(recipientName);
+  const formattedMessage = escapeHtml(message).replace(/\n/g, '<br>');
   
   return `
 <!DOCTYPE html>
