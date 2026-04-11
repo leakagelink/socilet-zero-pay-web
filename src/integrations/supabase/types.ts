@@ -1654,6 +1654,10 @@ export type Database = {
       generate_invoice_number: { Args: never; Returns: string }
       generate_project_code: { Args: never; Returns: string }
       generate_quotation_number: { Args: never; Returns: string }
+      get_user_role: {
+        Args: { user_uuid: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1661,6 +1665,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { user_uuid: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

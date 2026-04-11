@@ -8,8 +8,12 @@ const corsHeaders = {
 };
 
 // Agora Credentials from environment
-const AGORA_APP_ID = Deno.env.get('AGORA_APP_ID') || '70055c1865ad4462bd0a92cb610707be';
-const AGORA_APP_CERTIFICATE = Deno.env.get('AGORA_APP_CERTIFICATE') || '2e1cbfe2c6e1407f8a49a21f3d706b14';
+const AGORA_APP_ID = Deno.env.get('AGORA_APP_ID');
+const AGORA_APP_CERTIFICATE = Deno.env.get('AGORA_APP_CERTIFICATE');
+
+if (!AGORA_APP_ID || !AGORA_APP_CERTIFICATE) {
+  console.error('Agora credentials not configured');
+}
 
 serve(async (req) => {
   // Handle CORS preflight
