@@ -23,6 +23,10 @@ User-agent: Yandex
 Allow: /
 Crawl-delay: 3
 
+# LLMs.txt for AI chatbots
+# https://llmstxt.org/
+LLMs-txt: https://socilet.in/llms.txt
+
 # Sitemap locations
 Sitemap: https://socilet.in/sitemap_index.xml
 Sitemap: https://socilet.in/sitemap-pages.xml
