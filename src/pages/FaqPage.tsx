@@ -61,11 +61,47 @@ const FaqPage = () => {
     }
   ];
 
+  const allFaqs = [
+    ...paymentRelatedFaqs,
+    ...affiliateProgramFaqs,
+    { question: "What services do you offer?", answer: "We offer website development, app development, AI spokesperson creation, SEO services, Google Ads management, social media marketing, and business profile listing. All services come with our unique zero advance payment model." },
+    { question: "How does your zero advance payment model work?", answer: "Our zero advance payment model means you only pay after your project is successfully delivered and you are completely satisfied with the results. There are no upfront costs or hidden fees." },
+    { question: "What technologies do you use?", answer: "We use React, Next.js, TypeScript, Tailwind CSS for frontend. Supabase and Node.js for backend. WordPress for CMS. Vercel, AWS, and DigitalOcean for hosting." },
+    { question: "How long does it take to complete a project?", answer: "A simple website takes 2-4 weeks. Complex web applications may require 2-6 months. We provide a detailed timeline during our free consultation." },
+    { question: "Do you provide ongoing support after project completion?", answer: "Yes, we offer 1 month free support after delivery plus ongoing maintenance packages to keep your digital products running smoothly." },
+    { question: "How do I get started with your services?", answer: "Simply reach out through our contact form, WhatsApp, or email at team@socilet.in. We'll schedule a free consultation to discuss your requirements." }
+  ];
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": allFaqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in" },
+      { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://socilet.in/faq" }
+    ]
+  };
+
   return (
     <>
       <Helmet>
         <title>Frequently Asked Questions | Socilet</title>
         <meta name="description" content="Find answers to common questions about Socilet's zero advance payment services, payment terms, and affiliate program." />
+        <link rel="canonical" href="https://socilet.in/faq" />
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
       
       <Header />
