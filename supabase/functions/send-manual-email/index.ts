@@ -58,7 +58,7 @@ const getEmailHtml = (recipientName: string, message: string) => {
           <tr>
             <td style="padding: 32px;">
               <h2 style="margin: 0 0 16px 0; color: #111827; font-size: 20px; font-weight: 600;">
-                Hello${recipientName ? ` ${recipientName}` : ''},
+                Hello${sanitizedName ? ` ${sanitizedName}` : ''},
               </h2>
               
               <div style="color: #374151; font-size: 15px; line-height: 1.7;">
