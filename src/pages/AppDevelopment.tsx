@@ -16,6 +16,51 @@ const AppDevelopment = () => {
       <Helmet>
         <title>Mobile App Development Services | Socilet</title>
         <meta name="description" content="Native and cross-platform mobile applications for iOS and Android." />
+        <link rel="canonical" href="https://socilet.in/app-development" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Mobile App Development",
+          "name": "Mobile App Development - Zero Advance Payment",
+          "description": "Native and cross-platform mobile app development for iOS and Android with zero advance payment. React Native, Flutter, and native development.",
+          "url": "https://socilet.in/app-development",
+          "provider": {
+            "@type": "Organization",
+            "name": "Socilet",
+            "url": "https://socilet.in",
+            "logo": "https://socilet.in/socilet-logo.png"
+          },
+          "areaServed": [
+            {"@type": "Country", "name": "United States"},
+            {"@type": "Country", "name": "Canada"},
+            {"@type": "Country", "name": "India"}
+          ],
+          "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "priceCurrency": "INR",
+            "description": "Zero Advance Payment - Pay Only After Delivery"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "App Development Services",
+            "itemListElement": [
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Android App Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "iOS App Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Cross-Platform App Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "React Native Development"}},
+              {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Flutter App Development"}}
+            ]
+          }
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in"},
+            {"@type": "ListItem", "position": 2, "name": "App Development", "item": "https://socilet.in/app-development"}
+          ]
+        })}</script>
       </Helmet>
       <Header />
       <main className="pt-20">

@@ -16,6 +16,40 @@ const BusinessProfile = () => {
       <Helmet>
         <title>Business Profile Listing Services | Socilet</title>
         <meta name="description" content="Get your business listed across major platforms to increase visibility and reach." />
+        <link rel="canonical" href="https://socilet.in/google-business-profile" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Business Profile Management",
+          "name": "Google My Business Profile Setup & Optimization",
+          "description": "Get your business listed on Google Maps, Google Search, and major platforms. GMB setup, optimization, and management services.",
+          "url": "https://socilet.in/google-business-profile",
+          "provider": {
+            "@type": "Organization",
+            "name": "Socilet",
+            "url": "https://socilet.in",
+            "logo": "https://socilet.in/socilet-logo.png"
+          },
+          "areaServed": [
+            {"@type": "Country", "name": "United States"},
+            {"@type": "Country", "name": "Canada"},
+            {"@type": "Country", "name": "India"}
+          ],
+          "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "priceCurrency": "INR",
+            "description": "Business Profile Listing - Competitive Rates"
+          }
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in"},
+            {"@type": "ListItem", "position": 2, "name": "Google Business Profile", "item": "https://socilet.in/google-business-profile"}
+          ]
+        })}</script>
       </Helmet>
       <Header />
       <main className="pt-20">
