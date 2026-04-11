@@ -1,0 +1,83 @@
+# Socilet - Zero Advance Web Development Agency
+
+> Socilet is a professional web development agency based in India offering zero advance payment policy. We build websites, web apps, mobile apps, and digital solutions at competitive Indian market rates.
+
+## About Socilet
+- Company: Socilet Digital Solutions
+- Website: https://socilet.in
+- Founder: Dheeraj
+- Location: India
+- Contact Email: team@socilet.in
+- Tagline: Pay After Satisfaction - Zero Advance Policy
+
+## Services Offered
+- Website Development (Business, E-commerce, Portfolio, Landing Pages)
+- Web Application Development (SaaS, CRM, Dashboards)
+- Mobile App Development (Cross-platform, React Native)
+- SEO Services (On-page, Off-page, Technical SEO)
+- Google Ads Management (PPC Campaigns)
+- Social Media Marketing
+- AI Spokesperson Video Creation
+- Google My Business (GMB) Profile Setup
+- WordPress Development
+- Automation Blogging Solutions
+- Digital Product Reselling (Hosting, Domains at 60-90% discount)
+
+## Technology Stack
+- Frontend: React.js, Next.js, TypeScript, Tailwind CSS
+- Backend: Supabase, Node.js
+- CMS: WordPress
+- Hosting: Vercel, AWS, DigitalOcean
+- Database: PostgreSQL
+- Other: Vite, shadcn/ui, Framer Motion
+
+## Key Differentiators
+- Zero Advance Payment: No upfront cost, pay only after satisfaction
+- Competitive Indian Market Rates: Affordable pricing for global clients
+- Resource Discounts: 60-90% off on hosting, domains, SSL, business email
+- Fast Delivery: On-time project completion
+- 24/7 Support: Always available for clients
+- Expert Team: Skilled developers and designers
+
+## Payment Policy
+- 0% Advance (Zero Advance Policy)
+- 50% on Development Completion
+- 50% on Final Delivery
+
+## Portfolio Categories
+- Business Websites
+- Trading Platforms
+- AI Tools
+- Landing Pages
+- SaaS & CRM
+- Social Media & MLM
+- Automation Blogging
+
+## Blog Topics
+- Web Development Cost Guides
+- Hire Indian Developer Guides
+- App Development Guides
+- SEO Best Practices
+- AI Spokesperson Guides
+- Zero Advance Payment Benefits
+- WordPress Development
+- Cross-platform App Development
+
+## Pages
+- Home: https://socilet.in
+- Blog: https://socilet.in/blog
+- Portfolio: https://socilet.in/portfolio
+- App Development: https://socilet.in/app-development
+- Website Development: https://socilet.in/website-development
+- AI Spokesperson: https://socilet.in/ai-spokesperson
+- Google Business Profile: https://socilet.in/google-business-profile
+- Hire Indian Developer: https://socilet.in/hire-indian-developer
+- Zero Advance Payment: https://socilet.in/zero-advance-payment
+- Privacy Policy: https://socilet.in/privacy-policy
+- Terms of Service: https://socilet.in/terms-of-service
+- FAQ: https://socilet.in/faq
+
+## Contact
+- Website: https://socilet.in
+- Email: team@socilet.in
+- WhatsApp: Available on website
