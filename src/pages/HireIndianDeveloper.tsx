@@ -167,6 +167,8 @@ const HireIndianDeveloper = () => {
         <meta property="og:description" content="Save 70% on development costs. Zero risk - pay only after completion. Trusted by 900+ US & Canada clients." />
         <meta property="og:url" content="https://socilet.in/hire-indian-developer" />
         <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(jsonLdService)}</script>
+        <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
       </Helmet>
 
       <Header />

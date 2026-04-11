@@ -16,6 +16,49 @@ const ZeroAdvancePayment = () => {
       <Helmet>
         <title>Zero Advance Payment Model | Socilet - Brand Your Dream</title>
         <meta name="description" content="Socilet's unique zero advance payment business model ensures you only pay after the work is completed to your satisfaction, protecting you from scams." />
+        <link rel="canonical" href="https://socilet.in/zero-advance-payment" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Zero Advance Payment Model - Pay After Satisfaction",
+          "description": "Socilet's unique zero advance payment model. No upfront cost for web & app development. Pay only after project completion and satisfaction.",
+          "url": "https://socilet.in/zero-advance-payment",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Socilet",
+            "url": "https://socilet.in",
+            "logo": "https://socilet.in/socilet-logo.png"
+          },
+          "mainEntity": {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What is zero advance payment model?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Zero advance payment means you don't pay anything upfront. Socilet starts your project, delivers it first, and you pay only after you are completely satisfied."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is zero advance payment safe?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, it's the safest model for clients. You see the work before paying. Socilet has delivered 900+ projects with this model."
+                }
+              }
+            ]
+          }
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in"},
+            {"@type": "ListItem", "position": 2, "name": "Zero Advance Payment", "item": "https://socilet.in/zero-advance-payment"}
+          ]
+        })}</script>
       </Helmet>
       <Toaster position="top-right" richColors />
       <Header />
