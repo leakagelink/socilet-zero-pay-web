@@ -243,14 +243,28 @@ const FAQ = () => {
                 </summary>
                 <div className="px-5 pb-5 text-gray-700 leading-relaxed">
                   <p>{item.a}</p>
-                  <a
-                    href="#contact"
-                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-md hover:bg-primary-700 transition-colors duration-300 shadow-sm"
-                    aria-label={`${t('inlineCta')} — ${item.q}`}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    {t('inlineCta')}
-                  </a>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <a
+                      href={`https://wa.me/919301499921?text=${encodeURIComponent(
+                        (lang === 'hi'
+                          ? `नमस्ते Socilet, मेरा सवाल है: "${item.q}" — कृपया मुझे फ्री कंसल्टेशन दें।`
+                          : `Hi Socilet, I have a question about: "${item.q}" — please share a free consultation.`)
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-md hover:bg-green-600 transition-colors duration-300 shadow-sm"
+                      aria-label={`${lang === 'hi' ? 'WhatsApp पर पूछें' : 'Ask on WhatsApp'} — ${item.q}`}
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      {lang === 'hi' ? 'WhatsApp पर पूछें' : 'Ask on WhatsApp'}
+                    </a>
+                    <a
+                      href="#contact"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-md hover:bg-primary-700 transition-colors duration-300 shadow-sm"
+                    >
+                      {t('inlineCta')}
+                    </a>
+                  </div>
                 </div>
               </details>
             );
