@@ -159,7 +159,203 @@
 </head>
 
   <body>
-    <div id="root"></div>
+    <!-- ============================================================ -->
+    <!-- Inline styles for the no-JS / pre-hydration #root fallback   -->
+    <!-- Scoped to .fallback-shell so they never affect the React UI. -->
+    <!-- ============================================================ -->
+    <style>
+      .fallback-shell {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #0f172a;
+        background: linear-gradient(180deg, #eff6ff 0%, #ffffff 60%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+      .fallback-shell * { box-sizing: border-box; }
+      .fallback-shell .fb-nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px 24px; max-width: 1200px; margin: 0 auto;
+      }
+      .fallback-shell .fb-brand {
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 800; font-size: 22px; color: #1d4ed8; text-decoration: none;
+      }
+      .fallback-shell .fb-brand img { width: 32px; height: 32px; }
+      .fallback-shell .fb-nav-links { display: flex; gap: 18px; }
+      .fallback-shell .fb-nav-links a { color: #334155; text-decoration: none; font-weight: 500; font-size: 14px; }
+      .fallback-shell .fb-nav-links a:hover { color: #1d4ed8; }
+      .fallback-shell .fb-hero {
+        max-width: 1100px; margin: 0 auto; padding: 56px 24px 40px;
+        text-align: center;
+      }
+      .fallback-shell .fb-badge {
+        display: inline-block; background: #dbeafe; color: #1e40af;
+        padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+        margin-bottom: 18px;
+      }
+      .fallback-shell .fb-hero h1 {
+        font-size: clamp(28px, 5vw, 48px); line-height: 1.15; margin: 0 0 18px;
+        color: #0f172a; font-weight: 800; letter-spacing: -0.02em;
+      }
+      .fallback-shell .fb-hero h1 span { color: #1d4ed8; }
+      .fallback-shell .fb-hero p {
+        font-size: clamp(15px, 2vw, 18px); color: #475569;
+        max-width: 720px; margin: 0 auto 28px; line-height: 1.6;
+      }
+      .fallback-shell .fb-cta-row {
+        display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+        margin-bottom: 36px;
+      }
+      .fallback-shell .fb-btn {
+        display: inline-block; padding: 12px 24px; border-radius: 999px;
+        font-weight: 600; font-size: 15px; text-decoration: none; transition: transform 0.15s;
+      }
+      .fallback-shell .fb-btn-primary {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      }
+      .fallback-shell .fb-btn-secondary {
+        background: #fff; color: #1d4ed8; border: 2px solid #dbeafe;
+      }
+      .fallback-shell .fb-stats {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px; max-width: 800px; margin: 0 auto 48px; padding: 0 24px;
+      }
+      .fallback-shell .fb-stat {
+        background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+        padding: 20px; text-align: center; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      }
+      .fallback-shell .fb-stat strong {
+        display: block; font-size: 28px; color: #1d4ed8; font-weight: 800; margin-bottom: 4px;
+      }
+      .fallback-shell .fb-stat span { color: #64748b; font-size: 13px; }
+      .fallback-shell .fb-services {
+        max-width: 1100px; margin: 0 auto; padding: 24px;
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+      }
+      .fallback-shell .fb-service {
+        background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;
+      }
+      .fallback-shell .fb-service h3 {
+        margin: 0 0 8px; color: #0f172a; font-size: 18px;
+      }
+      .fallback-shell .fb-service p { margin: 0; color: #64748b; font-size: 14px; line-height: 1.6; }
+      .fallback-shell .fb-loading {
+        text-align: center; color: #64748b; font-size: 13px; padding: 24px;
+      }
+      .fallback-shell .fb-loading::after {
+        content: ""; display: inline-block; width: 14px; height: 14px;
+        border: 2px solid #cbd5e1; border-top-color: #1d4ed8; border-radius: 50%;
+        margin-left: 8px; vertical-align: middle;
+        animation: fb-spin 0.8s linear infinite;
+      }
+      @keyframes fb-spin { to { transform: rotate(360deg); } }
+      .fallback-shell .fb-footer {
+        text-align: center; padding: 32px 24px; color: #94a3b8; font-size: 13px;
+        border-top: 1px solid #e2e8f0; margin-top: 24px;
+      }
+      .fallback-shell .fb-footer a { color: #475569; text-decoration: none; margin: 0 8px; }
+    </style>
+
+    <div id="root">
+      <!-- ====================================================== -->
+      <!-- HTML fallback shown instantly: works without JS, while -->
+      <!-- React hydration is loading, or if the JS bundle fails. -->
+      <!-- React's createRoot().render() will replace this on     -->
+      <!-- mount, so end users transition seamlessly to the SPA.  -->
+      <!-- ====================================================== -->
+      <div class="fallback-shell" role="document">
+        <header>
+          <nav class="fb-nav" aria-label="Primary">
+            <a class="fb-brand" href="/" aria-label="Socilet — Home">
+              <img src="/socilet-logo.png" alt="Socilet" width="32" height="32" loading="eager" />
+              <span>Socilet</span>
+            </a>
+            <div class="fb-nav-links" aria-label="Sections">
+              <a href="/website-development">Web</a>
+              <a href="/app-development">Apps</a>
+              <a href="/ai-spokesperson">AI Video</a>
+              <a href="/hire-indian-developer">Hire Developer</a>
+              <a href="/blog">Blog</a>
+              <a href="/faq">FAQ</a>
+            </div>
+          </nav>
+        </header>
+
+        <main>
+          <section class="fb-hero">
+            <span class="fb-badge">★ 4.9/5 — Trusted by 900+ businesses worldwide</span>
+            <h1>
+              Zero Advance Payment <span>Web &amp; App Development</span>
+              <br />from India for the World
+            </h1>
+            <p>
+              Socilet builds professional websites, mobile apps, AI spokesperson videos,
+              and digital marketing campaigns for clients in the USA, Canada, UK, Australia
+              and India. <strong>Pay only after we deliver</strong> and you are 100% satisfied —
+              no upfront cost, no risk.
+            </p>
+            <div class="fb-cta-row">
+              <a class="fb-btn fb-btn-primary" href="https://wa.me/919301139140?text=Hi%20Socilet%2C%20I%20want%20a%20free%20consultation%20for%20my%20project.">
+                Get Free Consultation
+              </a>
+              <a class="fb-btn fb-btn-secondary" href="/zero-advance-payment">
+                How It Works
+              </a>
+            </div>
+
+            <div class="fb-stats" aria-label="Company stats">
+              <div class="fb-stat"><strong>900+</strong><span>Projects Delivered</span></div>
+              <div class="fb-stat"><strong>4.9/5</strong><span>Client Rating</span></div>
+              <div class="fb-stat"><strong>0%</strong><span>Advance Payment</span></div>
+              <div class="fb-stat"><strong>8+ yrs</strong><span>Since 2017</span></div>
+            </div>
+          </section>
+
+          <section class="fb-services" aria-label="Services">
+            <article class="fb-service">
+              <h3>Website Development</h3>
+              <p>React, Next.js, WordPress &amp; custom builds. Fast, mobile-first, SEO-optimized. Pay after delivery.</p>
+            </article>
+            <article class="fb-service">
+              <h3>Mobile App Development</h3>
+              <p>Android &amp; iOS apps with React Native, Flutter, or native code. From MVPs to enterprise scale.</p>
+            </article>
+            <article class="fb-service">
+              <h3>AI Spokesperson Videos</h3>
+              <p>Professional AI presenter videos for marketing, demos, training and brand promotion at a fraction of the cost.</p>
+            </article>
+            <article class="fb-service">
+              <h3>SEO &amp; Google Ads</h3>
+              <p>On-page, technical and local SEO plus high-ROI Google Ads campaigns to drive qualified traffic.</p>
+            </article>
+            <article class="fb-service">
+              <h3>Social Media Marketing</h3>
+              <p>Content, ads and audience growth for Facebook, Instagram, LinkedIn, YouTube and Twitter.</p>
+            </article>
+            <article class="fb-service">
+              <h3>Google My Business</h3>
+              <p>GMB profile setup &amp; optimization to rank in Google Maps and local search results.</p>
+            </article>
+          </section>
+
+          <p class="fb-loading">Loading interactive experience</p>
+        </main>
+
+        <footer class="fb-footer">
+          <p>
+            <a href="/zero-advance-payment">Zero Advance Payment</a> ·
+            <a href="/affiliate">Affiliate Program</a> ·
+            <a href="/blog">Blog</a> ·
+            <a href="/faq">FAQ</a> ·
+            <a href="/privacy-policy">Privacy</a> ·
+            <a href="/terms-of-service">Terms</a>
+          </p>
+          <p>&copy; 2017–2026 Socilet Digital Solutions · Bhopal, Madhya Pradesh, India · <a href="mailto:contact@socilet.in">contact@socilet.in</a></p>
+        </footer>
+      </div>
+    </div>
 
     <!-- SEO/LLM fallback kept outside the React mount point so it never blocks the styled app UI.
          It stays hidden for normal visitors and is only shown when JavaScript is disabled. -->
