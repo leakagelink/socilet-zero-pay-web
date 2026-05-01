@@ -1,19 +1,41 @@
 # Socilet.in SEO Robots.txt
-# Updated: 2026-01-31
+# Updated: 2026-05-01
 
-# Allow all search engines to crawl
+# ---------------------------------------------------------------
+# Default policy — allow all crawlers across public site
+# ---------------------------------------------------------------
 User-agent: *
 Allow: /
 
-# Disallow admin and private pages
-Disallow: /admin
+# Block private / authenticated / utility routes from indexing
+Disallow: /admin-panel
+Disallow: /admin-panel/
 Disallow: /auth
 Disallow: /meetings
+Disallow: /investments
+Disallow: /workspace/
+Disallow: /refer/
+Disallow: /track-project
 
-# Allow specific bots with higher crawl rates
+# Block static internal asset folders that shouldn't appear in SERPs
+Disallow: /lovable-uploads/
+
+# Allow important static assets
+Allow: /og-image.png
+Allow: /socilet-logo.png
+Allow: /manifest.json
+Allow: /ads.txt
+Allow: /llms.txt
+
+# ---------------------------------------------------------------
+# Per-bot crawl tuning (search engines)
+# ---------------------------------------------------------------
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 1
+
+User-agent: Googlebot-Image
+Allow: /
 
 User-agent: Bingbot
 Allow: /
@@ -23,16 +45,52 @@ User-agent: Yandex
 Allow: /
 Crawl-delay: 3
 
-# LLMs.txt for AI chatbots
-# https://llmstxt.org/
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Applebot
+Allow: /
+Crawl-delay: 2
+
+# ---------------------------------------------------------------
+# AI / LLM crawlers — explicitly allowed for discoverability
+# ---------------------------------------------------------------
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# LLMs.txt for AI chatbots — https://llmstxt.org/
 LLMs-txt: https://socilet.in/llms.txt
 
+# ---------------------------------------------------------------
 # Sitemap locations
+# ---------------------------------------------------------------
 Sitemap: https://socilet.in/sitemap_index.xml
 Sitemap: https://socilet.in/sitemap-pages.xml
 Sitemap: https://socilet.in/sitemap-blog.xml
 Sitemap: https://socilet.in/sitemap-services.xml
 Sitemap: https://socilet.in/sitemap-images.xml
 
-# Host declaration
+# Canonical host
 Host: https://socilet.in
