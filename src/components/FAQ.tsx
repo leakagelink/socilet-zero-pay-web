@@ -132,7 +132,7 @@ const FAQ = () => {
     ]),
   };
 
-  const t = (key: 'heading' | 'sub' | 'still' | 'cta' | 'helper') => {
+  const t = (key: 'heading' | 'sub' | 'still' | 'cta' | 'helper' | 'inlineCta') => {
     const dict = {
       en: {
         heading: 'Frequently Asked Questions',
@@ -140,6 +140,7 @@ const FAQ = () => {
         still: 'Still have questions?',
         cta: 'Contact Us',
         helper: "Couldn't find what you were looking for? Reach out and we'll respond within a few hours.",
+        inlineCta: 'Get a Free Consultation',
       },
       hi: {
         heading: 'अक्सर पूछे जाने वाले सवाल',
@@ -147,6 +148,7 @@ const FAQ = () => {
         still: 'अभी भी कोई सवाल है?',
         cta: 'संपर्क करें',
         helper: 'अगर आपको जवाब नहीं मिला तो हमें संपर्क करें — हम कुछ घंटों में रिप्लाई करते हैं।',
+        inlineCta: 'फ्री कंसल्टेशन बुक करें',
       },
     };
     return dict[lang][key];
@@ -241,6 +243,14 @@ const FAQ = () => {
                 </summary>
                 <div className="px-5 pb-5 text-gray-700 leading-relaxed">
                   <p>{item.a}</p>
+                  <a
+                    href="#contact"
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-md hover:bg-primary-700 transition-colors duration-300 shadow-sm"
+                    aria-label={`${t('inlineCta')} — ${item.q}`}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    {t('inlineCta')}
+                  </a>
                 </div>
               </details>
             );

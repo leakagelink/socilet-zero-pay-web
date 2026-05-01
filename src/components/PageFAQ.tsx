@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { ChevronDown, HelpCircle, Languages } from 'lucide-react';
+import { ChevronDown, HelpCircle, Languages, MessageCircle } from 'lucide-react';
 
 export type PageFaq = {
   question: string;
@@ -19,6 +19,10 @@ interface PageFAQProps {
   faqs: PageFaq[];
   defaultOpenCount?: number;
   className?: string;
+  /** Per-answer CTA button. Defaults to a free consultation link to #contact. */
+  ctaHref?: string;
+  ctaLabel?: string;
+  ctaLabelHi?: string;
 }
 
 type Lang = 'en' | 'hi';
@@ -31,6 +35,9 @@ const PageFAQ: React.FC<PageFAQProps> = ({
   faqs,
   defaultOpenCount = 3,
   className = 'bg-gray-50',
+  ctaHref = '/#contact',
+  ctaLabel = 'Get a Free Consultation',
+  ctaLabelHi = 'फ्री कंसल्टेशन बुक करें',
 }) => {
   const hasHindi = faqs.some((f) => f.questionHi && f.answerHi);
   const [lang, setLang] = useState<Lang>('en');
@@ -137,6 +144,14 @@ const PageFAQ: React.FC<PageFAQProps> = ({
                 </summary>
                 <div className="px-5 pb-5 text-gray-700 leading-relaxed">
                   <p>{a}</p>
+                  <a
+                    href={ctaHref}
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-md hover:bg-primary-700 transition-colors duration-300 shadow-sm"
+                    aria-label={`${lang === 'hi' ? ctaLabelHi : ctaLabel} — ${q}`}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    {lang === 'hi' ? ctaLabelHi : ctaLabel}
+                  </a>
                 </div>
               </details>
             );
