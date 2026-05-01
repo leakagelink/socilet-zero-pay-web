@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { Check, Video, MoveRight } from 'lucide-react';
 import Contact from '../components/Contact';
@@ -14,10 +15,15 @@ import { Button } from '@/components/ui/button';
 const AiSpokesperson = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="AI Spokesperson Video Service | Marketing, Demos, Training | Socilet"
+        description="Create realistic AI-powered spokesperson videos for marketing, product demos, training, and brand promotions — high quality at a fraction of traditional production costs."
+        keywords="AI spokesperson, AI presenter video, AI marketing video, virtual presenter, AI explainer video, AI brand video, AI spokesperson India"
+        canonical="/ai-spokesperson"
+        image="/og-image.png"
+        imageAlt="AI Spokesperson Video Service by Socilet"
+      />
       <Helmet>
-        <title>AI Spokesperson Services | Socilet</title>
-        <meta name="description" content="Create virtual presenters and spokespersons powered by AI for your marketing needs." />
-        <link rel="canonical" href="https://socilet.in/ai-spokesperson" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",

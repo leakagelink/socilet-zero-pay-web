@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { Check, Globe, MoveRight } from 'lucide-react';
 import Contact from '../components/Contact';
@@ -14,10 +15,15 @@ import { Button } from '@/components/ui/button';
 const BusinessProfile = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Google My Business Setup & Profile Optimization | Socilet"
+        description="Get your business listed and optimized on Google Maps and Google Search. Complete GMB setup, optimization, and ongoing management for local visibility."
+        keywords="Google My Business setup, GMB optimization, Google business profile, local SEO, business listing services, Google Maps listing"
+        canonical="/google-business-profile"
+        image="/og-image.png"
+        imageAlt="Google My Business Setup by Socilet"
+      />
       <Helmet>
-        <title>Business Profile Listing Services | Socilet</title>
-        <meta name="description" content="Get your business listed across major platforms to increase visibility and reach." />
-        <link rel="canonical" href="https://socilet.in/google-business-profile" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
