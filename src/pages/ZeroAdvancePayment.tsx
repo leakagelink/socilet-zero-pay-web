@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import PageFAQ from '../components/PageFAQ';
 import { motion } from "framer-motion";
 import { Helmet } from 'react-helmet';
 import { Toaster } from 'sonner';
@@ -382,6 +383,20 @@ const ZeroAdvancePayment = () => {
         </section>
       </main>
       
+      <PageFAQ
+        title="Zero Advance Payment FAQs"
+        subtitle="How our 'work first, pay later' model protects you and which projects qualify."
+        faqs={[
+          { question: "Is zero advance payment really 100% no-upfront?", answer: "For WordPress websites, GMB setup, AI spokesperson videos and SEO audits: yes, zero rupees upfront. For custom React/Node apps and mobile apps, the only milestone is 45% after 30% of work is completed — we still take zero before any work begins." },
+          { question: "Why do you offer zero advance when no one else does?", answer: "We've delivered 900+ projects since inception with a 98% client satisfaction rate. Confidence in our quality lets us absorb the risk so clients can hire without fear of being scammed — a common pain point with offshore developers." },
+          { question: "What guarantees you'll actually deliver after I commit?", answer: "We sign a written scope agreement before kickoff, share progress demos every 5–7 days via your project workspace, and you can cancel anytime before final payment with no penalty. You only pay for what you approve." },
+          { question: "Which projects qualify for zero advance?", answer: "All WordPress websites under ₹75,000, all GMB setup packages, AI spokesperson videos, monthly SEO retainers and small landing pages qualify. Custom builds above ₹1,00,000 use the 45%-at-30% milestone model to cover infrastructure costs." },
+          { question: "What payment methods can I use for the final invoice?", answer: "UPI (PhonePe/GPay/Paytm), bank transfer (NEFT/IMPS/RTGS), credit/debit cards via Razorpay, and international wire / Wise / PayPal for overseas clients (USD, CAD, GBP, AUD, AED accepted)." },
+          { question: "Do international clients also get zero advance?", answer: "Yes — clients in the USA, Canada, UK, Australia and UAE get the same zero advance model on WordPress, GMB and video projects. For custom apps, the same 45%-at-30% milestone applies, billed in USD/equivalent." },
+          { question: "What happens if I'm unhappy with the final result?", answer: "We revise free of charge until you sign off in writing. If we genuinely cannot meet the agreed scope, you walk away owing nothing — no kill fee, no lawsuits, no drama. That's the promise." },
+        ]}
+      />
+
       <Footer />
       <WhatsAppButton />
     </div>

@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Check, Video, MoveRight } from 'lucide-react';
@@ -285,6 +286,20 @@ const AiSpokesperson = () => {
         {/* Contact Section */}
         <Contact />
       </main>
+      <PageFAQ
+        title="AI Spokesperson Video FAQs"
+        subtitle="How AI-generated spokesperson videos work, pricing, languages and turnaround time."
+        faqs={[
+          { question: "What is an AI spokesperson video?", answer: "An AI spokesperson video uses a realistic AI-generated avatar (or your own cloned likeness) to deliver a script on camera — perfect for ads, explainers, training and product demos without hiring actors or studios." },
+          { question: "How much does an AI spokesperson video cost?", answer: "30-second videos start at ₹1,500. 60-second videos at ₹2,500. 2–3 minute explainers from ₹5,000. Bulk packages (10+ videos/month) get up to 40% discount. All in INR, no hidden fees." },
+          { question: "How fast can you deliver a video?", answer: "Standard delivery is 3–5 business days. Rush delivery (24–48 hours) is available for a 30% surcharge. You'll receive 2 free revisions on every video." },
+          { question: "Which languages are supported?", answer: "English (Indian, US, UK accents), Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Punjabi, Kannada, Malayalam, plus 40+ international languages including Spanish, Arabic, French and Mandarin." },
+          { question: "Can I use my own face or voice for the avatar?", answer: "Yes — for an additional ₹3,500 we can clone your voice, and for ₹6,000 we can create a custom avatar from a 2-minute training video of you. Cloned assets remain your IP." },
+          { question: "Are the videos commercially usable?", answer: "Yes, full commercial rights are transferred on delivery. You can use the videos on YouTube, Instagram, Facebook ads, your website, TV — anywhere, royalty-free, forever." },
+          { question: "What do I need to provide?", answer: "Just the script (or topic + key points and we'll write the script). Optionally: brand colours, logo, background preference, music style and avatar gender/age preference." },
+        ]}
+      />
+
       <Footer />
       <WhatsAppButton />
     </div>

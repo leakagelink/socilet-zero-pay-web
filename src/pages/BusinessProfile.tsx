@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Check, Globe, MoveRight } from 'lucide-react';
@@ -285,6 +286,20 @@ const BusinessProfile = () => {
         {/* Contact Section */}
         <Contact />
       </main>
+      <PageFAQ
+        title="Google Business Profile FAQs"
+        subtitle="GMB setup, verification, ranking and ongoing local SEO management."
+        faqs={[
+          { question: "What is Google Business Profile (GMB)?", answer: "Google Business Profile (formerly Google My Business) is a free Google listing that shows your business on Google Search and Google Maps with photos, hours, reviews, services and direct call/direction buttons." },
+          { question: "How much does GMB setup and optimisation cost?", answer: "One-time setup: ₹2,500. Setup + 1-month optimisation: ₹4,500. Monthly local SEO management (posts, reviews, citations, ranking): ₹3,500–₹8,000/month based on competition." },
+          { question: "How long does GMB verification take?", answer: "Postcard verification takes 5–14 days. Video verification (now most common) is approved within 1–3 days. We handle the entire verification process for you." },
+          { question: "Will my business rank in the Google Maps 3-pack?", answer: "Top 3 ranking depends on category competition, location, reviews and consistent NAP citations. Our optimisation typically lifts businesses into the local 3-pack within 60–120 days for low-to-medium competition keywords." },
+          { question: "Do you handle review management?", answer: "Yes — we set up automated review request flows (WhatsApp/SMS/Email), professionally respond to every review, and flag/dispute fake negative reviews with Google support." },
+          { question: "Can you set up GMB for service-area businesses (no physical shop)?", answer: "Absolutely. Service-area businesses (plumbers, photographers, agencies, home services) can list and rank on Google Maps without showing a physical address. We configure service areas correctly to maximise reach." },
+          { question: "What's included in monthly GMB management?", answer: "4–8 Google Posts/month, photo uploads, Q&A management, review responses, citation building (50+ directories), monthly insights report, keyword tracking and competitor monitoring." },
+        ]}
+      />
+
       <Footer />
       <WhatsAppButton />
     </div>
