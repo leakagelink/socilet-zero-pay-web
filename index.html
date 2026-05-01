@@ -58,8 +58,11 @@
 </head>
 
   <body>
-    <div id="root">
-      <!-- SEO/LLM Pre-rendered Content (replaced by React on mount) -->
+    <div id="root"></div>
+
+    <!-- SEO/LLM Pre-rendered Content — only shown when JS is disabled.
+         LLM and search crawlers without JS will read this; React renders into #root for normal users. -->
+    <noscript>
       <header>
         <nav aria-label="Main navigation">
           <a href="/" aria-label="Socilet Home">Socilet</a>
@@ -192,7 +195,7 @@
       <footer>
         <p>&copy; 2017–2026 Socilet Digital Solutions. Zero advance payment web &amp; app development company. All rights reserved.</p>
       </footer>
-    </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- Schema.org structured data for Organization (International) -->
