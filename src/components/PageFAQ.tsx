@@ -144,14 +144,28 @@ const PageFAQ: React.FC<PageFAQProps> = ({
                 </summary>
                 <div className="px-5 pb-5 text-gray-700 leading-relaxed">
                   <p>{a}</p>
-                  <a
-                    href={ctaHref}
-                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-md hover:bg-primary-700 transition-colors duration-300 shadow-sm"
-                    aria-label={`${lang === 'hi' ? ctaLabelHi : ctaLabel} — ${q}`}
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    {lang === 'hi' ? ctaLabelHi : ctaLabel}
-                  </a>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <a
+                      href={`https://wa.me/919301499921?text=${encodeURIComponent(
+                        lang === 'hi'
+                          ? `नमस्ते Socilet, मेरा सवाल है: "${q}" — कृपया मुझे फ्री कंसल्टेशन दें।`
+                          : `Hi Socilet, I have a question about: "${q}" — please share a free consultation.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-md hover:bg-green-600 transition-colors duration-300 shadow-sm"
+                      aria-label={`${lang === 'hi' ? 'WhatsApp पर पूछें' : 'Ask on WhatsApp'} — ${q}`}
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      {lang === 'hi' ? 'WhatsApp पर पूछें' : 'Ask on WhatsApp'}
+                    </a>
+                    <a
+                      href={ctaHref}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-md hover:bg-primary-700 transition-colors duration-300 shadow-sm"
+                    >
+                      {lang === 'hi' ? ctaLabelHi : ctaLabel}
+                    </a>
+                  </div>
                 </div>
               </details>
             );
