@@ -308,69 +308,8 @@
 
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Schema.org structured data for Organization (International) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Socilet",
-        "alternateName": "Socilet Digital Services",
-        "url": "https://socilet.in",
-        "logo": "https://socilet.in/socilet-logo.png",
-        "description": "India's first zero advance payment digital services company. No upfront payment web developer with 900+ projects delivered. Website development, app development, AI spokesperson services.",
-        "founder": {
-          "@type": "Person",
-          "name": "Dheeraj Tagde",
-          "jobTitle": "Founder & CEO"
-        },
-        "foundingDate": "2017",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Bhopal",
-          "addressRegion": "Madhya Pradesh",
-          "addressCountry": "IN"
-        },
-        "areaServed": [
-          {"@type": "Country", "name": "United States"},
-          {"@type": "Country", "name": "Canada"},
-          {"@type": "Country", "name": "India"},
-          {"@type": "Country", "name": "United Kingdom"},
-          {"@type": "Country", "name": "Australia"}
-        ],
-        "priceRange": "$$",
-        "paymentAccepted": ["PayPal", "Bank Transfer", "UPI", "Credit Card"],
-        "currenciesAccepted": "USD, CAD, INR, GBP, AUD",
-        "slogan": "Work First, Pay Later - Zero Advance Payment",
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": "+91-7024466980",
-          "contactType": "customer service",
-          "availableLanguage": ["English", "Hindi"]
-        },
-        "sameAs": [
-          "https://facebook.com/socilet",
-          "https://twitter.com/socilet",
-          "https://instagram.com/socilet",
-          "https://linkedin.com/company/socilet"
-        ]
-      }
-    </script>
-    
-    <!-- Schema.org structured data for WebSite with SearchAction -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Socilet",
-        "url": "https://socilet.in",
-        "description": "Zero advance payment web & app development services for US, Canada & India",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://socilet.in/search?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
-      }
-    </script>
+    <!-- Organization & WebSite schemas moved to <head> for early discovery -->
+
 
     <!-- Service Schema for Web Development -->
     <script type="application/ld+json">
@@ -570,51 +509,8 @@
       }
     </script>
 
-    <!-- BreadcrumbList Schema -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://socilet.in"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Website Development",
-            "item": "https://socilet.in/website-development"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": "App Development",
-            "item": "https://socilet.in/app-development"
-          },
-          {
-            "@type": "ListItem",
-            "position": 4,
-            "name": "Portfolio",
-            "item": "https://socilet.in/portfolio"
-          },
-          {
-            "@type": "ListItem",
-            "position": 5,
-            "name": "Blog",
-            "item": "https://socilet.in/blog"
-          },
-          {
-            "@type": "ListItem",
-            "position": 6,
-            "name": "Contact",
-            "item": "https://socilet.in/#contact"
-          }
-        ]
-      }
-    </script>
+    <!-- BreadcrumbList moved to <head> for early discovery -->
+
 
     <!-- Service Schema for SEO -->
     <script type="application/ld+json">
