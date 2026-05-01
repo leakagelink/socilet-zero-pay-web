@@ -153,21 +153,18 @@ const HireIndianDeveloper = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <SEO
+        title="Hire Indian Developer No Upfront Payment | US & Canada | Socilet"
+        description="Hire an Indian web developer with zero advance payment. Save 70% vs US rates. 900+ projects delivered. Safe, reliable outsourcing for US & Canada businesses."
+        keywords="hire Indian developer USA, outsource web development India, no upfront payment developer, Indian freelance developer, budget website development for US startups"
+        canonical="/hire-indian-developer"
+        image="/og-image.png"
+        imageAlt="Hire Indian Developer with Zero Advance Payment — Socilet"
+      />
       <Helmet>
-        <title>Hire Indian Developer No Upfront Payment | US & Canada | Socilet</title>
-        <meta name="description" content="Hire Indian web developer with zero advance payment. Save 70% vs US rates. 900+ projects delivered. Safe, reliable outsourcing for US & Canada businesses." />
-        <meta name="keywords" content="hire Indian developer USA, outsource web development India, no upfront payment developer, Indian freelance developer, budget website development for US startups" />
-        <link rel="canonical" href="https://socilet.in/hire-indian-developer" />
-        
         {/* Hreflang for this page */}
         <link rel="alternate" hrefLang="en-us" href="https://socilet.in/hire-indian-developer" />
         <link rel="alternate" hrefLang="en-ca" href="https://socilet.in/hire-indian-developer" />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content="Hire Indian Developer No Upfront Payment | US & Canada" />
-        <meta property="og:description" content="Save 70% on development costs. Zero risk - pay only after completion. Trusted by 900+ US & Canada clients." />
-        <meta property="og:url" content="https://socilet.in/hire-indian-developer" />
-        <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(jsonLdService)}</script>
         <script type="application/ld+json">{JSON.stringify(jsonLdBreadcrumb)}</script>
       </Helmet>
