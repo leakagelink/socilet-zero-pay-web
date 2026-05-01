@@ -58,11 +58,10 @@
 </head>
 
   <body>
-    <div id="root"></div>
-
-    <!-- SEO/LLM Pre-rendered Content — only shown when JS is disabled.
-         LLM and search crawlers without JS will read this; React renders into #root for normal users. -->
-    <noscript>
+    <!-- SEO/LLM Pre-rendered Content placed INSIDE #root.
+         Crawlers and LLM analyzers without JS execution will read this real HTML content directly in the body.
+         React's createRoot().render() will replace this content on mount, so normal users see the styled SPA. -->
+    <div id="root">
       <header>
         <nav aria-label="Main navigation">
           <a href="/" aria-label="Socilet Home">Socilet</a>
