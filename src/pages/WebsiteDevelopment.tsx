@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Check, Code, MoveRight } from 'lucide-react';
@@ -303,6 +304,20 @@ const WebsiteDevelopment = () => {
         {/* Contact Section */}
         <Contact />
       </main>
+      <PageFAQ
+        title="Website Development FAQs"
+        subtitle="Common questions about pricing, timelines, technologies and our zero advance model."
+        faqs={[
+          { question: "How much does a website cost in India?", answer: "Basic business websites start at ₹15,000. Standard multi-page websites range ₹25,000–₹60,000. E-commerce stores start at ₹35,000. Custom React web apps typically range ₹50,000–₹3,00,000. All pricing is in INR with itemised, fixed quotations." },
+          { question: "Do I really pay nothing in advance?", answer: "Yes — for WordPress websites you pay 100% only after delivery and your written approval. For custom React projects, the only milestone payment is 45% after 30% of work is completed; the balance is due on completion." },
+          { question: "How long does website development take?", answer: "A standard 5–7 page business website takes 2–4 weeks. E-commerce stores take 4–8 weeks. Custom React applications take 6–16 weeks depending on scope. We share a milestone-by-milestone timeline before kickoff." },
+          { question: "Which technologies do you use to build websites?", answer: "WordPress with Elementor/Gutenberg for content sites, React + Next.js + TypeScript + Tailwind CSS for custom apps, and Shopify/WooCommerce for stores. All sites are responsive, SEO-optimised and Core Web Vitals friendly." },
+          { question: "Will my website be SEO-optimised?", answer: "Yes — every site ships with on-page SEO (meta tags, semantic HTML, schema), sitemap.xml, robots.txt, OG tags, optimised images, lazy loading and a Lighthouse score target of 90+. Ongoing SEO is offered as an add-on." },
+          { question: "Do you provide hosting and domain?", answer: "Clients provide their own domain. WordPress projects include 1 year of free hosting. For React/custom apps we deploy to your account or recommend Vercel, Cloudflare Pages, AWS or DigitalOcean." },
+          { question: "Will I get the source code and ownership?", answer: "Yes. Once final payment is received you get full source code, repository access, deployment credentials and complete IP ownership of the website." },
+        ]}
+      />
+
       <Footer />
       <WhatsAppButton />
     </div>

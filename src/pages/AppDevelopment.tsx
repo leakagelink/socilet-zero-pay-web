@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
+import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Check, Smartphone, MoveRight } from 'lucide-react';
@@ -299,6 +300,20 @@ const AppDevelopment = () => {
         {/* Contact Section */}
         <Contact />
       </main>
+      <PageFAQ
+        title="Mobile App Development FAQs"
+        subtitle="Pricing, platforms, timelines and post-launch support for Android and iOS apps."
+        faqs={[
+          { question: "How much does it cost to develop a mobile app in India?", answer: "Simple apps (3–5 screens) start at ₹60,000. Mid-complexity apps (auth, payments, dashboards) range ₹1,50,000–₹4,00,000. Complex marketplaces or fintech apps start at ₹5,00,000. Pricing is fixed per scope, in INR." },
+          { question: "Which platforms do you support — Android, iOS or both?", answer: "We build cross-platform apps with React Native and Flutter so you get one codebase for both Android and iOS. Native iOS (Swift) and native Android (Kotlin) are also available when performance-critical." },
+          { question: "Do you handle Play Store and App Store submission?", answer: "Yes. We handle store listing assets, privacy policy, screenshots, build signing, and full submission to Google Play and Apple App Store. Apple Developer (₹8,500/yr) and Google Play (one-time ₹2,100) accounts are paid by the client." },
+          { question: "How long does mobile app development take?", answer: "MVPs ship in 6–10 weeks. Mid-complexity apps take 3–4 months. Full-featured apps with backend, payments and admin panel take 4–6 months. Each milestone is demoed weekly via shared TestFlight/APK builds." },
+          { question: "Will I get the source code?", answer: "Yes — full Git repository access, signed builds, backend code, Firebase/Supabase project access, and complete IP transfer on final payment." },
+          { question: "Do you provide post-launch support?", answer: "Every app includes 30 days of free bug-fix support. After that we offer monthly maintenance from ₹5,000/month covering OS updates, store compliance, crash monitoring and minor enhancements." },
+          { question: "Can you integrate payments, push notifications and analytics?", answer: "Yes — Razorpay, Stripe, PhonePe, Cashfree for payments; Firebase Cloud Messaging / OneSignal for push; Firebase Analytics, Mixpanel or PostHog for analytics. All integrations are quoted upfront." },
+        ]}
+      />
+
       <Footer />
       <WhatsAppButton />
     </div>
