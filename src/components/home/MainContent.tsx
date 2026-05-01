@@ -14,6 +14,7 @@ import GoogleAdPlans from '../GoogleAdPlans';
 import ZeroAdvanceSection from './ZeroAdvanceSection';
 import TeamShowcase from '../TeamShowcase';
 import PortfolioShowcase from '../PortfolioShowcase';
+import LocationSection from '../LocationSection';
 
 const MainContent: React.FC = () => {
   return (
@@ -58,6 +59,7 @@ const MainContent: React.FC = () => {
       <section id="contact" aria-labelledby="contact-heading" className="w-full overflow-hidden">
         <Contact />
       </section>
+      <LocationSection />
     </div>
   );
 };
