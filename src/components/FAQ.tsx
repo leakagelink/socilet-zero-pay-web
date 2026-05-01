@@ -1,54 +1,92 @@
-
 import React from 'react';
 import { motion } from "framer-motion";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { MessageCircle, HelpCircle } from "lucide-react";
+import { MessageCircle, HelpCircle, ChevronDown } from "lucide-react";
+
+const faqs = [
+  {
+    question: "What digital services does Socilet offer?",
+    answer:
+      "Socilet offers website development, mobile app development (React Native, Flutter, native iOS/Android), AI spokesperson video creation, business profile listing (Google My Business setup), SEO services, social media marketing, and Google Ads management. All services are available under our zero advance payment model for eligible projects.",
+  },
+  {
+    question: "How does Socilet's zero advance payment model work?",
+    answer:
+      "With our zero advance payment model, WordPress website clients pay 100% only after the project is completely delivered and approved. For React-based custom projects, we ask for a 45% milestone payment after 30% of the work is completed. There are no hidden fees, and you only pay when you are satisfied with the deliverable.",
+  },
+  {
+    question: "Where is Socilet located and which areas do you serve?",
+    answer:
+      "Socilet is based in Ayodhya Nagar, Bhopal, Madhya Pradesh, India (PIN 462041). We serve clients across Bhopal, Indore, Jabalpur and the rest of India, plus international clients in the USA, Canada, UK, Australia and the UAE.",
+  },
+  {
+    question: "What technologies do you use for development?",
+    answer:
+      "For frontend we use React, Next.js, Vue.js and Angular. For backend we use Node.js, Python (FastAPI/Django) and PHP (Laravel/WordPress). For mobile apps we work with React Native, Flutter and native iOS/Android. We also offer AI integrations using Gemini and OpenAI models.",
+  },
+  {
+    question: "How long does it take to complete a typical project?",
+    answer:
+      "A standard business website takes 2–4 weeks. E-commerce stores take 4–8 weeks. Mobile apps typically take 2–6 months depending on complexity. AI spokesperson videos are delivered within 3–7 days. Every project starts with a detailed timeline shared during the free consultation.",
+  },
+  {
+    question: "Do you provide ongoing support and maintenance after delivery?",
+    answer:
+      "Yes. Every project includes 30 days of free post-launch bug-fix support. After that we offer affordable monthly maintenance packages that cover hosting management, security updates, content updates, performance monitoring and feature additions.",
+  },
+  {
+    question: "Who provides the domain and hosting for the project?",
+    answer:
+      "Clients provide their own domain. For WordPress projects we include 1 year of free hosting. For React-based and custom projects, hosting is discussed during the proposal — we can either deploy on your hosting account or recommend cost-effective providers.",
+  },
+  {
+    question: "How much does a website or app cost in India?",
+    answer:
+      "A basic business website starts at ₹15,000. E-commerce websites start at ₹35,000. Custom React web apps typically range from ₹50,000 to ₹3,00,000. Mobile apps start at ₹60,000 and go up based on features. All pricing is in INR with transparent, fixed quotations.",
+  },
+  {
+    question: "What happens if I am not satisfied with the delivered work?",
+    answer:
+      "We work in iterative milestones with continuous client feedback. If you're not satisfied with any deliverable, we revise it free of charge until you approve. Final payment is only collected after written approval, which is the core promise of our zero advance model.",
+  },
+  {
+    question: "How do I get started with Socilet?",
+    answer:
+      "Contact us via the form on socilet.in, WhatsApp us at +91 93011 39140, or email contact@socilet.in. We respond within a few business hours, schedule a free consultation, and share a detailed proposal with timeline and pricing within 24–48 hours.",
+  },
+];
 
 const FAQ = () => {
-  const faqs = [
-    {
-      question: "What services do you offer?",
-      answer: "We offer a range of digital services including website development, app development, AI spokesperson creation, and business profile listing. All our services come with our unique zero advance payment model."
-    },
-    {
-      question: "How does your zero advance payment model work?",
-      answer: "Our zero advance payment model means you only pay after your project is successfully delivered and you are completely satisfied with the results. There are no upfront costs or hidden fees."
-    },
-    {
-      question: "What technologies do you use?",
-      answer: "We use modern technologies such as React, Angular, Vue.js for frontend development, and Node.js, Python, PHP for backend development. For mobile app development, we work with React Native, Flutter, and native iOS/Android technologies."
-    },
-    {
-      question: "How long does it take to complete a project?",
-      answer: "Project timelines vary based on complexity and requirements. A simple website might take 2-4 weeks, while complex applications may require 2-6 months. We'll provide you with a detailed timeline during our consultation."
-    },
-    {
-      question: "Do you provide ongoing support after project completion?",
-      answer: "Yes, we offer ongoing support and maintenance packages to keep your digital products running smoothly. We can also provide training to your team to manage day-to-day operations."
-    },
-    {
-      question: "How do I get started with your services?",
-      answer: "Simply reach out to us through our contact form or give us a call. We'll schedule a free consultation to discuss your requirements and provide you with a project proposal and timeline."
-    }
-  ];
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: f.answer,
+      },
+    })),
+  };
 
   return (
     <section id="faq" className="section-padding bg-white relative">
-      <motion.div 
+      {/* FAQPage JSON-LD for rich results & LLM extraction */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
+      <motion.div
         className="absolute top-0 right-0 w-72 h-72 bg-primary-50 rounded-full filter blur-3xl opacity-20"
         animate={{
           scale: [1, 1.1, 1],
-          transition: { duration: 8, repeat: Infinity }
+          transition: { duration: 8, repeat: Infinity },
         }}
-      ></motion.div>
-      
+      />
+
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
+        <motion.div
           className="text-center max-w-2xl mx-auto mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -60,39 +98,49 @@ const FAQ = () => {
               <HelpCircle className="w-6 h-6 text-primary-600" />
             </div>
           </div>
-          <h2 className="text-4xl font-bold mb-2">Frequently Asked Questions</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-primary-600 to-primary-400 mx-auto mb-6 rounded-full"></div>
+          <h2 id="faq-heading" className="text-4xl font-bold mb-2">
+            Frequently Asked Questions
+          </h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-primary-600 to-primary-400 mx-auto mb-6 rounded-full" />
           <p className="text-gray-600">
-            Find answers to commonly asked questions about our services and payment model.
+            Clear answers about our services, pricing, timelines, and zero advance payment model.
           </p>
         </motion.div>
 
-        <motion.div 
-          className="max-w-3xl mx-auto"
+        <motion.div
+          className="max-w-3xl mx-auto space-y-3"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, index) => (
-              <AccordionItem 
-                key={index} 
-                value={`item-${index}`}
-                className="border-b border-gray-200"
+          {faqs.map((faq, index) => (
+            <details
+              key={index}
+              // First 3 open by default so answers are visible to crawlers/users without interaction
+              open={index < 3}
+              className="group border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow [&_summary::-webkit-details-marker]:hidden"
+              itemScope
+              itemProp="mainEntity"
+              itemType="https://schema.org/Question"
+            >
+              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-5 py-4 font-semibold text-lg text-gray-900">
+                <span itemProp="name">{faq.question}</span>
+                <ChevronDown className="w-5 h-5 text-primary-600 flex-shrink-0 transition-transform duration-300 group-open:rotate-180" />
+              </summary>
+              <div
+                className="px-5 pb-5 text-gray-700 leading-relaxed"
+                itemScope
+                itemProp="acceptedAnswer"
+                itemType="https://schema.org/Answer"
               >
-                <AccordionTrigger className="text-left font-semibold text-lg hover:no-underline py-5">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                <p itemProp="text">{faq.answer}</p>
+              </div>
+            </details>
+          ))}
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="mt-12 bg-gradient-to-r from-primary-50 to-blue-50 p-6 md:p-8 rounded-xl text-center max-w-3xl mx-auto border border-primary-100"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -106,10 +154,10 @@ const FAQ = () => {
           </div>
           <h3 className="text-xl font-bold mb-3">Still have questions?</h3>
           <p className="text-gray-600 mb-5">
-            If you couldn't find the answer to your question, feel free to contact us directly.
+            Couldn't find what you were looking for? Reach out and we'll respond within a few hours.
           </p>
-          <a 
-            href="#contact" 
+          <a
+            href="#contact"
             className="inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition-colors duration-300"
           >
             Contact Us
