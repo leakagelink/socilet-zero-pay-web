@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { Check, Smartphone, MoveRight } from 'lucide-react';
 import Contact from '../components/Contact';
@@ -14,10 +15,15 @@ import { Button } from '@/components/ui/button';
 const AppDevelopment = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Mobile App Development | Android, iOS, React Native, Flutter | Socilet"
+        description="Build powerful Android & iOS apps with React Native, Flutter, or native code. 900+ projects delivered. Zero advance payment — pay only after delivery."
+        keywords="mobile app development, Android app developer India, iOS app development, React Native developer, Flutter app development, cross-platform app, hire app developer"
+        canonical="/app-development"
+        image="/og-image.png"
+        imageAlt="Mobile App Development Services by Socilet"
+      />
       <Helmet>
-        <title>Mobile App Development Services | Socilet</title>
-        <meta name="description" content="Native and cross-platform mobile applications for iOS and Android." />
-        <link rel="canonical" href="https://socilet.in/app-development" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",

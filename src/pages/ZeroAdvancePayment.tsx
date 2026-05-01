@@ -6,6 +6,7 @@ import WhatsAppButton from '../components/WhatsAppButton';
 import PageFAQ from '../components/PageFAQ';
 import { motion } from "framer-motion";
 import { Helmet } from 'react-helmet';
+import SEO from '../components/SEO';
 import { Toaster } from 'sonner';
 import { Shield, DollarSign, ThumbsUp, Clock, AlertTriangle, Medal } from "lucide-react";
 import { Button } from '@/components/ui/button';
@@ -14,10 +15,15 @@ import { Link } from 'react-router-dom';
 const ZeroAdvancePayment = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Zero Advance Payment Model | Pay After Completion | Socilet"
+        description="Socilet's zero advance payment model: we build first, you pay only after the project is delivered and you're 100% satisfied. Safe, transparent, scam-proof."
+        keywords="zero advance payment, pay after completion, no upfront payment developer, work first pay later, safe web development model"
+        canonical="/zero-advance-payment"
+        image="/og-image.png"
+        imageAlt="Zero Advance Payment Model by Socilet"
+      />
       <Helmet>
-        <title>Zero Advance Payment Model | Socilet - Brand Your Dream</title>
-        <meta name="description" content="Socilet's unique zero advance payment business model ensures you only pay after the work is completed to your satisfaction, protecting you from scams." />
-        <link rel="canonical" href="https://socilet.in/zero-advance-payment" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebPage",

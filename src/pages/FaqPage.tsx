@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import SEO from '@/components/SEO';
 import { motion } from 'framer-motion';
 import { CreditCard, Users, HelpCircle, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
@@ -158,16 +159,17 @@ const FaqPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
+      <SEO
+        title="FAQ in English & Hindi — Pricing, Zero Advance, Affiliate | Socilet"
+        description="Bilingual FAQs (English + हिन्दी) about Socilet's zero advance payment model, WordPress & React pricing, project timelines, hosting, support and the 10% affiliate commission program."
+        keywords="Socilet FAQ, zero advance payment FAQ, WordPress pricing, React pricing, affiliate commission, project timelines, hosting FAQ, हिंदी FAQ"
+        canonical="/faq"
+        image="/og-image.png"
+        imageAlt="Socilet FAQ — Pricing, Zero Advance Payment, Affiliate"
+      >
         <html lang="en" />
-        <title>FAQ in English & Hindi — Pricing, Zero Advance, Affiliate | Socilet</title>
-        <meta
-          name="description"
-          content="Bilingual FAQs (English + हिन्दी) about Socilet's zero advance payment model, WordPress & React pricing, project timelines, hosting, support and the 10% affiliate commission program."
-        />
-        <link rel="canonical" href="https://socilet.in/faq" />
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-      </Helmet>
+      </SEO>
 
       <Header />
 

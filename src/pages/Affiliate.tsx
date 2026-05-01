@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
+import SEO from "@/components/SEO";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -157,10 +158,14 @@ const Affiliate = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Affiliate Program | Socilet</title>
-        <meta name="description" content="Join Socilet's affiliate program and earn commissions by referring clients for our zero advance payment services." />
-      </Helmet>
+      <SEO
+        title="Affiliate Program — Earn 10% Commission Per Referral | Socilet"
+        description="Join Socilet's affiliate program and earn 10% commission for every successfully completed referral. Free to join, transparent tracking, fast payouts."
+        keywords="Socilet affiliate program, refer and earn India, web development affiliate, 10% commission, referral program India"
+        canonical="/affiliate"
+        image="/og-image.png"
+        imageAlt="Socilet Affiliate Program — Refer and Earn"
+      />
       
       <Header />
       

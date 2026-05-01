@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import PageFAQ from '../components/PageFAQ';
 import { Helmet } from 'react-helmet';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { Check, Code, MoveRight } from 'lucide-react';
 import Contact from '../components/Contact';
@@ -14,10 +15,15 @@ import { Button } from '@/components/ui/button';
 const WebsiteDevelopment = () => {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Website Development Services in India | React, Next.js, WordPress | Socilet"
+        description="Professional website development with React, Next.js, TypeScript, and WordPress. Responsive, SEO-optimized, and mobile-first. Zero advance payment — pay only after completion."
+        keywords="website development India, React website developer, Next.js developer, WordPress development, custom website design, responsive web development, zero advance website"
+        canonical="/website-development"
+        image="/og-image.png"
+        imageAlt="Website Development Services by Socilet"
+      />
       <Helmet>
-        <title>Website Development Services | Socilet</title>
-        <meta name="description" content="Custom website development with responsive design and modern UI/UX practices." />
-        <link rel="canonical" href="https://socilet.in/website-development" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Service",
