@@ -27,6 +27,7 @@ import Meetings from "./pages/Meetings";
 import HireIndianDeveloper from "./pages/HireIndianDeveloper";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Investments from "./pages/Investments";
+import SeoAudit from "./pages/SeoAudit";
 import VersionChecker from "./components/VersionChecker";
 
 // Create a new QueryClient instance outside of the component
@@ -83,6 +84,7 @@ const App = () => {
                 <Route path="/hire-indian-developer" element={<HireIndianDeveloper />} />
                 <Route path="/workspace/:projectCode" element={<ProjectWorkspace />} />
                 <Route path="/investments" element={<Investments />} />
+                <Route path="/seo-audit" element={<SeoAudit />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
