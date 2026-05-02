@@ -61,8 +61,8 @@ const Index = () => {
         description="No upfront payment web developer from India. 900+ projects delivered to US, Canada & India. Work first, pay later. Get professional websites, mobile apps, and AI spokesperson services."
         keywords="no upfront payment web developer, zero advance payment website development, pay after completion developer, hire Indian developer USA, app development without advance"
         canonical="/"
-        image="/og-image.png"
-        imageAlt="Socilet - Zero Advance Payment Web & App Development"
+        image="/og/og-home.jpg"
+        imageAlt="Socilet — Zero Advance Payment Web & App Development from India to USA, Canada, UK"
       >
         {/* Homepage FAQ rich-result schema (in addition to in-page <FAQ /> schema) */}
         <script type="application/ld+json">{JSON.stringify(homepageFaqSchema)}</script>

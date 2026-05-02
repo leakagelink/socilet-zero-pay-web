@@ -78,7 +78,12 @@ const Blog: React.FC = () => {
         <meta property="og:url" content="https://socilet.in/blog" />
         <meta property="og:title" content="Blog | Socilet - Web & App Development Insights" />
         <meta property="og:description" content="Expert insights on web development, app development, zero advance payment models, and digital marketing." />
-        <meta property="og:image" content="https://socilet.in/lovable-uploads/082da739-5b35-4399-be06-1bbc60823d09.png" />
+        <meta property="og:image" content="https://socilet.in/og/og-blog.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Socilet Blog — Web & App Development Insights, Guides & Pricing" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://socilet.in/og/og-blog.jpg" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />

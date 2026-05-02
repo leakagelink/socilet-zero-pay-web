@@ -20,7 +20,7 @@ const ZeroAdvancePayment = () => {
         description="Socilet's zero advance payment model: we build first, you pay only after the project is delivered and you're 100% satisfied. Safe, transparent, scam-proof."
         keywords="zero advance payment, pay after completion, no upfront payment developer, work first pay later, safe web development model"
         canonical="/zero-advance-payment"
-        image="/og-image.png"
+        image="/og/og-zero-advance.jpg"
         imageAlt="Zero Advance Payment Model by Socilet"
       />
       <Helmet>

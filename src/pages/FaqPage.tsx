@@ -164,7 +164,7 @@ const FaqPage: React.FC = () => {
         description="Bilingual FAQs (English + हिन्दी) about Socilet's zero advance payment model, WordPress & React pricing, project timelines, hosting, support and the 10% affiliate commission program."
         keywords="Socilet FAQ, zero advance payment FAQ, WordPress pricing, React pricing, affiliate commission, project timelines, hosting FAQ, हिंदी FAQ"
         canonical="/faq"
-        image="/og-image.png"
+        image="/og/og-faq.jpg"
         imageAlt="Socilet FAQ — Pricing, Zero Advance Payment, Affiliate"
       >
         <html lang="en" />

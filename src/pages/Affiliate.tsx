@@ -163,7 +163,7 @@ const Affiliate = () => {
         description="Join Socilet's affiliate program and earn 10% commission for every successfully completed referral. Free to join, transparent tracking, fast payouts."
         keywords="Socilet affiliate program, refer and earn India, web development affiliate, 10% commission, referral program India"
         canonical="/affiliate"
-        image="/og-image.png"
+        image="/og/og-affiliate.jpg"
         imageAlt="Socilet Affiliate Program — Refer and Earn"
       />
       
