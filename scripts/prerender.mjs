@@ -41,28 +41,10 @@ const STATIC_ROUTES = [
   '/cookie-policy',
 ];
 
-// Blog slugs — kept in sync manually with src/data/blogData.ts
-const BLOG_SLUGS = [
-  'outsource-web-development-india-vs-philippines',
-  'hire-developer-without-getting-scammed',
-  'wordpress-developer-india-cost-guide',
-  'google-my-business-setup-service-india',
-  'affordable-website-development-small-business',
-  'cross-platform-app-development-india',
-  'zero-advance-payment-website-development-guide',
-  'hire-indian-developer-no-upfront-payment-guide',
-  'ai-spokesperson-video-service-guide',
-  'mobile-app-development-cost-india-2026',
-  'zero-advance-payment-guide-2026',
-  'hire-indian-developer-guide-2026',
-  'ai-spokesperson-guide-2026',
-  'app-payment-models-guide-2026',
-  'website-cost-guide-2026',
-  'zero-advance-payment-benefits',
-  'complete-guide-app-development-2024',
-  'pay-after-delivery-transforming-software-development',
-  'website-development-seo-best-practices',
-];
+// Blog slugs are read from src/data/blogData.ts at build time so this list
+// stays in sync automatically when new posts are added.
+const { getBlogSlugs } = await import('./generate-blog-sitemap.mjs');
+const BLOG_SLUGS = await getBlogSlugs();
 
 const ROUTES = [...STATIC_ROUTES, ...BLOG_SLUGS.map((s) => `/blog/${s}`)];
 
