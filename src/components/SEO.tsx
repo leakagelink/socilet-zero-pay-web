@@ -22,7 +22,7 @@ interface SEOProps {
 }
 
 const SITE_URL = 'https://socilet.in';
-const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/og/og-home.jpg`;
 const SITE_NAME = 'Socilet';
 const TWITTER_HANDLE = '@socilet';
 

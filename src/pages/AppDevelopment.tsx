@@ -20,7 +20,7 @@ const AppDevelopment = () => {
         description="Build powerful Android & iOS apps with React Native, Flutter, or native code. 900+ projects delivered. Zero advance payment — pay only after delivery."
         keywords="mobile app development, Android app developer India, iOS app development, React Native developer, Flutter app development, cross-platform app, hire app developer"
         canonical="/app-development"
-        image="/og-image.png"
+        image="/og/og-app-development.jpg"
         imageAlt="Mobile App Development Services by Socilet"
       />
       <Helmet>

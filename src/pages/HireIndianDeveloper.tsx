@@ -158,7 +158,7 @@ const HireIndianDeveloper = () => {
         description="Hire an Indian web developer with zero advance payment. Save 70% vs US rates. 900+ projects delivered. Safe, reliable outsourcing for US & Canada businesses."
         keywords="hire Indian developer USA, outsource web development India, no upfront payment developer, Indian freelance developer, budget website development for US startups"
         canonical="/hire-indian-developer"
-        image="/og-image.png"
+        image="/og/og-hire-developer.jpg"
         imageAlt="Hire Indian Developer with Zero Advance Payment — Socilet"
       />
       <Helmet>

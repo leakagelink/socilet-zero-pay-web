@@ -20,7 +20,7 @@ const AiSpokesperson = () => {
         description="Create realistic AI-powered spokesperson videos for marketing, product demos, training, and brand promotions — high quality at a fraction of traditional production costs."
         keywords="AI spokesperson, AI presenter video, AI marketing video, virtual presenter, AI explainer video, AI brand video, AI spokesperson India"
         canonical="/ai-spokesperson"
-        image="/og-image.png"
+        image="/og/og-ai-spokesperson.jpg"
         imageAlt="AI Spokesperson Video Service by Socilet"
       />
       <Helmet>

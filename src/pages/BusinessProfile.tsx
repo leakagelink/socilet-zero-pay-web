@@ -20,7 +20,7 @@ const BusinessProfile = () => {
         description="Get your business listed and optimized on Google Maps and Google Search. Complete GMB setup, optimization, and ongoing management for local visibility."
         keywords="Google My Business setup, GMB optimization, Google business profile, local SEO, business listing services, Google Maps listing"
         canonical="/google-business-profile"
-        image="/og-image.png"
+        image="/og/og-business-profile.jpg"
         imageAlt="Google My Business Setup by Socilet"
       />
       <Helmet>
