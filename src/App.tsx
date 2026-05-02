@@ -27,6 +27,7 @@ import Meetings from "./pages/Meetings";
 import HireIndianDeveloper from "./pages/HireIndianDeveloper";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Investments from "./pages/Investments";
+import SeoAudit from "./pages/SeoAudit";
 import VersionChecker from "./components/VersionChecker";
 
 // Create a new QueryClient instance outside of the component
