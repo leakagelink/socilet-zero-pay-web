@@ -132,15 +132,24 @@ const BlogPost: React.FC = () => {
     }
   };
 
-  // Structured Data for Article
+  // Structured Data — BlogPosting (richer than generic Article for blog rich results)
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": post.title,
+    "@type": "BlogPosting",
+    "headline": post.title.slice(0, 110),
     "description": post.excerpt,
-    "image": post.imageUrl,
+    "image": {
+      "@type": "ImageObject",
+      "url": post.imageUrl,
+      "width": 1200,
+      "height": 630
+    },
     "datePublished": post.dateISO || post.date,
     "dateModified": post.dateISO || post.date,
+    "inLanguage": "en-IN",
+    "isAccessibleForFree": true,
+    "articleSection": post.category,
+    "keywords": post.keywords || `${post.category}, web development, app development, zero advance payment`,
     "author": {
       "@type": "Organization",
       "name": "Socilet",
@@ -148,16 +157,20 @@ const BlogPost: React.FC = () => {
     },
     "publisher": {
       "@type": "Organization",
+      "@id": "https://socilet.in/#organization",
       "name": "Socilet",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://socilet.in/lovable-uploads/082da739-5b35-4399-be06-1bbc60823d09.png"
+        "url": "https://socilet.in/socilet-logo.png",
+        "width": 512,
+        "height": 512
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": canonicalUrl
-    }
+    },
+    "url": canonicalUrl
   };
 
   // BreadcrumbList Schema
@@ -165,24 +178,9 @@ const BlogPost: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://socilet.in"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Blog",
-        "item": "https://socilet.in/blog"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": post.title,
-        "item": canonicalUrl
-      }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://socilet.in" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://socilet.in/blog" },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": canonicalUrl }
     ]
   };
 
