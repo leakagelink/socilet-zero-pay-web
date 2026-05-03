@@ -74,7 +74,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              &copy; {new Date().getFullYear()} Socilet. All rights reserved.
+              &copy; {new Date().getFullYear()} Socilet. All rights reserved. <span className="ml-2 text-gray-500">GSTIN: 23AZIPT3197N1ZM</span>
             </p>
             <div className="text-gray-400 text-sm">
               <Link to="/terms-of-service" className="hover:text-white mr-4">Terms of Service</Link>
