@@ -511,6 +511,7 @@ const MultiProjectInvoice: React.FC<MultiProjectInvoiceProps> = ({ onInvoiceCrea
                     <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#6366f1', margin: 0 }}>SOCILET</h1>
                     <p style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0' }}>Web & App Development Agency</p>
                     <p style={{ fontSize: '12px', color: '#6b7280', margin: '2px 0 0' }}>hello@socilet.in | www.socilet.in</p>
+                    <p style={{ fontSize: '12px', color: '#6b7280', margin: '2px 0 0', fontWeight: 600 }}>GSTIN: 23AZIPT3197N1ZM</p>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#111', margin: 0 }}>INVOICE</h2>

@@ -381,6 +381,7 @@ const QuotationGenerator = () => {
             <p className="text-sm text-muted-foreground">Brand Your Dream</p>
             <p className="text-sm text-muted-foreground mt-2">📧 team@socilet.in</p>
             <p className="text-sm text-muted-foreground">🌐 www.socilet.in</p>
+            <p className="text-sm text-muted-foreground">GSTIN: 23AZIPT3197N1ZM</p>
           </div>
         </div>
         <div className="space-y-3">
