@@ -39,16 +39,17 @@ export const blogPosts: BlogPostData[] = [
   },
   {
     id: 21,
-    title: "WordPress Developer India Cost 2026: Complete Pricing Guide",
-    excerpt: "Hire WordPress developers from India at 70% lower cost. Detailed pricing for themes, plugins, customization, and full website development.",
+    title: "WordPress Developer Hourly Rate India 2026 - Pricing Guide",
+    excerpt: "WordPress developer hourly rates in India range from ₹300 to ₹3,000+/hr. Full 2026 pricing tables by experience level, project type & hiring tips.",
     slug: "wordpress-developer-india-cost-guide",
-    date: "January 31, 2026",
-    dateISO: "2026-01-31",
+    date: "May 31, 2026",
+    dateISO: "2026-05-31",
     category: "Pricing Guide",
     imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f",
     readTime: "13 min read",
-    keywords: "WordPress developer India cost, hire WordPress developer India, WordPress development pricing"
+    keywords: "WordPress developer hourly rate India, hire WordPress developer India 2026, WordPress development pricing India"
   },
+
   {
     id: 22,
     title: "Google My Business Setup Service India: Complete GMB Optimization Guide",
