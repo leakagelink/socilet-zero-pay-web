@@ -18,19 +18,20 @@ const Footer = () => {
               We believe in delivering quality before asking for payment.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
+              <a href="#" aria-label="Follow Socilet on Facebook" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
+              <a href="#" aria-label="Follow Socilet on Twitter" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
+              <a href="#" aria-label="Follow Socilet on Instagram" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
+              <a href="#" aria-label="Connect with Socilet on LinkedIn" className="w-10 h-10 bg-gray-800 hover:bg-primary-600 rounded-full flex items-center justify-center transition-colors">
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
+
           </div>
           
           <div>
@@ -60,11 +61,12 @@ const Footer = () => {
             <h4 className="text-lg font-bold mb-6">Newsletter</h4>
             <p className="text-gray-400 mb-4">Subscribe to receive updates about our services and offers.</p>
             <div className="flex space-x-2 mb-4">
-              <Input placeholder="Your Email" className="bg-gray-800 border-gray-700" />
-              <Button className="bg-primary-600 hover:bg-primary-700 px-3">
+              <Input placeholder="Your Email" aria-label="Email address for newsletter" className="bg-gray-800 border-gray-700" />
+              <Button aria-label="Subscribe to newsletter" className="bg-primary-600 hover:bg-primary-700 px-3">
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </div>
+
             <p className="text-gray-400 text-sm">
               By subscribing, you agree to our privacy policy and terms of service.
             </p>

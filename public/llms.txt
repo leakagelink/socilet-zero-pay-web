@@ -64,18 +64,21 @@
 - Cross-platform App Development
 
 ## Pages
-- Home: https://socilet.in
-- Blog: https://socilet.in/blog
-- Portfolio: https://socilet.in/portfolio
-- App Development: https://socilet.in/app-development
-- Website Development: https://socilet.in/website-development
-- AI Spokesperson: https://socilet.in/ai-spokesperson
-- Google Business Profile: https://socilet.in/google-business-profile
-- Hire Indian Developer: https://socilet.in/hire-indian-developer
-- Zero Advance Payment: https://socilet.in/zero-advance-payment
-- Privacy Policy: https://socilet.in/privacy-policy
-- Terms of Service: https://socilet.in/terms-of-service
-- FAQ: https://socilet.in/faq
+- [Home](https://socilet.in/): Zero advance web & app development agency from India.
+- [Blog](https://socilet.in/blog): Guides on web/app development, SEO, and hiring Indian developers.
+- [Website Development](https://socilet.in/website-development): React, Next.js, and WordPress websites with zero advance payment.
+- [App Development](https://socilet.in/app-development): Android, iOS, React Native, and Flutter app development.
+- [AI Spokesperson](https://socilet.in/ai-spokesperson): AI avatar video creation for marketing and explainers.
+- [Business Profile Listing](https://socilet.in/business-profile): Google Business Profile (GMB) setup and optimization.
+- [Hire Indian Developer](https://socilet.in/hire-indian-developer): Hire vetted Indian developers without upfront payment.
+- [Zero Advance Payment](https://socilet.in/zero-advance-payment): Pay-after-delivery model explained in detail.
+- [FAQ](https://socilet.in/faq): Common questions about pricing, process, and policies.
+- [Affiliate Program](https://socilet.in/affiliate): Earn commissions by referring clients to Socilet.
+- [Track My Project](https://socilet.in/track-project): Check live progress of an ongoing project.
+- [Privacy Policy](https://socilet.in/privacy-policy): How we handle your data.
+- [Terms of Service](https://socilet.in/terms-of-service): Service usage terms.
+- [Cookie Policy](https://socilet.in/cookie-policy): Cookie usage and consent.
+
 
 ## Contact
 - Website: https://socilet.in

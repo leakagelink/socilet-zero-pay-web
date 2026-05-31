@@ -105,8 +105,9 @@ const ZeroAdvancePayment = () => {
                     Start Your Project
                   </Button>
                   <Button variant="outline" size="lg" className="gap-2">
-                    Learn More
+                    Learn about zero advance payment
                   </Button>
+
                 </div>
               </motion.div>
               

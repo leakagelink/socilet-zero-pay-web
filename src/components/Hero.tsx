@@ -223,7 +223,7 @@ const Hero = () => {
                   whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.2)" }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <h3 className="font-bold text-2xl text-primary-800">900+</h3>
+                  <h2 className="font-bold text-2xl text-primary-800">900+</h2>
                   <p className="text-sm text-gray-600">Completed Projects</p>
                 </motion.div>
                 <motion.div 
@@ -231,7 +231,7 @@ const Hero = () => {
                   whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.2)" }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <h3 className="font-bold text-2xl text-primary-800">100%</h3>
+                  <h2 className="font-bold text-2xl text-primary-800">100%</h2>
                   <p className="text-sm text-gray-600">Client Satisfaction</p>
                 </motion.div>
               </div>
