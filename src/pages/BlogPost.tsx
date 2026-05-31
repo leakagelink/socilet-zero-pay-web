@@ -30,6 +30,7 @@ import WordPressDeveloperCostGuideContent from '@/components/blog/WordPressDevel
 import GMBSetupServiceGuideContent from '@/components/blog/GMBSetupServiceGuide';
 import AffordableWebsiteSmallBusinessContent from '@/components/blog/AffordableWebsiteSmallBusiness';
 import CrossPlatformAppDevIndiaContent from '@/components/blog/CrossPlatformAppDevIndia';
+import HireWordPressDeveloperIndiaContent from '@/components/blog/HireWordPressDeveloperIndia';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -127,6 +128,8 @@ const BlogPost: React.FC = () => {
         return <AffordableWebsiteSmallBusinessContent {...contentProps} />;
       case 'cross-platform-app-development-india':
         return <CrossPlatformAppDevIndiaContent {...contentProps} />;
+      case 'hire-wordpress-developer-india':
+        return <HireWordPressDeveloperIndiaContent {...contentProps} />;
       default:
         return <div className="text-center py-12">Content not available</div>;
     }
