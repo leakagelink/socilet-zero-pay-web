@@ -86,6 +86,7 @@ LLMs-txt: https://socilet.in/llms.txt
 # ---------------------------------------------------------------
 # Sitemap locations
 # ---------------------------------------------------------------
+Sitemap: https://socilet.in/sitemap.xml
 Sitemap: https://socilet.in/sitemap_index.xml
 Sitemap: https://socilet.in/sitemap-pages.xml
 Sitemap: https://socilet.in/sitemap-blog.xml
