@@ -35,9 +35,12 @@ const MobileNavigation = () => {
         size="sm"
         className="p-0.5 h-7 w-7 min-w-0"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
+        aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+        aria-expanded={isMenuOpen}
       >
         {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
       </Button>
+
       
       {/* Mobile dropdown menu */}
       {isMenuOpen && (

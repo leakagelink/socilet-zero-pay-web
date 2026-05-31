@@ -134,7 +134,7 @@ const Services = () => {
                     variant="ghost" 
                     className="text-primary-600 hover:text-primary-700 hover:bg-primary-50 p-0 flex items-center font-medium group"
                   >
-                    <span>Learn more</span>
+                    <span>Explore this service</span>
                     <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </motion.div>

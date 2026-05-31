@@ -16,8 +16,9 @@ const WebsiteDevelopment = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Website Development Services in India | React, Next.js, WordPress | Socilet"
-        description="Professional website development with React, Next.js, TypeScript, and WordPress. Responsive, SEO-optimized, and mobile-first. Zero advance payment — pay only after completion."
+        title="Website Development Services in India | Socilet"
+        description="Professional React, Next.js, and WordPress website development. Responsive, SEO-optimized. Zero advance payment — pay only after completion."
+
         keywords="website development India, React website developer, Next.js developer, WordPress development, custom website design, responsive web development, zero advance website"
         canonical="/website-development"
         image="/og/og-website-development.jpg"
