@@ -12,6 +12,18 @@ export interface BlogPostData {
 }
 
 export const blogPosts: BlogPostData[] = [
+  {
+    id: 25,
+    title: "Hire WordPress Developer in India 2026: Rates & Guide",
+    excerpt: "Hire WordPress developer in India from ₹500/hr. Compare rates, skills, vetted agencies vs freelancers. Save 70% vs US devs. Free hiring checklist inside.",
+    slug: "hire-wordpress-developer-india",
+    date: "May 31, 2026",
+    dateISO: "2026-05-31",
+    category: "Outsourcing",
+    imageUrl: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5",
+    readTime: "11 min read",
+    keywords: "hire wordpress developer india, wordpress developer india, hire dedicated wordpress developer, wordpress development company india, wordpress developer hourly rate india, wordpress developer salary india, wordpress freelancer, best wordpress developer, hire wordpress expert"
+  },
   // NEW SEO ARTICLES (Feb 2026) - Articles 5-10
   {
     id: 19,
