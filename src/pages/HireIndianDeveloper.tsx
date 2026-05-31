@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+
 import SEO from '../components/SEO';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -307,8 +309,12 @@ const HireIndianDeveloper = () => {
               Services & Pricing Comparison
             </h2>
             <p className="text-xl text-gray-600">
-              See how much you save compared to US/Canada rates
+              See how much you save compared to US/Canada rates. Need a stack-specific breakdown?{' '}
+              <Link to="/blog/wordpress-developer-india-cost-guide" className="text-primary-600 underline hover:text-primary-700">
+                See our WordPress pricing guide
+              </Link>.
             </p>
+
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
